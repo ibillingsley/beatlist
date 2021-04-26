@@ -1,7 +1,11 @@
 /* istanbul ignore file */
 import store from "@/plugins/store";
+import fs from "fs-extra";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
-import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
+import {
+  BeatsaverBeatmap,
+  Metadata,
+} from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import PlaylistLibrary from "../playlist/PlaylistLibrary";
@@ -25,6 +29,7 @@ export default class BeatmapLibrary {
   }
 
   public static GetAllValidBeatmapAsTableData(): BeatmapsTableDataUnit[] {
+    /*
     return this.GetAllMaps()
       .map((beatmap: BeatmapLocal) => ({
         local: beatmap,
@@ -33,6 +38,98 @@ export default class BeatmapLibrary {
           : undefined,
       }))
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
+    */
+
+    return this.GetAllMaps()
+      .map((beatmap: BeatmapLocal) => {
+        let mydata: BeatsaverBeatmap | undefined;
+        if (beatmap.hash) {
+          mydata = BeatsaverCachedLibrary.GetByHash(beatmap.hash)?.beatmap;
+          if (mydata == null) {
+            mydata = BeatmapLibrary.GenerateBeatmap(beatmap);
+          }
+        }
+        return {
+          local: beatmap,
+          data: mydata,
+        };
+      })
+      .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
+  }
+
+  static GenerateBeatmap(beatmap: BeatmapLocal): BeatsaverBeatmap | undefined {
+    if (beatmap.hash === undefined) {
+      return undefined;
+    }
+    let beatmapDescription;
+    try {
+      const infoDat = fs.readFileSync(`${beatmap.folderPath}/info.dat`);
+      beatmapDescription = JSON.parse(infoDat.toString());
+    } catch (e) {
+      return undefined;
+    }
+    const myDifficulties = {
+      easy: false,
+      normal: false,
+      hard: false,
+      expert: false,
+      expertPlus: false,
+    };
+    for (const mapset of beatmapDescription._difficultyBeatmapSets) {
+      if (mapset._beatmapCharacteristicName === "Standard") {
+        for (const map of mapset._difficultyBeatmaps) {
+          switch (map._difficulty) {
+            case "Easy":
+              myDifficulties.easy = true;
+              break;
+            case "Normal":
+              myDifficulties.normal = true;
+              break;
+            case "Hard":
+              myDifficulties.hard = true;
+              break;
+            case "Expert":
+              myDifficulties.expert = true;
+              break;
+            case "ExpertPlus":
+              myDifficulties.expertPlus = true;
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    const mymetadata: Metadata = {
+      difficulties: myDifficulties,
+      characteristics: [],
+      songName: beatmapDescription._songName,
+      songSubName: beatmapDescription._songSubName,
+      songAuthorName: beatmapDescription._songAuthorName,
+      levelAuthorName: beatmapDescription._levelAuthorName,
+      bpm: 0,
+    };
+    const item: BeatsaverBeatmap = {
+      metadata: mymetadata,
+      stats: {
+        downVotes: 0,
+        downloads: 0,
+        heat: 0,
+        plays: 0,
+        rating: 0,
+        upVotes: 0,
+      },
+      description: "",
+      key: "",
+      name: beatmapDescription._songName,
+      // uploaded: null,
+      hash: beatmap.hash,
+      directDownload: "",
+      downloadURL: "",
+      coverURL: "",
+    };
+    return item;
   }
 
   public static GetMapByHash(hash: string): BeatmapLocal | undefined {

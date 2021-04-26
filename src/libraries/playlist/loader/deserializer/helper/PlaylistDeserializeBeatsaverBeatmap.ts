@@ -1,5 +1,9 @@
 import * as Throttle from "promise-parallel-throttle";
-import { BeatsaverItem } from "@/libraries/beatmap/repo/BeatsaverItem";
+import {
+  BeatsaverItem,
+  BeatsaverItemInvalid,
+  BeatsaverItemInvalidForPlaylist,
+} from "@/libraries/beatmap/repo/BeatsaverItem";
 import {
   BeatsaverKey,
   BeatsaverKeyType,
@@ -35,6 +39,14 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
     return Throttle.all(
       identifiers.map((identifier) => async () =>
         this.fromAny(identifier).then((item) => {
+          if (!item?.beatmap) {
+            const newItem: BeatsaverItemInvalidForPlaylist = {
+              originalHash: identifier.hash ? identifier.hash : "",
+              ...(item as BeatsaverItemInvalid),
+            };
+            progress.plusOne();
+            return newItem;
+          }
           progress.plusOne();
           return item;
         })

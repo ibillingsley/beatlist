@@ -30,4 +30,8 @@ export interface BeatsaverItemInvalid {
   date: Date;
 }
 
+export interface BeatsaverItemInvalidForPlaylist extends BeatsaverItemInvalid {
+  originalHash?: string;
+}
+
 export default {};

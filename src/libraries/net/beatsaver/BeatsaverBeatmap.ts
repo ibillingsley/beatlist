@@ -4,7 +4,7 @@ export interface BeatsaverBeatmap {
   description: string;
   key: string;
   name: string;
-  uploaded: Date;
+  uploaded?: Date;
   hash: string;
   directDownload: string;
   downloadURL: string;

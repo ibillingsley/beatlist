@@ -6,6 +6,7 @@ import {
 } from "@/libraries/playlist/PlaylistLocal";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import BeatmapLibrary from "../beatmap/BeatmapLibrary";
 
 export default class PlaylistMapsLibrary {
   public static GetAllInvalidMap(): {
@@ -49,10 +50,36 @@ export default class PlaylistMapsLibrary {
   public static GetAllValidMapAsTableDataFor(
     playlist: PlaylistLocal
   ): BeatmapsTableDataUnit[] {
+    /*
     return this.GetAllValidMapFor(playlist)
       .map((playlistMap: PlaylistValidMap) => ({
         data: BeatsaverCachedLibrary.GetByHash(playlistMap.hash)?.beatmap,
       }))
+      .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
+    */
+    const validMaps = playlist.maps.filter((map) => {
+      // console.log(map.hash);
+      return map.hash !== undefined;
+    }) as PlaylistValidMap[];
+
+    return validMaps
+      .map((playlistMap: PlaylistValidMap) => {
+        let mydata = BeatsaverCachedLibrary.GetByHash(playlistMap.hash)
+          ?.beatmap;
+        if (mydata == null) {
+          // console.log(`mydata == null`);
+          const beatmapLocal = BeatmapLibrary.GetAllMaps().find(
+            (item) => item.hash === playlistMap.hash
+          );
+          // console.log(beatmapLocal?.folderPath);
+          if (beatmapLocal != null) {
+            mydata = BeatmapLibrary.GenerateBeatmap(beatmapLocal);
+          }
+        }
+        return {
+          data: mydata,
+        };
+      })
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
   }
 }
