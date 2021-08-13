@@ -8,7 +8,7 @@ This is a fork of the [beatlist](https://github.com/Alaanor/beatlist).
 
 # Installation
 
-1. [Download](https://github.com/ranmd9a/beatlist/releases/latest) and execute the latest version.
+1. [Download](https://github.com/ranmd9a/beatlist/releases) and execute the latest version.
 2. Insert manually or use the detector to set the **installation path** of Beat Saber in **settings**
 3. **Scan** your beatmaps/playlists library in settings through the scan button.
 4. Enjoy !
