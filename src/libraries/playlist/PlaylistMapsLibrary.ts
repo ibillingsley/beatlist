@@ -66,10 +66,12 @@ export default class PlaylistMapsLibrary {
       .map((playlistMap: PlaylistValidMap) => {
         let mydata = BeatsaverCachedLibrary.GetByHash(playlistMap.hash)
           ?.beatmap;
+        let beatmapLocal;
         if (mydata == null) {
           // console.log(`mydata == null`);
-          const beatmapLocal = BeatmapLibrary.GetAllMaps().find(
-            (item) => item.hash === playlistMap.hash
+          beatmapLocal = BeatmapLibrary.GetAllMaps().find(
+            (item) =>
+              item.hash?.toUpperCase() === playlistMap.hash.toUpperCase()
           );
           // console.log(beatmapLocal?.folderPath);
           if (beatmapLocal != null) {
@@ -77,6 +79,7 @@ export default class PlaylistMapsLibrary {
           }
         }
         return {
+          local: beatmapLocal,
           data: mydata,
         };
       })

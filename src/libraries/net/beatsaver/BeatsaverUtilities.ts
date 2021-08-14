@@ -12,6 +12,9 @@ const BEATSAVER_DOMAIN = "https://beatsaver.com/";
 
 export default class BeatsaverUtilities {
   public static GetImageSrcFrom(beatmap: BeatsaverBeatmap): string {
+    if (beatmap.coverURL == null || beatmap.coverURL === "") {
+      return "error";
+    }
     return url.resolve(BEATSAVER_DOMAIN, beatmap.coverURL);
   }
 
