@@ -36,6 +36,8 @@ export default class BeatsaverCacheManager {
         BeatsaverItemLoadError.RequestTimeout;
 
       if (!isOlderThan10Day && !isRateLimited && !isTimeout) {
+        // RateLimit でもタイムアウトでもない
+        // かつ 10日未満 (404エラーとかサーバーエラーとか)
         return existingBeatmap;
       }
 

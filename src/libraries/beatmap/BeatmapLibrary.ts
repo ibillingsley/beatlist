@@ -164,6 +164,10 @@ export default class BeatmapLibrary {
     store.commit("beatmap/removeBeatmap", { beatmap });
   }
 
+  public static RemoveBeatmapByPath(path: string) {
+    store.commit("beatmap/removeBeatmapByPath", { path });
+  }
+
   public static GetPlaylists(beatmap: BeatmapLocal): PlaylistLocal[] {
     return PlaylistLibrary.GetAllValidPlaylists().filter((playlist) =>
       playlist.maps.find(

@@ -6,11 +6,11 @@
         Current version: {{ currentVersion }}
       </div>
       <div class="pt-2">
-        <v-btn icon color="rgb(114, 137, 218)" @click="openDiscordInvitation()">
+        <!-- <v-btn icon color="rgb(114, 137, 218)" @click="openDiscordInvitation()">
           <v-icon class="mx-2">
             mdi-discord
           </v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-btn icon @click="openGithubRepo()">
           <v-icon>
             mdi-github-circle
@@ -18,7 +18,7 @@
         </v-btn>
       </div>
     </div>
-    <ChangelogDisplayer />
+    <!-- <ChangelogDisplayer /> -->
   </v-container>
 </template>
 
@@ -26,15 +26,15 @@
 import Vue from "vue";
 import { remote, shell } from "electron";
 import { get } from "vuex-pathify";
-import ChangelogDisplayer from "@/components/github/changelog/ChangelogDisplayer.vue";
-import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
+// import ChangelogDisplayer from "@/components/github/changelog/ChangelogDisplayer.vue";
+// import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 
 const titleWhite = require("@/assets/title_white.png");
 const titleDark = require("@/assets/title_dark.png");
 
 export default Vue.extend({
   name: "Home",
-  components: { ChangelogDisplayer },
+  // components: { ChangelogDisplayer },
   computed: {
     darkTheme: get<boolean>("settings/darkTheme"),
     titleImage() {
@@ -45,15 +45,15 @@ export default Vue.extend({
     },
   },
   beforeRouteEnter(to, from, next) {
-    DiscordRichPresence.UpdateStatus("Home");
+    // DiscordRichPresence.UpdateStatus("Home");
     next();
   },
   methods: {
     openGithubRepo() {
-      shell.openExternal("https://github.com/Alaanor/beatlist");
+      shell.openExternal("https://github.com/ranmd9a/beatlist");
     },
     openDiscordInvitation() {
-      shell.openExternal("https://discord.gg/f5AmKSH");
+      // shell.openExternal("https://discord.gg/f5AmKSH");
     },
   },
 });

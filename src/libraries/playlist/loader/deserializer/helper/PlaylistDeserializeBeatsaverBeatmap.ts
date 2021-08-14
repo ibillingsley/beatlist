@@ -1,8 +1,9 @@
-import * as Throttle from "promise-parallel-throttle";
+// import * as Throttle from "promise-parallel-throttle";
 import {
   BeatsaverItem,
   BeatsaverItemInvalid,
   BeatsaverItemInvalidForPlaylist,
+  BeatsaverItemValid,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
 import {
   BeatsaverKey,
@@ -11,7 +12,7 @@ import {
 import Progress from "@/libraries/common/Progress";
 import BeatsaverCacheManager from "@/libraries/beatmap/repo/BeatsaverCacheManager";
 
-const MAX_CONCURRENCY_ITEM = 3;
+// const MAX_CONCURRENCY_ITEM = 3;
 
 export default class PlaylistDeserializeBeatsaverBeatmap {
   public static async fromHash(hash: string): Promise<BeatsaverItem> {
@@ -35,24 +36,43 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
     progress: Progress
   ) {
     progress.setTotal(identifiers.length);
-
-    return Throttle.all(
-      identifiers.map((identifier) => async () =>
-        this.fromAny(identifier).then((item) => {
-          if (!item?.beatmap) {
-            const newItem: BeatsaverItemInvalidForPlaylist = {
-              originalHash: identifier.hash ? identifier.hash : "",
-              ...(item as BeatsaverItemInvalid),
-            };
-            progress.plusOne();
-            return newItem;
-          }
-          progress.plusOne();
-          return item;
-        })
-      ),
-      { maxInProgress: MAX_CONCURRENCY_ITEM }
-    );
+    const result: (BeatsaverItemValid | BeatsaverItemInvalidForPlaylist)[] = [];
+    for (const identifier of identifiers) {
+      // eslint-disable-next-line no-await-in-loop
+      const item = await this.fromAny(identifier);
+      if (!item?.beatmap) {
+        const newItem: BeatsaverItemInvalidForPlaylist = {
+          originalHash: identifier.hash ? identifier.hash : "",
+          ...(item as BeatsaverItemInvalid),
+        };
+        progress.plusOne();
+        result.push(newItem);
+        // return newItem;
+      }
+      progress.plusOne();
+      // return item;
+      if (item != null) {
+        result.push(item);
+      }
+    }
+    return result;
+    // return Throttle.all(
+    //   identifiers.map((identifier) => async () =>
+    //     this.fromAny(identifier).then((item) => {
+    //       if (!item?.beatmap) {
+    //         const newItem: BeatsaverItemInvalidForPlaylist = {
+    //           originalHash: identifier.hash ? identifier.hash : "",
+    //           ...(item as BeatsaverItemInvalid),
+    //         };
+    //         progress.plusOne();
+    //         return newItem;
+    //       }
+    //       progress.plusOne();
+    //       return item;
+    //     })
+    //   ),
+    //   { maxInProgress: MAX_CONCURRENCY_ITEM }
+    // );
   }
 
   private static async fromAny(identifier: { key?: string; hash?: string }) {

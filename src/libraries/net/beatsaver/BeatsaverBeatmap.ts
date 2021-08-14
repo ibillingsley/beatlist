@@ -11,6 +11,48 @@ export interface BeatsaverBeatmap {
   coverURL: string;
 }
 
+export interface BeatsaverNewBeatmap {
+  id: string;
+  name: string;
+  description: string;
+  uploader: any;
+  metadata: NewMetadata;
+  stats: NewStats;
+  uploaded?: Date;
+  automapper: boolean;
+  ranked: boolean;
+  qualified: boolean;
+  versions: BeatsaverNewVersion[];
+}
+
+export interface BeatsaverNewVersion {
+  hash: string;
+  state: string;
+  diffs: any[];
+  downloadURL: string;
+  coverURL: string;
+  previewURL: string;
+}
+
+export interface NewStats {
+  downloads: number;
+  plays: number;
+  downvotes: number;
+  upvotes: number;
+  score: number;
+
+  [stat: string]: number;
+}
+
+export interface NewMetadata {
+  bpm: number;
+  duration: number;
+  songName: string;
+  songSubName: string;
+  songAuthorName: string;
+  levelAuthorName: string;
+}
+
 export interface Metadata {
   difficulties: DifficultiesSimple;
   characteristics: Characteristic[];
@@ -27,11 +69,11 @@ export interface Characteristic {
 }
 
 export interface DifficultiesDetailed {
-  easy: Difficulty;
-  normal: Difficulty;
-  hard: Difficulty;
-  expert: Difficulty;
-  expertPlus: Difficulty;
+  easy: Difficulty | null;
+  normal: Difficulty | null;
+  hard: Difficulty | null;
+  expert: Difficulty | null;
+  expertPlus: Difficulty | null;
 }
 
 export interface Difficulty {
@@ -59,7 +101,7 @@ export interface Stats {
   plays: number;
   downVotes: number;
   upVotes: number;
-  heat: number;
+  //   heat: number;
   rating: number;
 
   [stat: string]: number;

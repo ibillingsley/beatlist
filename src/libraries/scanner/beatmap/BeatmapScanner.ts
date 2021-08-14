@@ -18,23 +18,33 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
     return ScannerLocker.acquire(async () => {
       const diff = await BeatmapScanner.GetTheDifferenceInPath();
 
+      for (const path of diff.removed) {
+        // 削除されたディレクトリのキャッシュを破棄
+        BeatmapLibrary.RemoveBeatmapByPath(path);
+      }
+      this.result.removedItems = diff.removed.length;
+      this.result.keptItems = diff.kept.length;
+      diff.removed = []; // 件数しか使用しないので早めに破棄
+      diff.kept = []; // 件数しか使用しないので早めに破棄
+
       progress.setTotal(diff.added.length);
 
       this.result.newItems = await Throttle.all(
         diff.added.map((path: string) => () =>
           BeatmapLoader.Load(path).then((beatmap: BeatmapLocal) => {
             progress.plusOne();
+            BeatmapLibrary.AddBeatmap(beatmap);
             return beatmap;
           })
         ),
         { maxInProgress: 25 }
       );
 
-      this.result.removedItems = diff.removed.length;
-      this.result.keptItems = diff.kept.length;
+      // this.result.removedItems = diff.removed.length;
+      // this.result.keptItems = diff.kept.length;
 
-      const allBeatmaps = this.ReassembleAllBeatmap(diff);
-      BeatmapLibrary.UpdateAllMaps(allBeatmaps);
+      // const allBeatmaps = this.ReassembleAllBeatmap(diff);
+      // BeatmapLibrary.UpdateAllMaps(allBeatmaps);
 
       return this.result;
     });
@@ -62,12 +72,12 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
     return computeDifference(oldPaths, currentPaths);
   }
 
-  private ReassembleAllBeatmap(diff: Differences<string>): BeatmapLocal[] {
-    const existingBeatmap = BeatmapLibrary.GetAllMaps().filter(
-      (beatmap: BeatmapLocal) =>
-        diff.kept.find((path: string) => beatmap.folderPath === path)
-    );
+  //   private ReassembleAllBeatmap(diff: Differences<string>): BeatmapLocal[] {
+  //     const existingBeatmap = BeatmapLibrary.GetAllMaps().filter(
+  //       (beatmap: BeatmapLocal) =>
+  //         diff.kept.find((path: string) => beatmap.folderPath === path)
+  //     );
 
-    return this.result.newItems.concat(existingBeatmap);
-  }
+  //     return this.result.newItems.concat(existingBeatmap);
+  //   }
 }

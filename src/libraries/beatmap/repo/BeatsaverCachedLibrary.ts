@@ -19,6 +19,10 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/addBeatsaverCachedInvalid", { key, item });
   }
 
+  public static LoadAll(path: string) {
+    store.commit("beatmap/loadBeatmaps", { path });
+  }
+
   public static Exist(key: BeatsaverKey) {
     return BeatsaverCachedLibrary.Get(key) !== undefined;
   }
@@ -40,15 +44,27 @@ export default class BeatsaverCachedLibrary {
   public static GetByHash(hash: string): BeatsaverItem | undefined {
     hash = hash.toUpperCase();
 
-    return (
+    const beatmap =
       BeatsaverCachedLibrary.GetAllValid().get(hash) ??
       BeatsaverCachedLibrary.GetAllInvalid().get(
         toStrKey({
           type: BeatsaverKeyType.Hash,
           value: hash,
         })
-      )
-    );
+      );
+    if (beatmap?.beatmap?.coverURL.startsWith("/cdn/")) {
+      beatmap.beatmap.coverURL = `https://cdn.beatsaver.com/${hash.toLowerCase()}.jpg`;
+    }
+    return beatmap;
+    // return (
+    //   BeatsaverCachedLibrary.GetAllValid().get(hash) ??
+    //   BeatsaverCachedLibrary.GetAllInvalid().get(
+    //     toStrKey({
+    //       type: BeatsaverKeyType.Hash,
+    //       value: hash,
+    //     })
+    //   )
+    // );
   }
 
   public static GetAllValid(): Map<string, BeatsaverItemValid> {

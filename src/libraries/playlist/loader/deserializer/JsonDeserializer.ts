@@ -12,6 +12,8 @@ import {
   BeatsaverItem,
   BeatsaverItemLoadError,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
+import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
+import { BeatsaverKeyType } from "@/libraries/beatmap/repo/BeatsaverKeyType";
 
 export const FILE_NOT_FOUND: Error = new Error("File not found");
 export const INVALID_JSON: Error = new Error("Invalid JSON");
@@ -36,6 +38,7 @@ export default class JsonDeserializer extends PlaylistDeserializer {
           Base64SrcLoader.GetRawSrc(json.image ?? ""),
           "base64"
         ),
+        // convertToHash の中で beatsaver api を呼び出している
         maps: await JsonDeserializer.convertToHash(
           json.songs ?? [],
           progress ?? new Progress()
@@ -57,7 +60,35 @@ export default class JsonDeserializer extends PlaylistDeserializer {
     songs: { hash: string | undefined; key: string | undefined }[],
     progress: Progress
   ): Promise<PlaylistLocalMap[]> {
-    return (await PlaylistDeserializeBeatsaverBeatmap.convert(songs, progress))
+    const resultList: PlaylistLocalMap[] = [];
+    const newSongs: {
+      hash: string | undefined;
+      key: string | undefined;
+    }[] = [];
+    for (const song of songs) {
+      if (song.hash != null) {
+        const beatmap = BeatmapLibrary.GetAllValidMap().find(
+          (value) => value.hash === song.hash
+        );
+        if (beatmap == null) {
+          newSongs.push(song);
+        } else {
+          resultList.push({
+            dateAdded: new Date(),
+            hash: beatmap.hash,
+            attemptedSource: {
+              type: BeatsaverKeyType.Hash,
+              value: song.hash,
+            },
+          } as PlaylistLocalMap);
+        }
+      }
+    }
+    const notLocalMaps = await PlaylistDeserializeBeatsaverBeatmap.convert(
+      newSongs,
+      progress
+    );
+    const newPlaylistLocalMaps = notLocalMaps
       .filter((item): item is BeatsaverItem => item !== undefined)
       .map(
         (item: BeatsaverItem) =>
@@ -70,6 +101,21 @@ export default class JsonDeserializer extends PlaylistDeserializer {
             ...this.getErrorFor(item),
           } as PlaylistLocalMap)
       );
+    return resultList.concat(newPlaylistLocalMaps);
+
+    // return (await PlaylistDeserializeBeatsaverBeatmap.convert(songs, progress))
+    //   .filter((item): item is BeatsaverItem => item !== undefined)
+    //   .map(
+    //     (item: BeatsaverItem) =>
+    //       ({
+    //         dateAdded: new Date(),
+    //         hash: item?.beatmap?.hash
+    //           ? item?.beatmap?.hash
+    //           : (item as any).originalHash,
+    //         attemptedSource: item.loadState.attemptedSource,
+    //         ...this.getErrorFor(item),
+    //       } as PlaylistLocalMap)
+    //   );
   }
 
   private static getErrorFor(

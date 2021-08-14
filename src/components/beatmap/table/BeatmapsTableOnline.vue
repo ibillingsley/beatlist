@@ -44,7 +44,7 @@
       <BeatmapsTable
         :items="beatmaps"
         :shown-column="shownColumn"
-        :items-per-page="10"
+        :items-per-page="20"
         :server-items-length="totalDocs"
         :loading="loading"
         :page.sync="page"
@@ -101,14 +101,14 @@ export default Vue.extend({
     BeatmapButtonAddToNPlaylists,
   },
   data: () => ({
-    selectedMode: "hot",
+    selectedMode: "search",
     modes: [
       { name: "search", value: "Search", icon: "search" },
-      { name: "hot", value: "Hot", icon: "whatshot" },
-      { name: "rating", value: "Rating", icon: "star" },
+      // { name: "hot", value: "Hot", icon: "whatshot" },
+      // { name: "rating", value: "Rating", icon: "star" },
       { name: "latest", value: "Latest", icon: "new_releases" },
-      { name: "download", value: "Download", icon: "cloud_download" },
-      { name: "plays", value: "Plays", icon: "play_arrow" },
+      // { name: "download", value: "Download", icon: "cloud_download" },
+      // { name: "plays", value: "Plays", icon: "play_arrow" },
       { name: "key", value: "Key", icon: "vpn_key" },
       { name: "hash", value: "Hash", text: "#" },
     ],
@@ -172,29 +172,35 @@ export default Vue.extend({
         case "search":
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
             this.search,
+            "Relevance",
             this.page - 1
           );
           break;
 
-        case "hot":
-          requestPage = BeatsaverAPI.Singleton.getByHot(this.page - 1);
-          break;
+        // case "hot":
+        //   requestPage = BeatsaverAPI.Singleton.getByHot(this.page - 1);
+        //   break;
 
-        case "rating":
-          requestPage = BeatsaverAPI.Singleton.getByRating(this.page - 1);
-          break;
+        // case "rating":
+        //   requestPage = BeatsaverAPI.Singleton.getByRating(this.page - 1);
+        //   break;
 
         case "latest":
-          requestPage = BeatsaverAPI.Singleton.getByLatest(this.page - 1);
+          // requestPage = BeatsaverAPI.Singleton.getByLatest(this.page - 1);
+          requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
+            this.search,
+            "Latest",
+            this.page - 1
+          );
           break;
 
-        case "download":
-          requestPage = BeatsaverAPI.Singleton.getByDownloads(this.page - 1);
-          break;
+        // case "download":
+        //   requestPage = BeatsaverAPI.Singleton.getByDownloads(this.page - 1);
+        //   break;
 
-        case "plays":
-          requestPage = BeatsaverAPI.Singleton.getByPlays(this.page - 1);
-          break;
+        // case "plays":
+        //   requestPage = BeatsaverAPI.Singleton.getByPlays(this.page - 1);
+        //   break;
 
         case "key":
           requestMap = BeatsaverAPI.Singleton.getBeatmapByKey(this.search);
@@ -257,12 +263,12 @@ export default Vue.extend({
         });
     },
     performSearch(): void {
-      if (!["search", "key", "hash"].includes(this.selectedMode)) {
+      if (!["search", "latest", "key", "hash"].includes(this.selectedMode)) {
         this.selectedMode = "search";
       }
 
       if (this.search === "") {
-        this.selectedMode = "hot";
+        this.selectedMode = "search";
         return;
       }
 

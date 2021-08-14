@@ -22,6 +22,8 @@ import {
 } from "@/libraries/net/downloader/DownloadUnitProgress";
 
 const ON_COMPLETED: string = "completed";
+const sleep = (msec: number) =>
+  new Promise((resolve) => setTimeout(resolve, msec));
 
 export default class DownloadOperationBeatmap
   implements DownloadOperationBase, DownloadOperationTypeBeatmap {
@@ -53,7 +55,7 @@ export default class DownloadOperationBeatmap
       status: DownloadOperationBeatmapResultStatus.Init,
     };
 
-    this._eventEmitter.on(ON_COMPLETED, this.CleanUp);
+    this._eventEmitter.on(ON_COMPLETED, this.CleanUp.bind(this));
   }
 
   public async Start(): Promise<void> {
@@ -74,15 +76,18 @@ export default class DownloadOperationBeatmap
 
         this.download = new DownloadUnit(url, stream, this.progress);
         this.download.onError((error: Error) => this.onDownloadError(error));
-        this.download.onCompleted(() => {
+        this.download.onCompleted(async () => {
           if (this.isCompleted) {
             return; // was terminated before by an error
           }
 
           try {
+            stream.close(); // 明示的に閉じる
+            await sleep(1000); // 少し待機しないとエラーになる
             this.handleExtraction(zipPath);
             this.onSuccess();
           } catch (e) {
+            console.log(e);
             this.onExtractError(e);
           }
         });
@@ -96,7 +101,8 @@ export default class DownloadOperationBeatmap
 
   private async CleanUp(): Promise<void> {
     if (this.tempFolder) {
-      await fs.unlink(this.tempFolder);
+      // await fs.unlink(this.tempFolder);
+      fs.rmdirSync(this.tempFolder);
     }
   }
 
@@ -110,6 +116,12 @@ export default class DownloadOperationBeatmap
     const extractPath = BeatSaber.GetFolderPathFor(this.beatmap);
 
     zip.extractAllTo(extractPath, true);
+
+    try {
+      fs.removeSync(zipPath); // temp ディレクトリの zip 削除
+    } catch (e) {
+      // ignore
+    }
   }
 
   OnCompleted(

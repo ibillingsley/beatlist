@@ -5,18 +5,22 @@ import BeatsaverRateLimitManager from "@/libraries/net/beatsaver/BeatsaverRateLi
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
 import {
   BeatsaverBeatmap,
+  BeatsaverNewBeatmap,
   BeatsaverPage,
+  Characteristic,
+  DifficultiesSimple,
+  Difficulty,
   isBeatsaverBeatmap,
 } from "./BeatsaverBeatmap";
 
-const GET_BY_HASH = "maps/by-hash";
-const GET_BY_KEY = "maps/detail";
+const GET_BY_HASH = "maps/hash";
+const GET_BY_KEY = "maps/id";
 const SEARCH = "search/text";
-const GET_BY_HOT = "maps/hot";
-const GET_BY_PLAYS = "maps/plays";
-const GET_BY_DOWNLOADS = "maps/downloads";
-const GET_BY_LATEST = "maps/latest";
-const GET_BY_RATING = "maps/rating";
+// const GET_BY_HOT = "maps/hot";
+// const GET_BY_PLAYS = "maps/plays";
+// const GET_BY_DOWNLOADS = "maps/downloads";
+// const GET_BY_LATEST = "maps/latest";
+// const GET_BY_RATING = "maps/rating";
 
 export type BeatSaverAPIResponse<T> =
   | BeatSaverAPIResponseDataFound<T>
@@ -63,6 +67,9 @@ export enum BeatSaverAPIResponseStatus {
   Timeout = 5, // timeout
 }
 
+const sleep = (msec: number) =>
+  new Promise((resolve) => setTimeout(resolve, msec));
+
 export default class BeatsaverAPI {
   public static Singleton: BeatsaverAPI = new BeatsaverAPI();
 
@@ -76,7 +83,7 @@ export default class BeatsaverAPI {
     hash: string
   ): Promise<BeatSaverAPIResponse<BeatsaverBeatmap>> {
     return this.makeRequest<BeatsaverBeatmap>(
-      `${GET_BY_HASH}/${hash}/`,
+      `${GET_BY_HASH}/${hash}`,
       isBeatsaverBeatmap
     );
   }
@@ -85,47 +92,52 @@ export default class BeatsaverAPI {
     key: string
   ): Promise<BeatSaverAPIResponse<BeatsaverBeatmap>> {
     return this.makeRequest<BeatsaverBeatmap>(
-      `${GET_BY_KEY}/${key}/`,
+      `${GET_BY_KEY}/${key}`,
       isBeatsaverBeatmap
     );
   }
 
   public async searchBeatmaps(
     search: string,
+    sortOrder = "Relevance",
     page: number = 0
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(`${SEARCH}/${page}?q=${search}`);
+    return this.makeRequest<BeatsaverPage>(
+      `${SEARCH}/${page}?q=${search}&sortOrder=${sortOrder}`
+    );
   }
 
-  public async getByHot(
-    page: number = 0
-  ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(`${GET_BY_HOT}/${page}`);
-  }
+  //   public async getByHot(
+  //     page: number = 0
+  //   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
+  //     return this.makeRequest<BeatsaverPage>(`${GET_BY_HOT}/${page}`);
+  //   }
 
-  public async getByPlays(
-    page: number = 0
-  ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(`${GET_BY_PLAYS}/${page}`);
-  }
+  //   public async getByPlays(
+  //     page: number = 0
+  //   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
+  //     return this.makeRequest<BeatsaverPage>(`${GET_BY_PLAYS}/${page}`);
+  //   }
 
-  public async getByDownloads(
-    page: number = 0
-  ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(`${GET_BY_DOWNLOADS}/${page}`);
-  }
+  //   public async getByDownloads(
+  //     page: number = 0
+  //   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
+  //     return this.makeRequest<BeatsaverPage>(`${GET_BY_DOWNLOADS}/${page}`);
+  //   }
 
   public async getByLatest(
     page: number = 0
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(`${GET_BY_LATEST}/${page}`);
+    return this.makeRequest<BeatsaverPage>(
+      `${SEARCH}/${page}?sortOrder=Latest`
+    );
   }
 
-  public async getByRating(
-    page: number = 0
-  ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(`${GET_BY_RATING}/${page}`);
-  }
+  //   public async getByRating(
+  //     page: number = 0
+  //   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
+  //     return this.makeRequest<BeatsaverPage>(`${GET_BY_RATING}/${page}`);
+  //   }
 
   public updateBaseUrl(baseUrl: BeatsaverServerUrl) {
     this.http = AxiosCachedFactory.getAxios(baseUrl);
@@ -138,6 +150,8 @@ export default class BeatsaverAPI {
     if (BeatsaverRateLimitManager.HasHitRateLimit()) {
       return BeatsaverAPI.RateLimitedAnswer<T>();
     }
+
+    await sleep(150);
 
     return this.http
       .get(apiPath, {
@@ -158,11 +172,32 @@ export default class BeatsaverAPI {
     let valid = true;
     if (validation !== undefined) {
       valid = validation(answer.data);
+      if (!valid) {
+        const newData = (answer.data as unknown) as BeatsaverNewBeatmap;
+        const data = BeatsaverAPI.convertNewMapToMap(newData);
+        return {
+          data: Object.freeze((data as unknown) as T),
+          status: BeatSaverAPIResponseStatus.ResourceFound,
+        } as BeatSaverAPIResponse<T>;
+      }
     }
 
     if (valid) {
+      const page: BeatsaverPage = {
+        docs: [],
+        lastPage: 1,
+        prevPage: null,
+        nextPage: null,
+        totalDocs: 200, // とりあえず 10ページ
+      };
+      for (const doc of ((answer.data as any)
+        .docs as unknown) as BeatsaverNewBeatmap[]) {
+        const data = BeatsaverAPI.convertNewMapToMap(doc);
+        page.docs.push(data);
+      }
       return {
-        data: Object.freeze(answer.data as T),
+        // data: Object.freeze(answer.data as T),
+        data: Object.freeze((page as unknown) as T),
         status: BeatSaverAPIResponseStatus.ResourceFound,
       } as BeatSaverAPIResponse<T>;
     }
@@ -225,5 +260,130 @@ export default class BeatsaverAPI {
       resetAt: BeatsaverRateLimitManager.GetResetDate(),
       total: undefined,
     } as BeatSaverAPIResponse<T>;
+  }
+
+  private static createDifficultiesMetadata(
+    doc: BeatsaverNewBeatmap
+  ): DifficultiesSimple {
+    const version = doc.versions[0];
+    const result: DifficultiesSimple = {
+      easy: false,
+      normal: false,
+      hard: false,
+      expert: false,
+      expertPlus: false,
+    };
+    for (const diff of version.diffs) {
+      if (diff.characteristic === "Standard") {
+        switch (diff.difficulty) {
+          case "ExpertPlus":
+            result.expertPlus = true;
+            break;
+          case "Expert":
+            result.expert = true;
+            break;
+          case "Hard":
+            result.hard = true;
+            break;
+          case "Normal":
+            result.normal = true;
+            break;
+          case "Easy":
+            result.easy = true;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    return result;
+  }
+
+  private static createCharacteristicMetadata(
+    doc: BeatsaverNewBeatmap
+  ): Characteristic[] {
+    const version = doc.versions[0];
+    const result: Characteristic[] = [];
+    const resultMap = new Map<string, Characteristic>();
+
+    for (const diff of version.diffs) {
+      const characteristicKey = diff.characteristic;
+      let characteristic = resultMap.get(characteristicKey);
+      if (characteristic == null) {
+        characteristic = {
+          name: characteristicKey,
+          difficulties: {
+            easy: null,
+            normal: null,
+            hard: null,
+            expert: null,
+            expertPlus: null,
+          },
+        };
+        resultMap.set(characteristicKey, characteristic);
+      }
+      const diffDetail: Difficulty = {
+        duration: doc.metadata.duration,
+        length: diff.length,
+        bombs: diff.bombs,
+        notes: diff.notes,
+        obstacles: diff.obstacles,
+        njs: diff.njs,
+        njsOffset: diff.offset,
+      };
+      switch (diff.difficulty) {
+        case "ExpertPlus":
+          characteristic.difficulties.expertPlus = diffDetail;
+          break;
+        case "Expert":
+          characteristic.difficulties.expert = diffDetail;
+          break;
+        case "Hard":
+          characteristic.difficulties.hard = diffDetail;
+          break;
+        case "Normal":
+          characteristic.difficulties.normal = diffDetail;
+          break;
+        case "Easy":
+          characteristic.difficulties.easy = diffDetail;
+          break;
+        default:
+          break;
+      }
+    }
+    for (const value of resultMap.values()) {
+      result.push(value);
+    }
+    return result;
+  }
+
+  public static convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
+    const data: BeatsaverBeatmap = {
+      metadata: {
+        bpm: doc.metadata.bpm,
+        songName: doc.metadata.songName,
+        songSubName: doc.metadata.songSubName,
+        songAuthorName: doc.metadata.songAuthorName,
+        levelAuthorName: doc.metadata.levelAuthorName,
+        difficulties: BeatsaverAPI.createDifficultiesMetadata(doc),
+        characteristics: BeatsaverAPI.createCharacteristicMetadata(doc),
+      },
+      coverURL: doc.versions[0].coverURL,
+      description: doc.description,
+      key: doc.id,
+      hash: doc.versions[0].hash,
+      downloadURL: doc.versions[0].downloadURL,
+      name: doc.name,
+      stats: {
+        downloads: doc.stats.downloads,
+        downVotes: doc.stats.downvotes,
+        upVotes: doc.stats.upvotes,
+        plays: doc.stats.plays,
+        rating: doc.stats.score,
+      },
+      uploaded: doc.uploaded,
+      directDownload: "",
+    };
+    return data;
   }
 }

@@ -9,10 +9,12 @@ module.exports = {
           target: "nsis",
           icon: "./public/icon.ico",
         },
+        extraResources: ["cache/*"],
       },
     },
   },
   configureWebpack: {
+    // devtool: "source-map",
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),

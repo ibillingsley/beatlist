@@ -26,7 +26,7 @@
           Remove
         </v-btn>
 
-        <v-btn
+        <!-- <v-btn
           v-if="bulkDownload"
           outlined
           small
@@ -37,7 +37,7 @@
           @click="performBulkDownload"
         >
           Download ({{ beatmapNotDownloadedAndSelected.length }})
-        </v-btn>
+        </v-btn> -->
 
         <span class="pl-3">
           {{ selected.length }} item{{ selected.length > 1 ? "s" : "" }}

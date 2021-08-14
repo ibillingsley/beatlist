@@ -1,10 +1,13 @@
 import events from "events";
+import fs from "fs";
 import Progress from "@/libraries/common/Progress";
 import ProgressGroup from "@/libraries/common/ProgressGroup";
 import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
 import BeatmapScanner from "@/libraries/scanner/beatmap/BeatmapScanner";
 import BeatmapScannerResult from "@/libraries/scanner/beatmap/BeatmapScannerResult";
 import PlaylistScannerResult from "@/libraries/scanner/playlist/PlaylistScannerResult";
+import BeatmapLibrary from "../beatmap/BeatmapLibrary";
+import BeatsaverCachedLibrary from "../beatmap/repo/BeatsaverCachedLibrary";
 
 const ON_SCAN_START = "on_scan_start";
 const ON_SCAN_COMPLETED = "on_scan_completed";
@@ -64,6 +67,12 @@ export default class ScannerService {
     this.operation = "all";
 
     this.eventEmitter.emit(ON_SCAN_START);
+    if (BeatmapLibrary.GetAllMaps().length === 0) {
+      const fileName = "resources/cache/beatsaverCache.json";
+      if (fs.existsSync(fileName)) {
+        BeatsaverCachedLibrary.LoadAll(fileName);
+      }
+    }
     return this.ScanBeatmaps().then(() => this.ScanPlaylists());
   }
 

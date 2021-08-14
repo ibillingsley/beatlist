@@ -20,7 +20,7 @@ export default class BeatsaverUtilities {
   }
 
   public static GetPageUrl(beatmap: BeatsaverBeatmap): string {
-    return url.resolve(BEATSAVER_DOMAIN, `beatmap/${beatmap.key}`);
+    return url.resolve(BEATSAVER_DOMAIN, `maps/${beatmap.key}`);
   }
 
   public static ErrorToMessage<T>(
