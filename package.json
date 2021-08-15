@@ -1,15 +1,14 @@
 {
   "name": "beatlist",
   "description": "App to create playlist for BeatSaber",
-  "version": "1.2.6-beta",
-  "homepage": "https://github.com/Alaanor/beatlist",
+  "version": "1.2.6-beta2",
+  "homepage": "https://github.com/ranmd9a/beatlist",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Alaanor/beatlist.git"
+    "url": "https://github.com/ranmd9a/beatlist.git"
   },
   "author": {
     "name": "Alaanor",
-    "email": "max.bonvin@gmail.com",
     "url": "https://github.com/Alaanor"
   },
   "private": true,
