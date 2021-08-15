@@ -48,6 +48,8 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
         progress.plusOne();
         result.push(newItem);
         // return newItem;
+        // eslint-disable-next-line no-continue
+        continue;
       }
       progress.plusOne();
       // return item;

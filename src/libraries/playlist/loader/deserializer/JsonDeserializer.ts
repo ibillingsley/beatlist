@@ -68,7 +68,7 @@ export default class JsonDeserializer extends PlaylistDeserializer {
     for (const song of songs) {
       if (song.hash != null) {
         const beatmap = BeatmapLibrary.GetAllValidMap().find(
-          (value) => value.hash === song.hash
+          (value) => value.hash?.toUpperCase() === song.hash?.toUpperCase()
         );
         if (beatmap == null) {
           newSongs.push(song);
