@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.2.6 (TBD)
+**Features:**
+ - Support the new beatsaver api.
+
+**Bug fixes**:
+ - Fixed a problem that the songs deleted from beatsaver.com are not displayed in playlist even if they exist in the CustomLevels directory.
+
+## v1.2.5 (27/04/2021)
+**Bug fixes**:
+ - Fixed a problem that the songs delete from beatsaver.com are not displayed in [Saved Beatmaps] page even if they exist in the CustomLevels directory.
+
 ## v1.2.4 (30/12/2020)
 **Bug fixes**:
  - Do not remove the playlist thumbnail when adding songs. (#80, #82)
