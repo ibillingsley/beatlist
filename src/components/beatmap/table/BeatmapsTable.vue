@@ -20,6 +20,7 @@
         :items-per-page="itemsPerPage"
         :items-per-page-list="itemsPerPageList"
         :no-item-per-page-choice="noItemPerPageChoice"
+        :current-item-count="items.length"
         :page.sync="currentPage"
         :pagination="pagination"
         v-on="$listeners"

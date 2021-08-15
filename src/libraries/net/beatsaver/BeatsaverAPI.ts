@@ -21,6 +21,7 @@ const SEARCH = "search/text";
 // const GET_BY_DOWNLOADS = "maps/downloads";
 // const GET_BY_LATEST = "maps/latest";
 // const GET_BY_RATING = "maps/rating";
+export const ITEM_COUNT_PER_PAGE_OF_SEARCH = 20;
 
 export type BeatSaverAPIResponse<T> =
   | BeatSaverAPIResponseDataFound<T>
@@ -103,7 +104,9 @@ export default class BeatsaverAPI {
     page: number = 0
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
     return this.makeRequest<BeatsaverPage>(
-      `${SEARCH}/${page}?q=${search}&sortOrder=${sortOrder}`
+      `${SEARCH}/${page}?q=${search}&sortOrder=${sortOrder}`,
+      undefined,
+      page
     );
   }
 
@@ -129,7 +132,9 @@ export default class BeatsaverAPI {
     page: number = 0
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
     return this.makeRequest<BeatsaverPage>(
-      `${SEARCH}/${page}?sortOrder=Latest`
+      `${SEARCH}/${page}?sortOrder=Latest`,
+      undefined,
+      page
     );
   }
 
@@ -145,7 +150,8 @@ export default class BeatsaverAPI {
 
   private async makeRequest<T>(
     apiPath: string,
-    validation?: (data: any) => boolean
+    validation?: (data: any) => boolean,
+    targetPageNumber?: number
   ): Promise<BeatSaverAPIResponse<T>> {
     if (BeatsaverRateLimitManager.HasHitRateLimit()) {
       return BeatsaverAPI.RateLimitedAnswer<T>();
@@ -158,7 +164,11 @@ export default class BeatsaverAPI {
         validateStatus: (status: number) => status === 200,
       })
       .then((answer) =>
-        BeatsaverAPI.handleResourceFoundCase<T>(validation, answer)
+        BeatsaverAPI.handleResourceFoundCase<T>(
+          validation,
+          answer,
+          targetPageNumber
+        )
       )
       .catch((error: AxiosError) =>
         BeatsaverAPI.handleResourceNotFoundCase<T>(error)
@@ -167,7 +177,8 @@ export default class BeatsaverAPI {
 
   private static handleResourceFoundCase<T>(
     validation: ((data: any) => boolean) | undefined,
-    answer: AxiosResponse<T>
+    answer: AxiosResponse<T>,
+    targetPageNumber?: number
   ) {
     let valid = true;
     if (validation !== undefined) {
@@ -188,12 +199,19 @@ export default class BeatsaverAPI {
         lastPage: 1,
         prevPage: null,
         nextPage: null,
-        totalDocs: 200, // とりあえず 10ページ
+        totalDocs: Number.MAX_SAFE_INTEGER, // API の response にないので INTEGER の最大値
       };
       for (const doc of ((answer.data as any)
         .docs as unknown) as BeatsaverNewBeatmap[]) {
         const data = BeatsaverAPI.convertNewMapToMap(doc);
         page.docs.push(data);
+      }
+      if (
+        targetPageNumber != null &&
+        page.docs.length < ITEM_COUNT_PER_PAGE_OF_SEARCH
+      ) {
+        page.totalDocs =
+          targetPageNumber * ITEM_COUNT_PER_PAGE_OF_SEARCH + page.docs.length;
       }
       return {
         // data: Object.freeze(answer.data as T),
