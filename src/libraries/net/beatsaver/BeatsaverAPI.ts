@@ -104,7 +104,7 @@ export default class BeatsaverAPI {
     page: number = 0
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
     return this.makeRequest<BeatsaverPage>(
-      `${SEARCH}/${page}?q=${search}&sortOrder=${sortOrder}`,
+      `${SEARCH}/${page}?q=${search ?? ""}&sortOrder=${sortOrder}`,
       undefined,
       page
     );

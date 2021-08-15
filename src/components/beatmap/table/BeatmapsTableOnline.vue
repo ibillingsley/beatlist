@@ -268,7 +268,9 @@ export default Vue.extend({
       }
 
       if (this.search === "") {
-        this.selectedMode = "search";
+        if (!["search", "latest"].includes(this.selectedMode)) {
+          this.selectedMode = "search";
+        }
         return;
       }
 
