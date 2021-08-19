@@ -8,6 +8,8 @@ export default class BeatmapScannerResult implements ScannerResultInterface {
 
   public keptItems: number = 0;
 
+  public errorMessage: string = "";
+
   public toString(): string {
     const newItemStr: string =
       this.newItems.length > 0
@@ -23,7 +25,7 @@ export default class BeatmapScannerResult implements ScannerResultInterface {
           } has been removed`
         : "";
 
-    return [newItemStr, removeItemStr]
+    return [newItemStr, removeItemStr, this.errorMessage]
       .filter((s: string) => s !== "")
       .join(" and ");
   }

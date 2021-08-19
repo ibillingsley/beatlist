@@ -16,6 +16,9 @@ const ON_PLAYLIST_SCAN_COMPLETED = "on_playlist_scan_completed";
 const ON_REQUEST_DIALOG_OPEN = "on_request_dialog_open";
 const ON_SCANNING_STATE_UPDATE = "on_scanning_state_update";
 
+const sleep = (msec: number) =>
+  new Promise((resolve) => setTimeout(resolve, msec));
+
 export default class ScannerService {
   static get playlistProgress(): ProgressGroup {
     return this._playlistProgress;
@@ -67,11 +70,35 @@ export default class ScannerService {
     this.operation = "all";
 
     this.eventEmitter.emit(ON_SCAN_START);
-    if (BeatmapLibrary.GetAllMaps().length === 0) {
-      const fileName = "resources/cache/beatsaverCache.json";
-      if (fs.existsSync(fileName)) {
-        BeatsaverCachedLibrary.LoadAll(fileName);
+    try {
+      this.locked = true;
+      if (BeatmapLibrary.GetAllMaps().length === 0) {
+        const cacheFileDir = "resources/cache";
+        if (fs.existsSync(cacheFileDir)) {
+          const files = fs.readdirSync(cacheFileDir, { withFileTypes: true });
+          const fileNames = files
+            .filter(
+              (dirent) =>
+                dirent.isFile() &&
+                dirent.name.match(/^beatsaverCache[0-9]+\.json$/)
+            )
+            .map((dirent) => dirent.name);
+          for (const fileName of fileNames) {
+            console.log(`filename: ${fileName} start`);
+            BeatsaverCachedLibrary.LoadAll(`${cacheFileDir}/${fileName}`);
+            console.log(`filename: ${fileName} end`);
+            // eslint-disable-next-line no-await-in-loop
+            await sleep(100); // ほかの非同期処理を動かすためのダミーの wait
+          }
+        }
       }
+      this.locked = false;
+    } catch (error) {
+      console.log(error);
+      this.locked = false;
+      this.eventEmitter.emit(ON_SCAN_COMPLETED);
+      this.operation = undefined;
+      return Promise.reject(error);
     }
     return this.ScanBeatmaps().then(() => this.ScanPlaylists());
   }
@@ -85,14 +112,33 @@ export default class ScannerService {
     this._beatmapProgress = new Progress();
     this.eventEmitter.emit(ON_SCAN_START);
 
-    return new BeatmapScanner()
-      .scanAll(this._beatmapProgress)
-      .then((result: BeatmapScannerResult) => {
-        this.locked = false;
-        this.scanningBeatmap = false;
-        this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, result);
-        this.checkForEndOperation("beatmap");
-      });
+    try {
+      const result = await new BeatmapScanner().scanAll(this._beatmapProgress);
+      this.locked = false;
+      this.scanningBeatmap = false;
+      this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, result);
+      this.checkForEndOperation("beatmap");
+      return Promise.resolve();
+    } catch (error) {
+      // TODO エラー処理
+      console.log(error);
+      this.locked = false;
+      this.scanningBeatmap = false;
+      const errorResult = new BeatmapScannerResult();
+      errorResult.errorMessage = error?.message ?? error;
+      this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, errorResult);
+      this.checkForEndOperation("beatmap");
+      return Promise.resolve();
+    }
+    // これだと、厳密には then() の中の処理の完了を待たずに次へ行くので修正
+    // return new BeatmapScanner()
+    //   .scanAll(this._beatmapProgress)
+    //   .then((result: BeatmapScannerResult) => {
+    //     this.locked = false;
+    //     this.scanningBeatmap = false;
+    //     this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, result);
+    //     this.checkForEndOperation("beatmap");
+    //   });
   }
 
   public static async ScanPlaylists(): Promise<void> {
@@ -104,14 +150,34 @@ export default class ScannerService {
     this._playlistProgress = new ProgressGroup();
     this.eventEmitter.emit(ON_SCAN_START);
 
-    return new PlaylistScanner()
-      .scanAll(this._playlistProgress)
-      .then((result: PlaylistScannerResult) => {
-        this.locked = false;
-        this.scanningPlaylist = false;
-        this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, result);
-        this.checkForEndOperation("playlist");
-      });
+    try {
+      const result = await new PlaylistScanner().scanAll(
+        this._playlistProgress
+      );
+      this.locked = false;
+      this.scanningPlaylist = false;
+      this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, result);
+      this.checkForEndOperation("playlist");
+      return Promise.resolve();
+    } catch (error) {
+      // TODO エラー処理
+      console.log(error);
+      this.locked = false;
+      this.scanningPlaylist = false;
+      const errorResult = new PlaylistScannerResult();
+      errorResult.errorMessage = error?.message ?? error;
+      this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, errorResult);
+      return Promise.resolve();
+    }
+    // これだと、厳密には then() の中の処理の完了を待たずに次へ行くので修正
+    // return new PlaylistScanner()
+    //   .scanAll(this._playlistProgress)
+    //   .then((result: PlaylistScannerResult) => {
+    //     this.locked = false;
+    //     this.scanningPlaylist = false;
+    //     this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, result);
+    //     this.checkForEndOperation("playlist");
+    //   });
   }
 
   private static checkForEndOperation(from: "beatmap" | "playlist") {

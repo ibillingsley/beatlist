@@ -15,8 +15,11 @@ export default class BeatmapLoader {
 
   private hash: string | undefined;
 
-  public static async Load(beatmapFolder: string): Promise<BeatmapLocal> {
-    return new BeatmapLoader().Load(beatmapFolder);
+  public static async Load(
+    beatmapFolder: string,
+    skipApiCall = false
+  ): Promise<BeatmapLocal> {
+    return new BeatmapLoader().Load(beatmapFolder, skipApiCall);
   }
 
   public static async LoadCover(
@@ -34,18 +37,32 @@ export default class BeatmapLoader {
     this.beatmap.loadState = { valid: false } as BeatmapLoadState;
   }
 
-  private async Load(beatmapFolder: string): Promise<BeatmapLocal> {
-    this.beatmapFolder = beatmapFolder;
-    this.beatmap.folderPath = beatmapFolder;
+  private async Load(
+    beatmapFolder: string,
+    skipApiCall = false
+  ): Promise<BeatmapLocal> {
+    try {
+      this.beatmapFolder = beatmapFolder;
+      this.beatmap.folderPath = beatmapFolder;
 
-    await this.ValidateFolderContent();
-    await this.FindTheHash();
-    await this.CacheBeatsaverMap();
+      await this.ValidateFolderContent();
+      await this.FindTheHash();
+      if (!skipApiCall) {
+        await this.CacheBeatsaverMap();
+      }
 
-    this.beatmap.loadState.valid =
-      this.beatmap.loadState.errorType === undefined;
+      this.beatmap.loadState.valid =
+        this.beatmap.loadState.errorType === undefined;
 
-    return this.beatmap;
+      return this.beatmap;
+    } catch (e) {
+      // 例外を外側に投げない
+      console.log(e);
+      this.beatmap.loadState.valid = false;
+      this.beatmap.loadState.errorType = BeatmapLoadStateError.Unknown;
+      this.beatmap.loadState.errorMessage = e.message;
+      return this.beatmap;
+    }
   }
 
   private async ValidateFolderContent() {

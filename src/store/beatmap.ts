@@ -2,6 +2,7 @@ import fs from "fs";
 import { make } from "vuex-pathify";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import {
+  BeatsaverItem,
   BeatsaverItemInvalid,
   BeatsaverItemValid,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
@@ -10,7 +11,10 @@ import {
   BeatsaverKeyType,
   toStrKey,
 } from "@/libraries/beatmap/repo/BeatsaverKeyType";
-import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
+import {
+  BeatsaverNewBeatmap,
+  convertNewMapToMap,
+} from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 
 export interface BeatmapStoreState {
   lastScan: Date;
@@ -45,16 +49,26 @@ const mutations = {
       (value: BeatmapLocal) => value.hash !== payload.beatmap.hash
     );
   },
-  removeBeatmapByPath(context: BeatmapStoreState, payload: { path: string }) {
+  // removeBeatmapByPath(context: BeatmapStoreState, payload: { path: string }) {
+  //   context.beatmaps = context.beatmaps.filter(
+  //     (value: BeatmapLocal) => value.folderPath.toLowerCase() !== payload.path
+  //   );
+  // },
+  removeBeatmapByPaths(
+    context: BeatmapStoreState,
+    payload: { paths: string[] }
+  ) {
+    const pathSet = new Set<string>(payload.paths);
     context.beatmaps = context.beatmaps.filter(
-      (value: BeatmapLocal) => value.folderPath.toLowerCase() !== payload.path
+      (value: BeatmapLocal) => !pathSet.has(value.folderPath.toLowerCase())
     );
   },
   loadBeatmaps(context: BeatmapStoreState, payload: { path: string }) {
     const beatmaps = JSON.parse(
       fs.readFileSync(payload.path, { encoding: "utf8" })
-    ) as BeatsaverBeatmap[];
-    for (const beatmap of beatmaps) {
+    ) as BeatsaverNewBeatmap[];
+    for (const newBeatmap of beatmaps) {
+      const beatmap = convertNewMapToMap(newBeatmap);
       const hash = beatmap.hash.toUpperCase();
       if (beatmap.coverURL?.startsWith("/cdn/")) {
         beatmap.coverURL = `https://cdn.beatsaver.com/${hash.toLowerCase()}.jpg`;
@@ -82,6 +96,32 @@ const mutations = {
       payload.item.beatmap.key.toUpperCase(),
       payload.item.beatmap.hash.toUpperCase()
     );
+  },
+  addAllBeatsaverCached(
+    context: BeatmapStoreState,
+    payload: {
+      items: {
+        key: BeatsaverKey;
+        item: BeatsaverItem;
+      }[];
+    }
+  ) {
+    for (const item of payload.items) {
+      if (item.item.beatmap) {
+        // 値あり
+        context.beatsaverCached.set(
+          item.item.beatmap.hash.toUpperCase(),
+          item.item
+        );
+        context.beatsaverKeyToHashIndex.set(
+          item.item.beatmap.key.toUpperCase(),
+          item.item.beatmap.hash.toUpperCase()
+        );
+      } else {
+        // 値なし
+        context.beatsaverFailCached.set(toStrKey(item.key), item.item);
+      }
+    }
   },
   addBeatsaverCachedInvalid(
     context: BeatmapStoreState,

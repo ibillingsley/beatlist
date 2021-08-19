@@ -15,6 +15,15 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/setBeatsaverCached", { hash, item });
   }
 
+  public static AddAll(
+    items: {
+      key: BeatsaverKey;
+      item: BeatsaverItem;
+    }[]
+  ) {
+    store.commit("beatmap/addAllBeatsaverCached", { items });
+  }
+
   public static AddInvalid(key: BeatsaverKey, item: BeatsaverItemInvalid) {
     store.commit("beatmap/addBeatsaverCachedInvalid", { key, item });
   }

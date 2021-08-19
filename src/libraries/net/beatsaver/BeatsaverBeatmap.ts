@@ -125,3 +125,128 @@ export function isBeatsaverBeatmap(beatmap: any): beatmap is BeatsaverBeatmap {
     "name" in beatmap
   );
 }
+
+function createDifficultiesMetadata(
+  doc: BeatsaverNewBeatmap
+): DifficultiesSimple {
+  const version = doc.versions[0];
+  const result: DifficultiesSimple = {
+    easy: false,
+    normal: false,
+    hard: false,
+    expert: false,
+    expertPlus: false,
+  };
+  for (const diff of version.diffs) {
+    if (diff.characteristic === "Standard") {
+      switch (diff.difficulty) {
+        case "ExpertPlus":
+          result.expertPlus = true;
+          break;
+        case "Expert":
+          result.expert = true;
+          break;
+        case "Hard":
+          result.hard = true;
+          break;
+        case "Normal":
+          result.normal = true;
+          break;
+        case "Easy":
+          result.easy = true;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  return result;
+}
+
+function createCharacteristicMetadata(
+  doc: BeatsaverNewBeatmap
+): Characteristic[] {
+  const version = doc.versions[0];
+  const result: Characteristic[] = [];
+  const resultMap = new Map<string, Characteristic>();
+
+  for (const diff of version.diffs) {
+    const characteristicKey = diff.characteristic;
+    let characteristic = resultMap.get(characteristicKey);
+    if (characteristic == null) {
+      characteristic = {
+        name: characteristicKey,
+        difficulties: {
+          easy: null,
+          normal: null,
+          hard: null,
+          expert: null,
+          expertPlus: null,
+        },
+      };
+      resultMap.set(characteristicKey, characteristic);
+    }
+    const diffDetail: Difficulty = {
+      duration: doc.metadata.duration,
+      length: diff.length,
+      bombs: diff.bombs,
+      notes: diff.notes,
+      obstacles: diff.obstacles,
+      njs: diff.njs,
+      njsOffset: diff.offset,
+    };
+    switch (diff.difficulty) {
+      case "ExpertPlus":
+        characteristic.difficulties.expertPlus = diffDetail;
+        break;
+      case "Expert":
+        characteristic.difficulties.expert = diffDetail;
+        break;
+      case "Hard":
+        characteristic.difficulties.hard = diffDetail;
+        break;
+      case "Normal":
+        characteristic.difficulties.normal = diffDetail;
+        break;
+      case "Easy":
+        characteristic.difficulties.easy = diffDetail;
+        break;
+      default:
+        break;
+    }
+  }
+  for (const value of resultMap.values()) {
+    result.push(value);
+  }
+  return result;
+}
+
+export function convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
+  const data: BeatsaverBeatmap = {
+    metadata: {
+      bpm: doc.metadata.bpm,
+      songName: doc.metadata.songName,
+      songSubName: doc.metadata.songSubName,
+      songAuthorName: doc.metadata.songAuthorName,
+      levelAuthorName: doc.metadata.levelAuthorName,
+      difficulties: createDifficultiesMetadata(doc),
+      characteristics: createCharacteristicMetadata(doc),
+    },
+    coverURL: doc.versions[0].coverURL,
+    description: doc.description,
+    key: doc.id,
+    hash: doc.versions[0].hash,
+    downloadURL: doc.versions[0].downloadURL,
+    name: doc.name,
+    stats: {
+      downloads: doc.stats.downloads,
+      downVotes: doc.stats.downvotes,
+      upVotes: doc.stats.upvotes,
+      plays: doc.stats.plays,
+      rating: doc.stats.score,
+    },
+    uploaded: doc.uploaded,
+    directDownload: "",
+  };
+  return data;
+}

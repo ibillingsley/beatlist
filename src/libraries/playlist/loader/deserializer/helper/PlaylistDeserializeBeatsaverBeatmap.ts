@@ -11,24 +11,31 @@ import {
 } from "@/libraries/beatmap/repo/BeatsaverKeyType";
 import Progress from "@/libraries/common/Progress";
 import BeatsaverCacheManager from "@/libraries/beatmap/repo/BeatsaverCacheManager";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 
 // const MAX_CONCURRENCY_ITEM = 3;
 
 export default class PlaylistDeserializeBeatsaverBeatmap {
-  public static async fromHash(hash: string): Promise<BeatsaverItem> {
+  public static async fromHash(
+    hash: string,
+    skipStore = false
+  ): Promise<BeatsaverItem> {
     const k: BeatsaverKey = {
       type: BeatsaverKeyType.Hash,
       value: hash.toUpperCase(),
     };
-    return BeatsaverCacheManager.forceGetCacheBeatmap(k);
+    return BeatsaverCacheManager.forceGetCacheBeatmap(k, skipStore);
   }
 
-  public static async fromKey(key: string): Promise<BeatsaverItem> {
+  public static async fromKey(
+    key: string,
+    skipStore = false
+  ): Promise<BeatsaverItem> {
     const k: BeatsaverKey = {
       type: BeatsaverKeyType.Key,
       value: key.toUpperCase(),
     };
-    return BeatsaverCacheManager.forceGetCacheBeatmap(k);
+    return BeatsaverCacheManager.forceGetCacheBeatmap(k, skipStore);
   }
 
   public static async convert(
@@ -37,9 +44,28 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
   ) {
     progress.setTotal(identifiers.length);
     const result: (BeatsaverItemValid | BeatsaverItemInvalidForPlaylist)[] = [];
+    const cacheItems: {
+      key: BeatsaverKey;
+      item: BeatsaverItem;
+    }[] = [];
+
     for (const identifier of identifiers) {
       // eslint-disable-next-line no-await-in-loop
       const item = await this.fromAny(identifier);
+      if (item != null) {
+        // キャッシュ情報を作成
+        cacheItems.push({
+          key: {
+            type: identifier.hash
+              ? BeatsaverKeyType.Hash
+              : BeatsaverKeyType.Key,
+            value: identifier.hash
+              ? identifier.hash.toUpperCase()
+              : identifier.key?.toUpperCase() ?? "",
+          },
+          item,
+        });
+      }
       if (!item?.beatmap) {
         const newItem: BeatsaverItemInvalidForPlaylist = {
           originalHash: identifier.hash ? identifier.hash : "",
@@ -47,7 +73,6 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
         };
         progress.plusOne();
         result.push(newItem);
-        // return newItem;
         // eslint-disable-next-line no-continue
         continue;
       }
@@ -57,6 +82,7 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
         result.push(item);
       }
     }
+    BeatsaverCachedLibrary.AddAll(cacheItems);
     return result;
     // return Throttle.all(
     //   identifiers.map((identifier) => async () =>
@@ -79,10 +105,10 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
 
   private static async fromAny(identifier: { key?: string; hash?: string }) {
     if (identifier.hash) {
-      return this.fromHash(identifier.hash);
+      return this.fromHash(identifier.hash, true); // store 更新はスキップ
     }
     if (identifier.key) {
-      return this.fromKey(identifier.key);
+      return this.fromKey(identifier.key, true); // store 更新はスキップ
     }
     return undefined;
   }

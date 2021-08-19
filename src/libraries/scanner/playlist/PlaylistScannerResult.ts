@@ -10,6 +10,8 @@ export default class PlaylistScannerResult implements ScannerResultInterface {
 
   public updatedItems: number = 0;
 
+  public errorMessage: string = "";
+
   public toString(): string {
     const newItemsStr =
       this.newItems.length > 0
@@ -32,7 +34,7 @@ export default class PlaylistScannerResult implements ScannerResultInterface {
           } has been updated`
         : "";
 
-    return [newItemsStr, removedItemsStr, updatedItemsStr]
+    return [newItemsStr, removedItemsStr, updatedItemsStr, this.errorMessage]
       .filter((s: string) => s !== "")
       .join(" and ");
   }

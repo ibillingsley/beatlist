@@ -15,7 +15,8 @@ import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibr
 
 export default class BeatsaverCacheManager {
   public static async forceGetCacheBeatmap(
-    key: BeatsaverKey
+    key: BeatsaverKey,
+    skipStore = false
   ): Promise<BeatsaverItem> {
     const existingBeatmap = BeatsaverCachedLibrary.Get(key);
 
@@ -50,10 +51,12 @@ export default class BeatsaverCacheManager {
 
     const beatsaverItem = await BeatsaverCacheManager.getOnlineData(key);
 
-    if (beatsaverItem.beatmap) {
-      BeatsaverCachedLibrary.Add(beatsaverItem.beatmap.hash, beatsaverItem);
-    } else {
-      BeatsaverCachedLibrary.AddInvalid(key, beatsaverItem);
+    if (!skipStore) {
+      if (beatsaverItem.beatmap) {
+        BeatsaverCachedLibrary.Add(beatsaverItem.beatmap.hash, beatsaverItem);
+      } else {
+        BeatsaverCachedLibrary.AddInvalid(key, beatsaverItem);
+      }
     }
 
     return beatsaverItem;
