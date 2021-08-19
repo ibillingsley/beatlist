@@ -36,7 +36,7 @@ export default class AutoContinueAfterRateLimitedScan {
           }
 
           ScannerService.ScanAll().then();
-        }, 1000 * remainingSeconds);
+        }, 1000 * remainingSeconds + 1000);
       }
     }
   }

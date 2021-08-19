@@ -42,7 +42,7 @@ const state = {
   installationPath: "",
   installationPathValid: false,
   darkTheme: true,
-  enableDiscordRichPresence: true,
+  enableDiscordRichPresence: false,
   defaultExportFormat: PlaylistFormatType.Json,
   beatmapsTable: {
     localBeatmaps: { ...defaultTableSettings },
