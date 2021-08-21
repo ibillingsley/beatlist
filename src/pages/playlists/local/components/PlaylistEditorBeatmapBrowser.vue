@@ -43,6 +43,7 @@ import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import route from "@/plugins/route/route";
+import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapBrowser",
@@ -58,6 +59,7 @@ export default Vue.extend({
   data: () => ({
     selectedBeatmap: [] as BeatsaverBeatmap[],
     search: "",
+    beatmaps: [] as BeatmapsTableDataUnit[],
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -66,8 +68,18 @@ export default Vue.extend({
     itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@playlistBrowser.itemsPerPage"
     ),
-    beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
+    // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
     seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+  },
+  // ここでは watch playlist は今のところ必要ないと思われる
+  mounted(): void {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData(): Promise<void> {
+      // TODO playlist.maps に含まれている譜面は除外すべき？
+      this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+    },
   },
 });
 </script>

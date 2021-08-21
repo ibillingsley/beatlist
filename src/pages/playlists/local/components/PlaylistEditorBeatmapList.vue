@@ -46,6 +46,7 @@ import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTa
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
 import route from "@/plugins/route/route";
+import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapList",
@@ -62,6 +63,7 @@ export default Vue.extend({
   data: () => ({
     selectedBeatmap: [] as BeatsaverBeatmap[],
     search: "",
+    beatmaps: [] as BeatmapsTableDataUnit[],
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -70,10 +72,25 @@ export default Vue.extend({
     itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@playlistContent.itemsPerPage"
     ),
-    beatmaps() {
-      return PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(this.playlist);
-    },
+    // beatmaps() {
+    //   return PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(this.playlist);
+    // },
     seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+  },
+  watch: {
+    async playlist() {
+      this.fetchData();
+    },
+  },
+  mounted(): void {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData(): Promise<void> {
+      this.beatmaps = await PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(
+        this.playlist
+      );
+    },
   },
 });
 </script>

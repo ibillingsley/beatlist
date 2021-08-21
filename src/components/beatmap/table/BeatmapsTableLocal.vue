@@ -31,6 +31,7 @@ import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTa
 import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
 import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
 import route from "@/plugins/route/route";
+import { BeatmapsTableDataUnit } from "./core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
   name: "BeatmapTableLocal",
@@ -43,6 +44,7 @@ export default Vue.extend({
   data: () => ({
     search: "",
     page: 1,
+    beatmaps: [] as BeatmapsTableDataUnit[],
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -51,12 +53,20 @@ export default Vue.extend({
     itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@localBeatmaps.itemsPerPage"
     ),
-    beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
+    // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
     seeMoreRouteName: () => route.BEATMAPS_LOCAL_UNIT,
   },
   watch: {
     search() {
       this.page = 1;
+    },
+  },
+  mounted(): void {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData(): Promise<void> {
+      this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
     },
   },
 });

@@ -28,7 +28,9 @@ export default class BeatmapLibrary {
     );
   }
 
-  public static GetAllValidBeatmapAsTableData(): BeatmapsTableDataUnit[] {
+  public static async GetAllValidBeatmapAsTableData(): Promise<
+    BeatmapsTableDataUnit[]
+  > {
     /*
     return this.GetAllMaps()
       .map((beatmap: BeatmapLocal) => ({
@@ -40,6 +42,45 @@ export default class BeatmapLibrary {
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
     */
 
+    const localValidMaps = BeatmapLibrary.GetAllValidMap();
+    const result: BeatmapsTableDataUnit[] = [];
+    const promiseResults: Promise<{
+      local: BeatmapLocal;
+      data: BeatsaverBeatmap | undefined;
+    }>[] = [];
+    // TODO 1000件ずつくらいに分割しないと、Local に 40000件くらいあったら 40000件の promise が作成されてしまう。
+    for (const beatmap of localValidMaps) {
+      let mydata: BeatsaverBeatmap | undefined;
+      if (beatmap.hash) {
+        mydata = BeatsaverCachedLibrary.GetByHash(beatmap.hash)?.beatmap;
+        if (mydata != null) {
+          result.push({
+            local: undefined,
+            data: mydata,
+          });
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        promiseResults.push(
+          new Promise<{
+            local: BeatmapLocal;
+            data: BeatsaverBeatmap | undefined;
+          }>((resolve) => {
+            BeatmapLibrary.GenerateBeatmap(beatmap).then((generatedMap) => {
+              resolve({
+                local: beatmap,
+                data: generatedMap,
+              });
+            });
+          })
+        );
+      }
+    }
+    const resolved = await Promise.all(promiseResults);
+    return result.concat(
+      resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
+    );
+    /*
     return this.GetAllMaps()
       .map((beatmap: BeatmapLocal) => {
         let mydata: BeatsaverBeatmap | undefined;
@@ -55,15 +96,18 @@ export default class BeatmapLibrary {
         };
       })
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
+    */
   }
 
-  static GenerateBeatmap(beatmap: BeatmapLocal): BeatsaverBeatmap | undefined {
-    if (beatmap.hash === undefined) {
+  static async GenerateBeatmap(
+    beatmap: BeatmapLocal | undefined
+  ): Promise<BeatsaverBeatmap | undefined> {
+    if (beatmap?.hash === undefined) {
       return undefined;
     }
     let beatmapDescription;
     try {
-      const infoDat = fs.readFileSync(`${beatmap.folderPath}/info.dat`);
+      const infoDat = await fs.readFile(`${beatmap.folderPath}/info.dat`);
       beatmapDescription = JSON.parse(infoDat.toString());
     } catch (e) {
       return undefined;

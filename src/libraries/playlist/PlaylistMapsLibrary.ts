@@ -7,6 +7,8 @@ import {
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import BeatmapLibrary from "../beatmap/BeatmapLibrary";
+import { BeatmapLocal } from "../beatmap/BeatmapLocal";
+import { BeatsaverBeatmap } from "../net/beatsaver/BeatsaverBeatmap";
 
 export default class PlaylistMapsLibrary {
   public static GetAllInvalidMap(): {
@@ -47,9 +49,9 @@ export default class PlaylistMapsLibrary {
     ) as PlaylistValidMap[];
   }
 
-  public static GetAllValidMapAsTableDataFor(
+  public static async GetAllValidMapAsTableDataFor(
     playlist: PlaylistLocal
-  ): BeatmapsTableDataUnit[] {
+  ): Promise<BeatmapsTableDataUnit[]> {
     /*
     return this.GetAllValidMapFor(playlist)
       .map((playlistMap: PlaylistValidMap) => ({
@@ -62,6 +64,49 @@ export default class PlaylistMapsLibrary {
       return map.hash !== undefined;
     }) as PlaylistValidMap[];
 
+    const localValidMaps = BeatmapLibrary.GetAllValidMap();
+    const result: BeatmapsTableDataUnit[] = [];
+    const promiseResults: Promise<{
+      local: BeatmapLocal;
+      data: BeatsaverBeatmap | undefined;
+    }>[] = [];
+    for (const playlistMap of validMaps) {
+      const playlistMapHash = playlistMap.hash.toUpperCase();
+      const mydata = BeatsaverCachedLibrary.GetByHash(playlistMapHash)?.beatmap;
+      if (mydata != null) {
+        result.push({
+          local: undefined,
+          data: mydata,
+        });
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      const beatmapLocal = localValidMaps.find(
+        (item) => item.hash?.toUpperCase() === playlistMapHash
+      );
+      if (beatmapLocal == null) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+      promiseResults.push(
+        new Promise<{
+          local: BeatmapLocal;
+          data: BeatsaverBeatmap | undefined;
+        }>((resolve) => {
+          BeatmapLibrary.GenerateBeatmap(beatmapLocal).then((generatedMap) => {
+            resolve({
+              local: beatmapLocal as BeatmapLocal,
+              data: generatedMap,
+            });
+          });
+        })
+      );
+    }
+    const resolved = await Promise.all(promiseResults);
+    return result.concat(
+      resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
+    );
+    /*
     return validMaps
       .map((playlistMap: PlaylistValidMap) => {
         let mydata = BeatsaverCachedLibrary.GetByHash(playlistMap.hash)
@@ -84,5 +129,6 @@ export default class PlaylistMapsLibrary {
         };
       })
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
+    */
   }
 }
