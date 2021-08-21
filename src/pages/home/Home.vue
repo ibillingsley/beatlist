@@ -18,7 +18,7 @@
         </v-btn>
       </div>
     </div>
-    <!-- <ChangelogDisplayer /> -->
+    <ChangelogDisplayer />
   </v-container>
 </template>
 
@@ -26,7 +26,7 @@
 import Vue from "vue";
 import { remote, shell } from "electron";
 import { get } from "vuex-pathify";
-// import ChangelogDisplayer from "@/components/github/changelog/ChangelogDisplayer.vue";
+import ChangelogDisplayer from "@/components/github/changelog/ChangelogDisplayer.vue";
 // import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 
 const titleWhite = require("@/assets/title_white.png");
@@ -34,7 +34,7 @@ const titleDark = require("@/assets/title_dark.png");
 
 export default Vue.extend({
   name: "Home",
-  // components: { ChangelogDisplayer },
+  components: { ChangelogDisplayer },
   computed: {
     darkTheme: get<boolean>("settings/darkTheme"),
     titleImage() {

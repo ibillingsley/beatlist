@@ -13,7 +13,7 @@
           <span class="caption">
             You can always check the
             <a
-              href="https://github.com/Alaanor/beatlist"
+              href="https://github.com/ranmd9a/beatlist"
               target="_blank"
               class="warning--text"
               rel="noopener noreferrer"
@@ -43,7 +43,11 @@ export default Vue.extend({
     },
   },
   mounted(): void {
-    new BeatlistRepo().GetChangelogContent().then((content) => {
+    let currentLanguage = navigator.language;
+    if (currentLanguage?.toLowerCase().indexOf("ja") >= 0) {
+      currentLanguage = "ja";
+    }
+    new BeatlistRepo().GetChangelogContent(currentLanguage).then((content) => {
       if (content) {
         this.changelogRaw = content;
         this.hasErr = false;

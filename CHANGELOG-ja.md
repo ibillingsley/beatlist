@@ -31,11 +31,10 @@
 - beatsaver.com の新APIに暫定対応 (とりあえず動くようにしただけ)
 - [Settings]画面で[CLEAR CACHE]したあとの[UPDATE LIBRARY]で、2021/04頃の beatsaver.com の曲情報(約4万件)をキャッシュとして読み込むように修正。
 - [My Playlists]画面では beatsaver.com から削除された(あるいは beatsaver.com が落ちていて情報が取得できなかった)曲は表示されないが、CustomLevels 以下にダウンロード済みの曲は表示するように修正。
-  - [制限事項](https://github.com/ranmd9a/beatlist/wiki#%E5%88%B6%E9%99%90%E4%BA%8B%E9%A0%85)も参照のこと。
   - [Saved Beatmaps]画面については v1.2.5 で修正済み。
 
 **Bug fixes**:
-- beatsaver.com からダウンロードした zip ファイルがロックされたままになり「Couldn't extract beatmap. [undefined]: undefined」エラーになることがあるのを修正。
+- beatsaver.com からダウンロードした zip ファイルがロックされたままになり「`Couldn't extract beatmap. [undefined]: undefined`」エラーになることがあるのを修正。
 - beatsaver.com からダウンロードした zip ファイルが「`%APPDATA%\..\Local\Temp`」以下に残ったままになることがあるのを修正。
 
 **Others**:
@@ -45,4 +44,3 @@
 ## v1.2.5 (2021/04/27)
 **Features:**
 - [Saved Beatmaps]画面では beatsaver.com から削除された(あるいは beatsaver.com が落ちていて情報が取得できなかった)曲は表示されないが、CustomLevels 以下にダウンロード済みの曲は表示するように修正。
-  - [制限事項](https://github.com/ranmd9a/beatlist/wiki#%E5%88%B6%E9%99%90%E4%BA%8B%E9%A0%85)も参照のこと。

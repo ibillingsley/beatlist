@@ -3,9 +3,11 @@ import AxiosCachedFactory from "@/libraries/net/AxiosCachedFactory";
 
 export default class BeatlistRepo {
   private static readonly baseUri: string =
-    "https://raw.githubusercontent.com/Alaanor/beatlist";
+    "https://raw.githubusercontent.com/ranmd9a/beatlist";
 
   private static readonly changelogUri: string = "/master/CHANGELOG.md";
+
+  private static readonly changelogJaUri: string = "/develop/CHANGELOG-ja.md";
 
   private readonly rawGithubHttp: AxiosInstance;
 
@@ -13,9 +15,13 @@ export default class BeatlistRepo {
     this.rawGithubHttp = AxiosCachedFactory.getAxios(BeatlistRepo.baseUri);
   }
 
-  public GetChangelogContent(): Promise<string | undefined> {
+  public GetChangelogContent(locale: string): Promise<string | undefined> {
     return this.rawGithubHttp
-      .get(BeatlistRepo.changelogUri)
+      .get(
+        locale === "ja"
+          ? BeatlistRepo.changelogJaUri
+          : BeatlistRepo.changelogUri
+      )
       .then((response) => response.data)
       .catch(() => undefined);
   }
