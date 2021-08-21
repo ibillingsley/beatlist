@@ -61,7 +61,7 @@
       </span>
     </template>
 
-    <template v-if="!noFilter" #body.append>
+    <template v-if="!noFilter" v-slot:[`body.append`]>
       <BeatmapsTableFilterRow
         :headers="getHeaders()"
         :filters-value="filtersValue"
@@ -73,7 +73,7 @@
       <v-progress-linear color="success" indeterminate />
     </template>
 
-    <template #header.data-table-select>
+    <template v-slot:[`header.data-table-select`]>
       <v-simple-checkbox
         :value="selected.length > 0"
         :indeterminate="
@@ -83,7 +83,7 @@
       />
     </template>
 
-    <template #item.data-table-select="{ item }">
+    <template v-slot:[`item.data-table-select`]="{ item }">
       <v-simple-checkbox
         :value="selected.includes(item.raw.data)"
         @input="((value) => selectThisItem(item.raw.data, value))"
