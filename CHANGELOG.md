@@ -1,18 +1,32 @@
 # Changelog
 
-## v1.2.6 (TBD)
+## v1.2.6 (NOT RELEASED)
 **Features:**
  - Support the new beatsaver api.
+ - Changed to load beatsaver.com data as of August 2021 as a cache when executing [CLEAR CACHE] & [UPDATE LIBRARY] in the Settings screen.
 
-**Bug fixes**:
+**Bug fixes:**
  - Fixed a problem that the songs deleted from beatsaver.com are not displayed in playlist even if they exist in the CustomLevels directory.
+ - Fixed a bug that caused memory usage to increase when executing [UPDATE LIBRARY].
+ - Fixed a bug that may use a large amount of memory when executing [UPDATE LIBRARY] in the Settings screen.
+ - Fixed a problem where a zip file downloaded from beatsaver.com would remain locked, resulting in a "`Couldn't extract beatmap. [undefined]: undefined`" error.
+ - Fixed a problem where zip files downloaded from beatsaver.com would sometime remain under `%APPDATA%\..\Local\Temp`.
+ 
+**Others:**
+ - DiscordRichPresense disabled by default.
+ - Changed the Home screen to show the change history in Japanese if the browser language is Japanese.
+ - Batch downloads in the My Playlists screen are being disabled.
+
+<br>
 
 ## v1.2.5 (27/04/2021)
-**Bug fixes**:
+**Bug fixes:**
  - Fixed a problem that the songs delete from beatsaver.com are not displayed in [Saved Beatmaps] page even if they exist in the CustomLevels directory.
 
+<br>
+
 ## v1.2.4 (30/12/2020)
-**Bug fixes**:
+**Bug fixes:**
  - Do not remove the playlist thumbnail when adding songs. (#80, #82)
 
 This is the final version of beatlist, and the repo will be archived. See README.MD for more information.

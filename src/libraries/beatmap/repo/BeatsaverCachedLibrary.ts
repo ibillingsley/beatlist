@@ -28,8 +28,16 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/addBeatsaverCachedInvalid", { key, item });
   }
 
-  public static LoadAll(path: string) {
-    store.commit("beatmap/loadBeatmaps", { path });
+  public static async LoadAll() {
+    // store.commit("beatmap/loadBeatmaps", { path });
+    store
+      .dispatch("beatmap/loadBeatmapsAsCache")
+      .then(() => {
+        return Promise.resolve();
+      })
+      .catch((error) => {
+        return Promise.reject(error);
+      });
   }
 
   public static Exist(key: BeatsaverKey) {

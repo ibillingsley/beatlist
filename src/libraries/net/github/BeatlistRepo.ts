@@ -1,5 +1,8 @@
 import { AxiosInstance } from "axios";
 import AxiosCachedFactory from "@/libraries/net/AxiosCachedFactory";
+import fs from "fs";
+
+const TEST = false;
 
 export default class BeatlistRepo {
   private static readonly baseUri: string =
@@ -16,6 +19,12 @@ export default class BeatlistRepo {
   }
 
   public GetChangelogContent(locale: string): Promise<string | undefined> {
+    if (TEST) {
+      // 動作確認用
+      return Promise.resolve(
+        fs.readFileSync("CHANGELOG-ja.md", { encoding: "utf8" })
+      );
+    }
     return this.rawGithubHttp
       .get(
         locale === "ja"

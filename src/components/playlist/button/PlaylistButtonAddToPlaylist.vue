@@ -36,7 +36,9 @@ export default Vue.extend({
   }),
   computed: {
     isAlreadyInPlaylist(): boolean {
-      return this.playlist.maps.some((map) => map.hash === this.beatmap.hash);
+      return this.playlist.maps.some(
+        (map) => map.hash?.toUpperCase() === this.beatmap.hash.toUpperCase()
+      );
     },
     lockPlaylistModification: sync<boolean>(
       "appState/lockPlaylistModification"

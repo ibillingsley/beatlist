@@ -15,7 +15,7 @@ describe("beatlist repo", () => {
     AxiosCachedFactory.getAxios = mockGetAxios;
 
     const repo = new BeatlistRepo();
-    const data = await repo.GetChangelogContent();
+    const data = await repo.GetChangelogContent("en");
 
     expect(data).toBeDefined();
     expect(data).toMatch(/^# Changelog/);
@@ -34,7 +34,7 @@ describe("beatlist repo", () => {
     AxiosCachedFactory.getAxios = mockGetAxios;
 
     const repo = new BeatlistRepo();
-    const data = await repo.GetChangelogContent();
+    const data = await repo.GetChangelogContent("en");
 
     expect(data).toBeUndefined();
   });

@@ -1,5 +1,4 @@
 import events from "events";
-import fs from "fs";
 import Progress from "@/libraries/common/Progress";
 import ProgressGroup from "@/libraries/common/ProgressGroup";
 import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
@@ -15,9 +14,6 @@ const ON_BEATMAP_SCAN_COMPLETED = "on_beatmap_scan_completed";
 const ON_PLAYLIST_SCAN_COMPLETED = "on_playlist_scan_completed";
 const ON_REQUEST_DIALOG_OPEN = "on_request_dialog_open";
 const ON_SCANNING_STATE_UPDATE = "on_scanning_state_update";
-
-const sleep = (msec: number) =>
-  new Promise((resolve) => setTimeout(resolve, msec));
 
 export default class ScannerService {
   static get playlistProgress(): ProgressGroup {
@@ -73,24 +69,7 @@ export default class ScannerService {
     try {
       this.locked = true;
       if (BeatmapLibrary.GetAllMaps().length === 0) {
-        const cacheFileDir = "resources/cache";
-        if (fs.existsSync(cacheFileDir)) {
-          const files = fs.readdirSync(cacheFileDir, { withFileTypes: true });
-          const fileNames = files
-            .filter(
-              (dirent) =>
-                dirent.isFile() &&
-                dirent.name.match(/^beatsaverCache[0-9]+\.json$/)
-            )
-            .map((dirent) => dirent.name);
-          for (const fileName of fileNames) {
-            console.log(`filename: ${fileName} start`);
-            BeatsaverCachedLibrary.LoadAll(`${cacheFileDir}/${fileName}`);
-            console.log(`filename: ${fileName} end`);
-            // eslint-disable-next-line no-await-in-loop
-            await sleep(100); // ほかの非同期処理を動かすためのダミーの wait
-          }
-        }
+        await BeatsaverCachedLibrary.LoadAll();
       }
       this.locked = false;
     } catch (error) {

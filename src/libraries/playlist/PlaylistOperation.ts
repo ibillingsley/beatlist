@@ -43,6 +43,16 @@ export default class PlaylistOperation {
     const copy = { ...playlist };
     copy.maps = [...playlist.maps];
 
+    const existsHashSet = new Set<string>();
+    for (const map of copy.maps) {
+      if (map.hash) {
+        existsHashSet.add(map.hash.toUpperCase());
+      }
+    }
+    if (existsHashSet.has(beatmapHash.toUpperCase())) {
+      // UIで制御しているはずだが念のためここでも重複チェック
+      return Promise.resolve(playlist);
+    }
     this.PushMapInPlaylist(copy, beatmapHash);
 
     return this.UpdatePlaylist(copy);
@@ -67,10 +77,18 @@ export default class PlaylistOperation {
   ) {
     const copy = { ...playlist };
     copy.maps = [...playlist.maps];
-
-    beatmapHashes.forEach((hash: string) => {
-      this.PushMapInPlaylist(copy, hash);
-    });
+    const existsHashSet = new Set<string>();
+    for (const map of copy.maps) {
+      if (map.hash) {
+        existsHashSet.add(map.hash.toUpperCase());
+      }
+    }
+    beatmapHashes
+      // UIで制御しているはずだが念のためここでも重複チェック
+      .filter((hash) => !existsHashSet.has(hash.toUpperCase()))
+      .forEach((hash: string) => {
+        this.PushMapInPlaylist(copy, hash);
+      });
 
     return this.UpdatePlaylist(copy);
   }
