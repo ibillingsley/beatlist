@@ -12,8 +12,8 @@
 
 **Others:**
 - [Home]画面で `navigator.language` を見て日本語なら日本語の変更履歴を表示するように変更。
-- [My Playlists]画面での一括ダウンロードは無効化中。
-  - オリジナル版が beatsaver.com の帯域制限に未対応のため。一括ダウンロードは ModAssistant もしくは PlaylistManger で実施してください。
+- [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
+  - オリジナル版が beatsaver.com の新APIでの帯域制限に(おそらく)未対応のため。一括ダウンロードは ModAssistant もしくは PlaylistManger で実施してください。
 - [Settings]画面の[Discord Rich Presence]の初期値を無効に変更。
 
 <br>
@@ -35,7 +35,7 @@
   - v1.2.6-beta での不具合
 
 **Others:**
-- [My Playlists]画面での一括ダウンロードは無効化中。
+- [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
 
 <br>
 
@@ -51,7 +51,7 @@
 - beatsaver.com からダウンロードした zip ファイルが「`%APPDATA%\..\Local\Temp`」以下に残ったままになることがあるのを修正。
 
 **Others:**
-- [My Playlists]画面での一括ダウンロードは無効化中。
+- [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
 - [Home]画面の変更履歴表示は暫定で非表示。
 
 
