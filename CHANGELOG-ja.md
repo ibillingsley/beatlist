@@ -1,17 +1,15 @@
 # Changelog
 
 ## v1.2.6-beta3 (2021/08/22)
-**Improvements:**
-- [Settings]画面で[CLEAR CACHE]したあとの[UPDATE LIBRARY]で読み込むキャッシュデータを2021/08頃のデータに更新。
-  - 現在正常に動作しているなら[CLEAR CACHE] & [UPDATE LIBRARY] する必要はありません。
-
 **Bug fixes:**
 - [Settings]画面の[UPDATE LIBRARY]でメモリを 5-6GB 等大量に使用することがあるのを修正。
   - オリジナル版の不具合。ほかの画面でのメモリ消費は未調査。
 - [My Playlists]画面で playlist を編集した時に無応答になる時間を少し削減。
 
 **Others:**
-- [Home]画面で `navigator.language` を見て日本語なら日本語の変更履歴を表示するように変更。
+- [Settings]画面で[CLEAR CACHE]したあとの[UPDATE LIBRARY]で読み込むキャッシュデータを2021/08頃のデータに更新。
+  - 現在正常に動作しているなら[CLEAR CACHE] & [UPDATE LIBRARY] する必要はありません。
+- [Home]画面で内部ブラウザの言語を見て日本語なら日本語の変更履歴を表示するように変更。
 - [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
   - オリジナル版が beatsaver.com の新APIでの帯域制限に(おそらく)未対応のため。一括ダウンロードは ModAssistant もしくは PlaylistManger で実施してください。
 - [Settings]画面の[Discord Rich Presence]の初期値を無効に変更。
