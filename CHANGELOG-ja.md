@@ -2,7 +2,7 @@
 
 ## v1.2.6-beta3 (2021/08/22)
 **Bug fixes:**
-- [Settings]画面の[UPDATE LIBRARY]でメモリを 5-6GB 等大量に使用することがあるのを修正。
+- 初回起動時や[Settings]画面の[UPDATE LIBRARY]ボタンを押した時、また playlist を追加した時、メモリを 5-6GB など大量に使用することがあるのを修正。
   - オリジナル版の不具合。ほかの画面でのメモリ消費は未調査。
 - [My Playlists]画面で playlist を編集した時に無応答になる時間を少し削減。
 
@@ -13,6 +13,9 @@
 - [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
   - オリジナル版が beatsaver.com の新APIでの帯域制限に(おそらく)未対応のため。一括ダウンロードは ModAssistant もしくは PlaylistManger で実施してください。
 - [Settings]画面の[Discord Rich Presence]の初期値を無効に変更。
+
+**ATTENTION:**
+- (2021/08/23) [Settings]画面の[Beatsaver server url] は既定値の [Beatsaver] にしてください。[BeatSaberPlus] だと動きません。
 
 <br>
 
