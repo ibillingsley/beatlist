@@ -49,7 +49,7 @@ const mutations = {
     payload: { beatmap: BeatmapLocal }
   ) {
     context.beatmaps = context.beatmaps.filter(
-      (value: BeatmapLocal) => value.hash !== payload.beatmap.hash
+      (value: BeatmapLocal) => value.hash !== payload.beatmap.hash // BeatmapLocal どうしのhash比較
     );
   },
   // removeBeatmapByPath(context: BeatmapStoreState, payload: { path: string }) {

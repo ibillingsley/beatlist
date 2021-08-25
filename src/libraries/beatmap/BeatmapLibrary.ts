@@ -219,7 +219,8 @@ export default class BeatmapLibrary {
   public static GetPlaylists(beatmap: BeatmapLocal): PlaylistLocal[] {
     return PlaylistLibrary.GetAllValidPlaylists().filter((playlist) =>
       playlist.maps.find(
-        (map) => map.hash !== undefined && map.hash === beatmap.hash
+        (map) =>
+          map.hash !== undefined && map.hash.toUpperCase() === beatmap.hash
       )
     );
   }

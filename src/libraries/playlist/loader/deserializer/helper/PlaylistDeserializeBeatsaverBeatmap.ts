@@ -82,7 +82,9 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
         result.push(item);
       }
     }
-    BeatsaverCachedLibrary.AddAll(cacheItems);
+    if (cacheItems.length > 0) {
+      BeatsaverCachedLibrary.AddAll(cacheItems);
+    }
     return result;
     // return Throttle.all(
     //   identifiers.map((identifier) => async () =>

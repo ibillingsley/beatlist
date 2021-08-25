@@ -65,7 +65,8 @@ export default class PlaylistOperation {
     const copy = { ...playlist };
 
     copy.maps = playlist.maps.filter(
-      (entry: PlaylistLocalMap) => entry.hash !== beatmapHash
+      (entry: PlaylistLocalMap) =>
+        entry.hash?.toUpperCase() !== beatmapHash.toUpperCase()
     );
 
     return this.UpdatePlaylist(copy);
@@ -101,7 +102,9 @@ export default class PlaylistOperation {
 
     copy.maps = playlist.maps.filter(
       (entry: PlaylistLocalMap) =>
-        !beatmapHashes.find((hash: string) => entry.hash === hash)
+        !beatmapHashes.find(
+          (hash: string) => entry.hash?.toUpperCase() === hash.toUpperCase()
+        )
     );
 
     return this.UpdatePlaylist(copy);
