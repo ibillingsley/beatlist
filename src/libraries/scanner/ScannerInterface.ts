@@ -1,7 +1,11 @@
 import { ProgressInterface } from "@/libraries/common/Progress";
+import { BeatsaverItemInvalid } from "../beatmap/repo/BeatsaverItem";
 
 export interface ScannerInterface<T> {
-  scanAll(progress?: ProgressInterface): Promise<ScannerResultInterface>;
+  scanAll(
+    progress?: ProgressInterface,
+    retryTargetItems?: BeatsaverItemInvalid[]
+  ): Promise<ScannerResultInterface>;
 
   scanOne(path: string): Promise<T>;
 

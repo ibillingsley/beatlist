@@ -49,7 +49,7 @@ export default Vue.extend({
       this.isScanning = ScannerService.isScanning;
     },
     scan() {
-      ScannerService.ScanAll();
+      ScannerService.ScanAll(true);
       ScannerService.requestDialogToBeOpened();
       NotificationServiceScanner.notifyOnNextScan();
     },

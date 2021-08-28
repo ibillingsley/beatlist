@@ -8,6 +8,7 @@ import ScannerLocker from "@/libraries/scanner/ScannerLocker";
 import BeatsaverCacheManager from "@/libraries/beatmap/repo/BeatsaverCacheManager";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import { BeatsaverKeyType } from "@/libraries/beatmap/repo/BeatsaverKeyType";
+import { BeatsaverItemInvalid } from "@/libraries/beatmap/repo/BeatsaverItem";
 import { BeatmapLocal } from "../../beatmap/BeatmapLocal";
 import BeatmapLoader from "../../beatmap/BeatmapLoader";
 import BeatmapLibrary from "../../beatmap/BeatmapLibrary";
@@ -16,7 +17,8 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
   public result: BeatmapScannerResult = new BeatmapScannerResult();
 
   public async scanAll(
-    progress: Progress = new Progress()
+    progress: Progress = new Progress(),
+    retryTargetItems: BeatsaverItemInvalid[] = []
   ): Promise<BeatmapScannerResult> {
     return ScannerLocker.acquire(async () => {
       const diff = await BeatmapScanner.GetTheDifferenceInPath();
@@ -29,11 +31,12 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
       diff.removed = []; // 件数しか使用しないので早めに破棄
       diff.kept = []; // 件数しか使用しないので早めに破棄
 
-      progress.setTotal(diff.added.length);
+      progress.setTotal(diff.added.length + retryTargetItems.length);
 
+      // 追加された曲
       this.result.newItems = [];
       const notCached: string[] = [];
-      // Scan beatmaps under the CustomLevels directory
+      // Scan added beatmaps under the CustomLevels directory
       for (let i = 0; i < diff.added.length; i += 25) {
         const addedPaths = diff.added.slice(i, i + 25);
         const addedBeatmapPromise = addedPaths.map(
@@ -63,8 +66,15 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
         this.result.newItems = this.result.newItems.concat(addedBeatmaps);
       }
       // Get an information of not cached beatmaps from beatsaver.com in order.
-      console.log(`not cached: ${notCached.length} item(s).`);
-      for (const hash of notCached) {
+      console.log(
+        `not cached: ${notCached.length} item(s). retry target: ${retryTargetItems.length} item(s).`
+      );
+      // TODO ひとつずつ登録するのではなく、ある程度まとめて登録すべし。
+      for (const hash of notCached.concat(
+        retryTargetItems.map((value) =>
+          value.loadState.attemptedSource.value.toUpperCase()
+        )
+      )) {
         // eslint-disable-next-line no-await-in-loop
         await BeatsaverCacheManager.forceGetCacheBeatmap({
           type: BeatsaverKeyType.Hash,

@@ -7,6 +7,11 @@ import BeatmapScannerResult from "@/libraries/scanner/beatmap/BeatmapScannerResu
 import PlaylistScannerResult from "@/libraries/scanner/playlist/PlaylistScannerResult";
 import BeatmapLibrary from "../beatmap/BeatmapLibrary";
 import BeatsaverCachedLibrary from "../beatmap/repo/BeatsaverCachedLibrary";
+import {
+  BeatsaverItemInvalid,
+  BeatsaverItemLoadError,
+} from "../beatmap/repo/BeatsaverItem";
+import { BeatsaverKeyType } from "../beatmap/repo/BeatsaverKeyType";
 
 const ON_SCAN_START = "on_scan_start";
 const ON_SCAN_COMPLETED = "on_scan_completed";
@@ -61,15 +66,38 @@ export default class ScannerService {
 
   private static _playlistProgress: ProgressGroup = new ProgressGroup();
 
-  public static async ScanAll(): Promise<void> {
+  private static retryTargetItems: BeatsaverItemInvalid[] = []; // 再取得する不正なデータ
+
+  public static async ScanAll(updateInvalid = false): Promise<void> {
     if (this.locked) return undefined;
     this.operation = "all";
+    this.retryTargetItems = [];
 
     this.eventEmitter.emit(ON_SCAN_START);
     try {
       this.locked = true;
       if (BeatmapLibrary.GetAllMaps().length === 0) {
         await BeatsaverCachedLibrary.LoadAll();
+      }
+
+      if (updateInvalid) {
+        this.retryTargetItems = Array.from(
+          BeatsaverCachedLibrary.GetAllInvalid().values()
+        ).filter((value) => {
+          return (
+            value.loadState.attemptedSource.type === BeatsaverKeyType.Hash &&
+            (value.loadState.errorType ===
+              BeatsaverItemLoadError.BeatsaverRateLimited ||
+              value.loadState.errorType ===
+                BeatsaverItemLoadError.BeatsaverServerNotAvailable)
+          );
+        });
+        console.log(`updateInvalid target: ${this.retryTargetItems.length}`);
+        for (const item of this.retryTargetItems) {
+          console.log(
+            `${item.loadState.attemptedSource.value}, ${item.loadState.errorType}`
+          );
+        }
       }
       this.locked = false;
     } catch (error) {
@@ -92,7 +120,10 @@ export default class ScannerService {
     this.eventEmitter.emit(ON_SCAN_START);
 
     try {
-      const result = await new BeatmapScanner().scanAll(this._beatmapProgress);
+      const result = await new BeatmapScanner().scanAll(
+        this._beatmapProgress,
+        this.retryTargetItems
+      );
       this.locked = false;
       this.scanningBeatmap = false;
       this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, result);

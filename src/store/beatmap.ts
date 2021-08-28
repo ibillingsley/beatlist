@@ -134,9 +134,17 @@ const mutations = {
   },
   removeBeatsaverCachedInvalid(
     context: BeatmapStoreState,
-    payload: { key: BeatsaverKey }
+    payload: { key: BeatsaverKey | BeatsaverKey[] }
   ) {
-    context.beatsaverFailCached.delete(toStrKey(payload.key));
+    let keys: BeatsaverKey[];
+    if (Array.isArray(payload.key)) {
+      keys = payload.key;
+    } else {
+      keys = [payload.key];
+    }
+    for (const key of keys) {
+      context.beatsaverFailCached.delete(toStrKey(key));
+    }
   },
   clearBeatsaverCache(context: BeatmapStoreState) {
     context.beatsaverCached = new Map<string, BeatsaverItemValid>();

@@ -26,7 +26,9 @@ export default Vue.extend({
     this.LaunchServices();
   },
   methods: {
-    LaunchServices() {
+    async LaunchServices() {
+      await store.restored;
+
       this.DiscordRichPresence();
       this.BeatsaverServerUrl();
 

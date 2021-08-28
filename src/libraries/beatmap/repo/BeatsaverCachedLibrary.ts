@@ -115,7 +115,7 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/clearBeatsaverCache");
   }
 
-  public static RemoveInvalid(key: BeatsaverKey) {
+  public static RemoveInvalid(key: BeatsaverKey | BeatsaverKey[]) {
     store.commit("beatmap/removeBeatsaverCachedInvalid", { key });
   }
 

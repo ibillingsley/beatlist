@@ -243,7 +243,7 @@ export default Vue.extend({
       );
     },
     scan() {
-      ScannerService.ScanAll();
+      ScannerService.ScanAll(true);
       ScannerService.requestDialogToBeOpened();
       NotificationServiceScanner.notifyOnNextScan();
     },

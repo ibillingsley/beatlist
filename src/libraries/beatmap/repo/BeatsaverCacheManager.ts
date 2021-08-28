@@ -4,6 +4,7 @@ import {
 } from "@/libraries/beatmap/repo/BeatsaverKeyType";
 import {
   BeatsaverItem,
+  BeatsaverItemInvalid,
   BeatsaverItemLoadError,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
 import BeatsaverAPI, {
@@ -12,6 +13,7 @@ import BeatsaverAPI, {
 } from "@/libraries/net/beatsaver/BeatsaverAPI";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import Progress from "@/libraries/common/Progress";
 
 export default class BeatsaverCacheManager {
   public static async forceGetCacheBeatmap(
@@ -35,18 +37,21 @@ export default class BeatsaverCacheManager {
       const isTimeout =
         existingBeatmap.loadState.errorType ===
         BeatsaverItemLoadError.RequestTimeout;
+      const isServerDown =
+        existingBeatmap.loadState.errorType ===
+        BeatsaverItemLoadError.BeatsaverServerNotAvailable;
 
-      if (!isOlderThan10Day && !isRateLimited && !isTimeout) {
-        // RateLimit でもタイムアウトでもない
-        // かつ 10日未満 (404エラーとかサーバーエラーとか)
+      if (!isOlderThan10Day && !isRateLimited && !isTimeout && !isServerDown) {
+        // RateLimit でもタイムアウトでも Server not available でもないエラー(※)は10日間再試行しない
+        // ※404エラーまたは BeatsaverItemLoadError.Unknown
         return existingBeatmap;
       }
 
-      if (isRateLimited || isTimeout) {
-        BeatsaverCachedLibrary.RemoveInvalid(
-          existingBeatmap.loadState.attemptedSource
-        );
-      }
+      // if (isRateLimited || isTimeout) {
+      BeatsaverCachedLibrary.RemoveInvalid(
+        existingBeatmap.loadState.attemptedSource
+      );
+      // }
     }
 
     const beatsaverItem = await BeatsaverCacheManager.getOnlineData(key);
@@ -74,6 +79,36 @@ export default class BeatsaverCacheManager {
       success: item.loadState.valid,
       errMsg: item.loadState.errorMessage,
     };
+  }
+
+  public static async updateInvalidOnlineData(
+    invalidItems: BeatsaverItemInvalid[],
+    progress: Progress
+  ): Promise<BeatsaverItem[]> {
+    const updated: BeatsaverItem[] = [];
+    const invalidKeys = invalidItems.map(
+      (value) => value.loadState.attemptedSource
+    );
+    BeatsaverCachedLibrary.RemoveInvalid(invalidKeys);
+
+    for (const invalidItem of invalidItems) {
+      const { attemptedSource } = invalidItem.loadState;
+      if (attemptedSource.type === BeatsaverKeyType.Hash) {
+        // eslint-disable-next-line no-await-in-loop
+        const item = await this.forceGetCacheBeatmap(
+          {
+            type: BeatsaverKeyType.Hash,
+            value: invalidItem.loadState.attemptedSource.value.toUpperCase(),
+          },
+          false
+        );
+        if (item.loadState.valid && item.beatmap != null) {
+          updated.push(item);
+        }
+        progress.plusOne();
+      }
+    }
+    return Promise.resolve(updated);
   }
 
   private static async getOnlineData(
