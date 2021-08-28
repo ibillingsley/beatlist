@@ -103,9 +103,10 @@ export default Vue.extend({
   data: () => ({
     selectedMode: "search",
     modes: [
+      // icon 名は material-design-icons-iconfont/dist/material-design-icons.css を参照
       { name: "search", value: "Search", icon: "search" },
       // { name: "hot", value: "Hot", icon: "whatshot" },
-      // { name: "rating", value: "Rating", icon: "star" },
+      { name: "rating", value: "Rating", icon: "thumb_up" },
       { name: "latest", value: "Latest", icon: "new_releases" },
       // { name: "download", value: "Download", icon: "cloud_download" },
       // { name: "plays", value: "Plays", icon: "play_arrow" },
@@ -181,10 +182,14 @@ export default Vue.extend({
         //   requestPage = BeatsaverAPI.Singleton.getByHot(this.page - 1);
         //   break;
 
-        // case "rating":
-        //   requestPage = BeatsaverAPI.Singleton.getByRating(this.page - 1);
-        //   break;
-
+        case "rating":
+          // requestPage = BeatsaverAPI.Singleton.getByRating(this.page - 1);
+          requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
+            this.search,
+            "Rating",
+            this.page - 1
+          );
+          break;
         case "latest":
           // requestPage = BeatsaverAPI.Singleton.getByLatest(this.page - 1);
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
@@ -263,12 +268,18 @@ export default Vue.extend({
         });
     },
     performSearch(): void {
-      if (!["search", "latest", "key", "hash"].includes(this.selectedMode)) {
+      if (
+        !["search", "latest", "rating", "key", "hash"].includes(
+          this.selectedMode
+        )
+      ) {
+        // 想定外の selectMode の場合は "search" にリセット
         this.selectedMode = "search";
       }
 
       if (this.search === "") {
-        if (!["search", "latest"].includes(this.selectedMode)) {
+        if (!["search", "latest", "rating"].includes(this.selectedMode)) {
+          // "key" や "hash" で検索ボックスが空欄なら "search" にリセット
           this.selectedMode = "search";
         }
         return;
