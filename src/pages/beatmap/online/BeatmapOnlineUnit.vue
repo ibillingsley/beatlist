@@ -59,6 +59,14 @@ export default Vue.extend({
     fetchData(): void {
       this.loading = true;
       this.beatmap = undefined;
+      if (
+        this.$route.name !== route.BEATMAPS_ONLINE_UNIT ||
+        this.$route.params.hash == null
+      ) {
+        this.loading = false;
+        // route が Online Unit でない、または hash が取得できない場合は fetch しない
+        return;
+      }
       BeatsaverAPI.Singleton.getBeatmapByHash(this.$route.params.hash)
         .then((response: BeatSaverAPIResponse<BeatsaverBeatmap>) => {
           this.error = BeatsaverUtilities.ErrorToMessage(response);

@@ -2,7 +2,7 @@ import events from "events";
 import { DownloadOperation } from "@/libraries/net/downloader/operation/DownloadOperation";
 import DownloadLibrary from "@/libraries/net/downloader/DownloadLibrary";
 
-const maxOperationInParallel = 3;
+const maxOperationInParallel = 1;
 const ON_QUEUE_UPDATED = "on_queue_updated";
 
 export default class DownloadManager {

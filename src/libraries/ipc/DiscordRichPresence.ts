@@ -41,12 +41,20 @@ export default class DiscordRichPresence {
       UPDATE_RICH_PRESENCE_VISIBILITY,
       async (event: any, enabled: boolean) => {
         this.enabled = enabled;
-
-        if (this.enabled) {
-          await this.ConnectRpc();
-          this.setActivity();
-        } else if (this.rpc) {
-          await this.rpc.destroy();
+        try {
+          if (this.enabled) {
+            await this.ConnectRpc();
+            this.setActivity();
+          } else if (this.rpc) {
+            // 接続に失敗していた場合、this.rpc は null ではないので destroy() もエラーになる。
+            await this.rpc.destroy();
+          }
+        } catch (e) {
+          // UnhandledPromiseRejectionWarning 回避のため catch
+          console.log(
+            `UPDATE_RICH_PRESENCE_VISIBILITY: Exception occurred. (enabled: ${enabled})\n`,
+            e
+          );
         }
       }
     );

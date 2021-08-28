@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="open" max-width="80%" @click:outside="closeDialog">
+  <v-dialog v-model="isOpen" max-width="80%" @click:outside="closeDialog">
     <v-card>
       <v-card-title>
         Invalid beatmaps in playlists
@@ -17,7 +17,7 @@
           aria-describedby="All invalid beatmaps inside playlists"
           dense
         >
-          <template #item.error="{item}">
+          <template v-slot:[`item.error`]="{ item }">
             <span class="error--text">
               {{ item.error | errorTranslated }}
             </span>
@@ -68,6 +68,8 @@ export default Vue.extend({
       { text: "Error", value: "error" },
       { text: "Details", value: "errorInfo" },
     ],
+    // props の値を直接 v-model に渡すべきではないので別の変数を用意する。
+    isOpen: false,
   }),
   computed: {
     invalidPlaylistsMaps: () =>
@@ -84,6 +86,18 @@ export default Vue.extend({
         error: entry.map.error,
         errorInfo: entry.map.errorInfo,
       })),
+  },
+  watch: {
+    open() {
+      if (this.isOpen !== this.open) {
+        this.isOpen = this.open;
+      }
+    },
+    isOpen() {
+      if (this.isOpen !== this.open) {
+        this.$emit("update:open", this.isOpen);
+      }
+    },
   },
   methods: {
     closeDialog() {

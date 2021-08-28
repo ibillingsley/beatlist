@@ -102,7 +102,12 @@ export default class DownloadOperationBeatmap
   private async CleanUp(): Promise<void> {
     if (this.tempFolder) {
       // await fs.unlink(this.tempFolder);
-      fs.rmdirSync(this.tempFolder);
+      fs.rmdir(this.tempFolder, (err) => {
+        if (err) {
+          console.log(err); // log only
+        }
+        return Promise.resolve();
+      });
     }
   }
 

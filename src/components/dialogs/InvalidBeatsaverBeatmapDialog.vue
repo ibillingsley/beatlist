@@ -1,8 +1,8 @@
 <template>
-  <v-dialog v-model="open" max-width="80%" @click:outside="closeDialog">
+  <v-dialog v-model="isOpen" max-width="80%" @click:outside="closeDialog">
     <v-card>
       <v-card-title>
-        Invalid beatmaps
+        Invalid beatmaps : {{ getInvalidBeatmapSize() }} item(s)
       </v-card-title>
       <v-card-text>
         <v-simple-table height="500" dense fixed-header>
@@ -18,9 +18,8 @@
                 <th class="text-left">
                   Reason
                 </th>
-                <th class="text-left">
-                  More info
-                </th>
+                <!-- 変更検知させるためダミーで props を含めておく -->
+                <th class="text-left">More info{{ open ? "" : "?" }}</th>
               </tr>
             </thead>
             <tbody>
@@ -54,7 +53,7 @@ import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibr
 import { BeatsaverItemLoadError } from "@/libraries/beatmap/repo/BeatsaverItem";
 
 export default Vue.extend({
-  name: "InvalidBeatmapDialog",
+  name: "InvalidBeatsaverBeatmapDialog",
   filters: {
     errorTranslated: (error: BeatsaverItemLoadError): string => {
       switch (error) {
@@ -77,12 +76,31 @@ export default Vue.extend({
   props: {
     open: { type: Boolean, required: true },
   },
+  data: () => ({
+    // props の値を直接 v-model に渡すべきではないので別の変数を用意する。
+    isOpen: false,
+  }),
   computed: {
     invalidBeatmap: () => BeatsaverCachedLibrary.GetAllInvalid(),
+  },
+  watch: {
+    open() {
+      if (this.isOpen !== this.open) {
+        this.isOpen = this.open;
+      }
+    },
+    isOpen() {
+      if (this.isOpen !== this.open) {
+        this.$emit("update:open", this.isOpen);
+      }
+    },
   },
   methods: {
     closeDialog() {
       this.$emit("update:open", false);
+    },
+    getInvalidBeatmapSize() {
+      return BeatsaverCachedLibrary.GetAllInvalid().size;
     },
   },
 });
