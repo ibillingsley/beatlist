@@ -1,0 +1,88 @@
+# Changelog
+
+## v1.2.6-beta4 (2021/08/xx)
+**ATTENTION:**
+- すいません。このバージョンをインストールする場合は[Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
+  - 詳細は Release ページをご確認ください。
+- [Settings]画面の[Beatsaver server url] は既定値の [Beatsaver] にしてください。[BeatSaberPlus] だと動きません。
+
+**Improvement:**
+- [Beatmap Online via beatsaver]画面に Rating でのソートを追加(復活)。アイコンは ThumbsUp に変更。
+- [Settings]画面で [UPDATE LIBRARY] ボタンを押した時、前回のスキャンで beatsaver.com から情報を取得できなかった曲を再取得するように修正。
+  - 404 エラーの曲は除く。
+- [My Playlists]画面でプレイリストを編集した時の処理速度を少し改善。
+  - 複数の編集をする場合、`+`/`-`ボタンで曲を1個ずつ追加/削除するよりチェックボックスで曲を選択して一度に追加/削除したほうが多少ましです。
+
+**Bug fixes:**
+- [My Playlists]画面で[Remove from playlist]ボタンが押せない、もしくは Content 欄で曲を選択して[REMOVE]ボタンを押しても曲が削除されないことがあるのを修正。
+- [Settings]画面の[Invalid beatmaps in playlists]画面や[Invalid beatmaps]画面を ESCキーで閉じるとそれ以降開かなくなることがあるのを修正。
+- [difficulties] に Standard 以外の難易度が表示されないのを修正。
+- その他エラー修正。
+
+**Others:**
+- [Saved Beatmaps]画面に[Refresh the Data]ボタン追加。
+  - 変更が反映されないときの手動反映用。beatsaver.com から最新情報を取得すためのもの**ではありません。**
+- 2021/08時点の beatsaver.com のキャッシュデータの持ち方を変更。
+  - Vuex store に入れずにメモリ上に持つように変更。ファイルサイズは今のところ 100M 未満です。
+
+<br>
+
+## v1.2.6-beta3 (2021/08/22)
+**Bug fixes:**
+- 初回起動時や[Settings]画面の[UPDATE LIBRARY]ボタンを押した時、また playlist を追加した時、メモリを 5-6GB など大量に使用することがあるのを修正。
+  - オリジナル版の不具合。ほかの画面でのメモリ消費は未調査。
+- [My Playlists]画面で playlist を編集した時に無応答になる時間を少し削減。
+
+**Others:**
+- [Settings]画面で[CLEAR CACHE]したあとの[UPDATE LIBRARY]で読み込むキャッシュデータを2021/08頃のデータに更新。
+  - 現在正常に動作しているなら[CLEAR CACHE] & [UPDATE LIBRARY] する必要はありません。
+- [Home]画面で内部ブラウザの言語を見て日本語なら日本語の変更履歴を表示するように変更。
+- [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
+  - オリジナル版が beatsaver.com の新APIでの帯域制限に(おそらく)未対応のため。一括ダウンロードは ModAssistant もしくは PlaylistManger で実施してください。
+- [Settings]画面の[Discord Rich Presence]の初期値を無効に変更。
+
+**ATTENTION:**
+- (2021/08/23) [Settings]画面の[Beatsaver server url] は既定値の [Beatsaver] にしてください。[BeatSaberPlus] だと動きません。
+
+<br>
+
+## v1.2.6-beta2 (2021/08/15)
+**Features:**
+- 「Beatmap Online via beatsaver」画面のページ移動を以下のような挙動に変更。
+  - 最終ページへの移動ボタンを削除
+  - 「1-20 of xxx」の「 of xxx」の表示を削除
+  - 表示件数が 20件未満になるまで次のページに移動可能
+
+**Bug fixes:**
+- 「Beatmap Online via beatsaver」画面で検索ボックスの×ボタンを押して検索文字列を削除すると、それ以降検索ボックスが空にも関わらず "null"という文字列で検索が行われていたのを修正。
+  - v1.2.6-beta での不具合
+- 「Beatmap Online via beatsaver」画面で検索ボックスが空の場合、Latest を指定していても Search(Relevance) での検索結果が表示されることがあるのを修正。
+  - v1.2.6-beta での不具合
+- playlist に beatsaver.com から取得できない曲が含まれている場合のエラーが2重に記録されていたのを修正。
+  - 「Settings」画面の「`xx beatmaps inside some playlists are invalid.`」
+  - v1.2.6-beta での不具合
+
+**Others:**
+- [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
+
+<br>
+
+## v1.2.6-beta (2021/08/13)
+**Features:**
+- beatsaver.com の新APIに暫定対応 (とりあえず動くようにしただけ)
+- [Settings]画面で[CLEAR CACHE]したあとの[UPDATE LIBRARY]で、2021/04頃の beatsaver.com の曲情報(約4万件)をキャッシュとして読み込むように修正。
+- [My Playlists]画面では beatsaver.com から削除された(あるいは beatsaver.com が落ちていて情報が取得できなかった)曲は表示されないが、CustomLevels 以下にダウンロード済みの曲は表示するように修正。
+  - [Saved Beatmaps]画面については v1.2.5 で修正済み。
+
+**Bug fixes:**
+- beatsaver.com からダウンロードした zip ファイルがロックされたままになり「`Couldn't extract beatmap. [undefined]: undefined`」エラーになることがあるのを修正。
+- beatsaver.com からダウンロードした zip ファイルが「`%APPDATA%\..\Local\Temp`」以下に残ったままになることがあるのを修正。
+
+**Others:**
+- [My Playlists]画面での playlist に含まれる曲の一括ダウンロードは無効化中。
+- [Home]画面の変更履歴表示は暫定で非表示。
+
+
+## v1.2.5 (2021/04/27)
+**Features:**
+- [Saved Beatmaps]画面では beatsaver.com から削除された(あるいは beatsaver.com が落ちていて情報が取得できなかった)曲は表示されないが、CustomLevels 以下にダウンロード済みの曲は表示するように修正。
