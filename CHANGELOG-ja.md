@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2.6-beta4 (2021/08/xx)
+## v1.2.6-beta4 (2021/08/29)
 **ATTENTION:**
 - すいません。このバージョンをインストールする場合は[Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
   - 詳細は Release ページをご確認ください。
