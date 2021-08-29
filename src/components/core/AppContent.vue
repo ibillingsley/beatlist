@@ -3,7 +3,7 @@
     <v-container v-if="isReady" fluid>
       <v-row>
         <transition name="slide-x-transition" mode="out-in">
-          <keep-alive>
+          <keep-alive exclude="BeatmapOnlineUnit,Settings,*Dialog">
             <router-view style="z-index: 1;" />
           </keep-alive>
         </transition>

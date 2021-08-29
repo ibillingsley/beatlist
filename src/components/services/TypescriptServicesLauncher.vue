@@ -14,6 +14,7 @@ import AutoContinueAfterRateLimitedScan from "@/libraries/scanner/AutoContinueAf
 import BeatsaverAPI from "@/libraries/net/beatsaver/BeatsaverAPI";
 import store from "@/plugins/store";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 
 export default Vue.extend({
   name: "TypescriptServicesLauncher",
@@ -31,6 +32,7 @@ export default Vue.extend({
 
       this.DiscordRichPresence();
       this.BeatsaverServerUrl();
+      await BeatsaverCachedLibrary.LoadAll();
 
       AutoScanLibHandler.register();
       AutoContinueAfterRateLimitedScan.register();

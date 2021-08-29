@@ -13,6 +13,7 @@ import { PlaylistLocal } from "../playlist/PlaylistLocal";
 
 export default class BeatmapLibrary {
   public static GetAllMaps(): BeatmapLocal[] {
+    // 純粋に store に保存されている曲のみ返却
     return store.getters["beatmap/beatmaps"] as BeatmapLocal[];
   }
 

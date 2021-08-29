@@ -3,6 +3,7 @@ import {
   PlaylistBase,
   PlaylistLocal,
   PlaylistMap,
+  PlaylistRaw,
 } from "@/libraries/playlist/PlaylistLocal";
 import Progress from "@/libraries/common/Progress";
 import PlaylistLoadStateError from "@/libraries/playlist/loader/PlaylistLoadStateError";
@@ -38,6 +39,26 @@ export default class PlaylistLoader {
       playlist.format = format;
 
       return playlist;
+    } catch (e) {
+      return this.handleError(e, filepath);
+    }
+  }
+
+  public static async LoadRaw(
+    filepath: string,
+    progress?: Progress
+  ): Promise<PlaylistRaw> {
+    try {
+      progress = progress ?? new Progress();
+
+      const format = PlaylistFilenameExtension.detectType(filepath);
+      const playlistRaw = await this.GetPlaylistAsRaw(filepath);
+      playlistRaw.path = filepath;
+      playlistRaw.format = format;
+
+      progress.setTotal(playlistRaw.songs?.length ?? 0);
+
+      return playlistRaw;
     } catch (e) {
       return this.handleError(e, filepath);
     }
@@ -94,7 +115,16 @@ export default class PlaylistLoader {
   }
 
   public static LoadCover(playlistPath: string): Promise<Buffer | null> {
-    return this.GetPlaylistBase(playlistPath).then((p) => p.cover);
+    return this.GetPlaylistAsRaw(playlistPath)
+      .then((p) => p.cover)
+      .catch((e) => {
+        console.log(
+          `Cannot load playlist cover of ${playlistPath}. error: ${
+            e?.message ?? e
+          }`
+        );
+        return null;
+      });
   }
 
   private static async GetPlaylistBase(
@@ -116,6 +146,25 @@ export default class PlaylistLoader {
     }
 
     return deserializer.deserialize(progress);
+  }
+
+  private static async GetPlaylistAsRaw(
+    filepath: string
+  ): Promise<PlaylistRaw> {
+    let deserializer: PlaylistDeserializer;
+    const format = PlaylistFilenameExtension.detectType(filepath);
+
+    switch (format) {
+      case PlaylistFormatType.Json:
+        deserializer = new JsonDeserializer(filepath);
+        break;
+
+      case PlaylistFormatType.Blist:
+      default:
+        throw FILENAME_EXTENSION_UNHANDLED;
+    }
+
+    return deserializer.deserializeAsRaw();
   }
 
   private static handleError(e: any, filepath: string) {
@@ -147,16 +196,16 @@ export default class PlaylistLoader {
     }
   }
 
-  private static computeHash(playlist: PlaylistBase, filepath: string): string {
+  public static computeHash(playlist: PlaylistBase, filepath: string): string {
     const safeEmptyPlaylist = {} as PlaylistBase;
     safeEmptyPlaylist.title = playlist.title;
     safeEmptyPlaylist.author = playlist.author;
     safeEmptyPlaylist.description = playlist.description;
     safeEmptyPlaylist.cover = playlist.cover;
     safeEmptyPlaylist.maps = playlist.maps.map((beatmap: PlaylistMap) => {
-      const copy = { ...beatmap };
+      const copy = { ...beatmap } as { hash: string; dateAdded?: Date };
       delete copy.dateAdded;
-      return copy;
+      return copy as PlaylistMap;
     });
 
     return crypto

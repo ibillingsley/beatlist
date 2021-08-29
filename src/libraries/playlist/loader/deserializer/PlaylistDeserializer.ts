@@ -1,4 +1,4 @@
-import { PlaylistBase } from "@/libraries/playlist/PlaylistLocal";
+import { PlaylistBase, PlaylistRaw } from "@/libraries/playlist/PlaylistLocal";
 import Progress from "@/libraries/common/Progress";
 
 export default abstract class PlaylistDeserializer {
@@ -9,4 +9,6 @@ export default abstract class PlaylistDeserializer {
   }
 
   public abstract deserialize(progress?: Progress): Promise<PlaylistBase>;
+
+  public abstract deserializeAsRaw(progress?: Progress): Promise<PlaylistRaw>;
 }

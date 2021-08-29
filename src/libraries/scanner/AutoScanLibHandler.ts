@@ -1,4 +1,5 @@
 import chokidar from "chokidar";
+import lodash from "lodash";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import store from "@/plugins/store";
 import ScannerService from "@/libraries/scanner/ScannerService";
@@ -16,20 +17,40 @@ export default class AutoScanLibHandler {
       ignoreInitial: true,
     });
 
-    watcher.on("add", AutoScanLibHandler.onChange);
-    watcher.on("change", AutoScanLibHandler.onChange);
-    watcher.on("unlink", AutoScanLibHandler.onChange);
-    watcher.on("addDir", AutoScanLibHandler.onChange);
-    watcher.on("unlinkDir", AutoScanLibHandler.onChange);
+    const delayFunc = lodash.debounce(
+      () => {
+        if (
+          BeatmapLibrary.GetAllMaps().length > 0 ||
+          PlaylistLibrary.GetAllPlaylists().length > 0
+        ) {
+          ScannerService.ScanAll();
+        }
+      },
+      500,
+      { maxWait: 5000 }
+    );
+
+    // watcher.on("add", AutoScanLibHandler.onChange);
+    // watcher.on("change", AutoScanLibHandler.onChange);
+    // watcher.on("unlink", AutoScanLibHandler.onChange);
+    // watcher.on("addDir", AutoScanLibHandler.onChange);
+    // watcher.on("unlinkDir", AutoScanLibHandler.onChange);
+    watcher.on("add", delayFunc);
+    watcher.on("change", delayFunc);
+    watcher.on("unlink", delayFunc);
+    watcher.on("addDir", delayFunc);
+    watcher.on("unlinkDir", delayFunc);
 
     if (
       store.getters["settings/configValid"] &&
       !store.getters["modal/newUserModal"]
     ) {
-      this.onChange();
+      // this.onChange();
+      delayFunc();
     }
   }
 
+  /*
   private static onChange() {
     if (
       BeatmapLibrary.GetAllMaps().length > 0 ||
@@ -38,4 +59,5 @@ export default class AutoScanLibHandler {
       ScannerService.ScanAll().then();
     }
   }
+  */
 }

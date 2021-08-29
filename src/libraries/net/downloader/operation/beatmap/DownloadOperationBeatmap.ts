@@ -84,8 +84,10 @@ export default class DownloadOperationBeatmap
           try {
             stream.close(); // 明示的に閉じる
             await sleep(1000); // 少し待機しないとエラーになる
-            this.handleExtraction(zipPath);
-            this.onSuccess();
+            const extractResult = await this.handleExtraction(zipPath);
+            if (extractResult) {
+              this.onSuccess();
+            }
           } catch (e) {
             console.log(e);
             this.onExtractError(e);
@@ -111,7 +113,7 @@ export default class DownloadOperationBeatmap
     }
   }
 
-  private handleExtraction(zipPath: string) {
+  private async handleExtraction(zipPath: string): Promise<boolean> {
     this.result = {
       ...this.result,
       status: DownloadOperationBeatmapResultStatus.Extracting,
@@ -120,13 +122,30 @@ export default class DownloadOperationBeatmap
     const zip = new AdmZip(zipPath);
     const extractPath = BeatSaber.GetFolderPathFor(this.beatmap);
 
-    zip.extractAllTo(extractPath, true);
+    // zip.extractAllTo(extractPath, true);
+    return new Promise((resolve) => {
+      try {
+        zip.extractAllTo(extractPath, true);
+      } catch (e) {
+        console.log(e);
+        this.onExtractError(e);
+        resolve(false);
+      }
+      fs.remove(zipPath) // temp ディレクトリの zip 削除
+        .then(() => {
+          resolve(true);
+        })
+        .catch(() => {
+          // ignore
+          resolve(true);
+        });
+    });
 
-    try {
-      fs.removeSync(zipPath); // temp ディレクトリの zip 削除
-    } catch (e) {
-      // ignore
-    }
+    // try {
+    //   fs.removeSync(zipPath); // temp ディレクトリの zip 削除
+    // } catch (e) {
+    //   // ignore
+    // }
   }
 
   OnCompleted(

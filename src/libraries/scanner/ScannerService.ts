@@ -1,17 +1,19 @@
 import events from "events";
+import store from "@/plugins/store";
 import Progress from "@/libraries/common/Progress";
 import ProgressGroup from "@/libraries/common/ProgressGroup";
 import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
 import BeatmapScanner from "@/libraries/scanner/beatmap/BeatmapScanner";
 import BeatmapScannerResult from "@/libraries/scanner/beatmap/BeatmapScannerResult";
 import PlaylistScannerResult from "@/libraries/scanner/playlist/PlaylistScannerResult";
-import BeatmapLibrary from "../beatmap/BeatmapLibrary";
+// import BeatmapLibrary from "../beatmap/BeatmapLibrary";
 import BeatsaverCachedLibrary from "../beatmap/repo/BeatsaverCachedLibrary";
 import {
   BeatsaverItemInvalid,
   BeatsaverItemLoadError,
 } from "../beatmap/repo/BeatsaverItem";
 import { BeatsaverKeyType } from "../beatmap/repo/BeatsaverKeyType";
+import DownloadLibrary from "../net/downloader/DownloadLibrary";
 
 const ON_SCAN_START = "on_scan_start";
 const ON_SCAN_COMPLETED = "on_scan_completed";
@@ -70,15 +72,27 @@ export default class ScannerService {
 
   public static async ScanAll(updateInvalid = false): Promise<void> {
     if (this.locked) return undefined;
+
+    if (
+      DownloadLibrary.queuedOperation.length > 0 ||
+      DownloadLibrary.ongoingOperation.length > 0
+    ) {
+      return undefined;
+    }
+    if (store.getters["appState/lockPlaylistModification"]) {
+      return undefined;
+    }
     this.operation = "all";
     this.retryTargetItems = [];
 
     this.eventEmitter.emit(ON_SCAN_START);
     try {
       this.locked = true;
+      /*
       if (BeatmapLibrary.GetAllMaps().length === 0) {
         await BeatsaverCachedLibrary.LoadAll();
       }
+      */
 
       if (updateInvalid) {
         this.retryTargetItems = Array.from(

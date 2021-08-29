@@ -1,3 +1,4 @@
+import fs from "fs-extra";
 import {
   BeatsaverKey,
   BeatsaverKeyType,
@@ -9,8 +10,18 @@ import {
   BeatsaverItemValid,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
 import store from "@/plugins/store";
+import {
+  BeatsaverNewBeatmap,
+  convertNewMapToMap,
+} from "@/libraries/net/beatsaver/BeatsaverBeatmap";
+
+const CACHE_FILES_DIR = "resources/cache";
 
 export default class BeatsaverCachedLibrary {
+  static beatsaverCache = new Map<string, BeatsaverItemValid>();
+
+  static beatsaverCacheKeyToIndex = new Map<string, string>();
+
   public static Add(hash: string, item: BeatsaverItemValid) {
     store.commit("beatmap/setBeatsaverCached", { hash, item });
   }
@@ -30,6 +41,7 @@ export default class BeatsaverCachedLibrary {
 
   public static async LoadAll() {
     // store.commit("beatmap/loadBeatmaps", { path });
+    /*
     store
       .dispatch("beatmap/loadBeatmapsAsCache")
       .then(() => {
@@ -38,6 +50,53 @@ export default class BeatsaverCachedLibrary {
       .catch((error) => {
         return Promise.reject(error);
       });
+    */
+    if (!fs.existsSync(CACHE_FILES_DIR)) {
+      console.log(`no cache directory.`);
+      return;
+    }
+
+    const files = fs.readdirSync(CACHE_FILES_DIR, { withFileTypes: true });
+    const fileNames = files
+      .filter(
+        (dirent) =>
+          dirent.isFile() && dirent.name.match(/^beatsaverCache[0-9]+\.json$/)
+      )
+      .map((dirent) => dirent.name);
+
+    for (const fileName of fileNames) {
+      const beatmaps = JSON.parse(
+        // eslint-disable-next-line no-await-in-loop
+        await fs.readFile(`${CACHE_FILES_DIR}/${fileName}`, {
+          encoding: "utf8",
+        })
+      ) as BeatsaverNewBeatmap[];
+      for (const newBeatmap of beatmaps) {
+        const beatmap = convertNewMapToMap(newBeatmap);
+        const hash = beatmap.hash.toUpperCase();
+        const validMap = {
+          beatmap,
+          loadState: {
+            valid: true,
+            attemptedSource: {
+              type: BeatsaverKeyType.Hash,
+              value: hash,
+            },
+          },
+        } as BeatsaverItemValid;
+        BeatsaverCachedLibrary.beatsaverCache.set(hash, validMap);
+        BeatsaverCachedLibrary.beatsaverCacheKeyToIndex.set(
+          beatmap.key.toUpperCase(),
+          hash
+        );
+        /*
+          context.state.beatsaverKeyToHashIndex.set(
+            beatmap.key.toUpperCase(),
+            hash
+          );
+          */
+      }
+    }
   }
 
   public static Exist(key: BeatsaverKey) {
@@ -45,7 +104,9 @@ export default class BeatsaverCachedLibrary {
   }
 
   public static GetByKey(key: string): BeatsaverItem | undefined {
-    const hash = this.GetKeyToHashIndex().get(key);
+    const hash =
+      this.GetKeyToHashIndex().get(key) ??
+      BeatsaverCachedLibrary.beatsaverCacheKeyToIndex.get(key);
 
     return (
       (hash ? this.GetByHash(hash) : undefined) ??
@@ -85,7 +146,19 @@ export default class BeatsaverCachedLibrary {
   }
 
   public static GetAllValid(): Map<string, BeatsaverItemValid> {
-    return store.getters["beatmap/beatsaverCached"];
+    const result = new Map(BeatsaverCachedLibrary.beatsaverCache);
+    const storedCache = store.getters["beatmap/beatsaverCached"] as Map<
+      string,
+      BeatsaverItemValid
+    >;
+    for (const key of storedCache.keys()) {
+      const value = storedCache.get(key);
+      if (value != null) {
+        result.set(key, value);
+      }
+    }
+    return result;
+    // return store.getters["beatmap/beatsaverCached"];
   }
 
   public static GetAllInvalid(): Map<string, BeatsaverItemInvalid> {

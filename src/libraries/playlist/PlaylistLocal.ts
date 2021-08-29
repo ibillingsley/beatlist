@@ -10,6 +10,17 @@ export interface PlaylistBase {
   maps: PlaylistMap[];
 }
 
+export interface PlaylistRaw {
+  title: string;
+  author: string;
+  description: string | null;
+  cover: Buffer | null;
+  songs?: { hash: string | undefined; key: string | undefined }[];
+  maps?: PlaylistMap[];
+  path: string | undefined;
+  format: PlaylistFormatType;
+}
+
 export interface PlaylistLocal extends PlaylistBase {
   path: string | undefined;
   hash: string | undefined;

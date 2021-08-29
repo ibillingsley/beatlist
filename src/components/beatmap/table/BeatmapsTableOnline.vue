@@ -161,6 +161,10 @@ export default Vue.extend({
   },
   methods: {
     fetchData(): void {
+      if (this.$route.name !== route.BEATMAPS_ONLINE) {
+        return;
+      }
+
       this.loading = true;
       let requestPage = undefined as
         | Promise<BeatSaverAPIResponse<BeatsaverPage>>

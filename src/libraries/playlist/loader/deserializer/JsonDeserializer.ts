@@ -4,6 +4,7 @@ import {
   PlaylistBase,
   PlaylistLocalMap,
   PlaylistMapImportError,
+  PlaylistRaw,
 } from "@/libraries/playlist/PlaylistLocal";
 import Base64SrcLoader from "@/libraries/os/utils/Base64SrcLoader";
 import Progress from "@/libraries/common/Progress";
@@ -49,6 +50,32 @@ export default class JsonDeserializer extends PlaylistDeserializer {
     }
   }
 
+  public async deserializeAsRaw(): Promise<PlaylistRaw> {
+    if (!(await fs.pathExists(this.filepath))) {
+      throw FILE_NOT_FOUND;
+    }
+
+    const rawJson = await fs.readFile(this.filepath);
+
+    try {
+      const json = JSON.parse(rawJson.toString());
+      JsonDeserializer.validateJson(json);
+
+      return {
+        title: json.playlistTitle,
+        author: json.playlistAuthor ?? "",
+        description: json.playlistDescription ?? "",
+        cover: Buffer.from(
+          Base64SrcLoader.GetRawSrc(json.image ?? ""),
+          "base64"
+        ),
+        songs: json.songs ?? [],
+      } as PlaylistRaw;
+    } catch (e) {
+      throw INVALID_JSON;
+    }
+  }
+
   private static validateJson(json: any) {
     // check for required fields
     if (!json.playlistTitle) {
@@ -56,11 +83,14 @@ export default class JsonDeserializer extends PlaylistDeserializer {
     }
   }
 
-  private static async convertToHash(
+  public static async convertToHash(
     songs: { hash: string | undefined; key: string | undefined }[],
     progress: Progress
   ): Promise<PlaylistLocalMap[]> {
     const resultList: PlaylistLocalMap[] = [];
+
+    // ダウンロード済の曲(CustomLevels 以下に存在する曲)はそれを返す
+    // 未ダウンロードの曲は newSongs に格納
     const newSongs: {
       hash: string | undefined;
       key: string | undefined;
@@ -84,6 +114,8 @@ export default class JsonDeserializer extends PlaylistDeserializer {
         }
       }
     }
+    // 未ダウンロードの曲をキャッシュあるいは beatsaver.com から取得
+    // ※本来 deserializer がやることじゃない
     const notLocalMaps = await PlaylistDeserializeBeatsaverBeatmap.convert(
       newSongs,
       progress
@@ -101,6 +133,7 @@ export default class JsonDeserializer extends PlaylistDeserializer {
             ...this.getErrorFor(item),
           } as PlaylistLocalMap)
       );
+    // 取得できたものをダウンロード済みの曲とマージして返却
     return resultList.concat(newPlaylistLocalMaps);
 
     // return (await PlaylistDeserializeBeatsaverBeatmap.convert(songs, progress))
