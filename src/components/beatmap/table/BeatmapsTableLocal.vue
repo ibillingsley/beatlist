@@ -3,6 +3,8 @@
     <BeatmapsTableOuterHeader
       :shown-column.sync="shownColumn"
       :search.sync="search"
+      :show-refresh-button="true"
+      @refresh="fetchData"
     />
     <v-card>
       <BeatmapsTable
@@ -31,6 +33,7 @@ import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTa
 import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
 import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
 import route from "@/plugins/route/route";
+import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import { BeatmapsTableDataUnit } from "./core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
@@ -53,12 +56,18 @@ export default Vue.extend({
     itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@localBeatmaps.itemsPerPage"
     ),
+    storedMaps(): BeatmapLocal[] {
+      return BeatmapLibrary.GetAllMaps();
+    },
     // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
     seeMoreRouteName: () => route.BEATMAPS_LOCAL_UNIT,
   },
   watch: {
     search() {
       this.page = 1;
+    },
+    storedMaps() {
+      this.fetchData();
     },
   },
   mounted(): void {

@@ -10,7 +10,7 @@ export default class BeatlistRepo {
 
   private static readonly changelogUri: string = "/master/CHANGELOG.md";
 
-  private static readonly changelogJaUri: string = "/develop/CHANGELOG-ja.md";
+  private static readonly changelogJaUri: string = "/master/CHANGELOG-ja.md";
 
   private readonly rawGithubHttp: AxiosInstance;
 
