@@ -1,5 +1,32 @@
 # Changelog
 
+## v1.2.6-beta4 (2021/08/xx)
+**ATTENTION:**
+- すいません。このバージョンをインストールする場合は[Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
+  - 詳細は Release ページをご確認ください。
+- [Settings]画面の[Beatsaver server url] は既定値の [Beatsaver] にしてください。[BeatSaberPlus] だと動きません。
+
+**Improvement:**
+- [Beatmap Online via beatsaver]画面に Rating でのソートを追加(復活)。アイコンは ThumbsUp に変更。
+- [Settings]画面で [UPDATE LIBRARY] ボタンを押した時、前回のスキャンで beatsaver.com から情報を取得できなかった曲を再取得するように修正。
+  - 404 エラーの曲は除く。
+- [My Playlists]画面でプレイリストを編集した時の処理速度を少し改善。
+  - 複数の編集をする場合、`+`/`-`ボタンで曲を1個ずつ追加/削除するよりチェックボックスで曲を選択して一度に追加/削除したほうが多少ましです。
+
+**Bug fixes:**
+- [My Playlists]画面で[Remove from playlist]ボタンが押せない、もしくは Content 欄で曲を選択して[REMOVE]ボタンを押しても曲が削除されないことがあるのを修正。
+- [Settings]画面の[Invalid beatmaps in playlists]画面や[Invalid beatmaps]画面を ESCキーで閉じるとそれ以降開かなくなることがあるのを修正。
+- [difficulties] に Standard 以外の難易度が表示されないのを修正。
+- その他エラー修正。
+
+**Others:**
+- [Saved Beatmaps]画面に[Refresh the Data]ボタン追加。
+  - 変更が反映されないときの手動反映用。beatsaver.com から最新情報を取得すためのもの**ではありません。**
+- 2021/08時点の beatsaver.com のキャッシュデータの持ち方を変更。
+  - Vuex store に入れずにメモリ上に持つように変更。ファイルサイズは今のところ 100M 未満です。
+
+<br>
+
 ## v1.2.6-beta3 (2021/08/22)
 **Bug fixes:**
 - 初回起動時や[Settings]画面の[UPDATE LIBRARY]ボタンを押した時、また playlist を追加した時、メモリを 5-6GB など大量に使用することがあるのを修正。
