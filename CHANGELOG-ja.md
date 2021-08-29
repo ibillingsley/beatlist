@@ -2,7 +2,7 @@
 
 ## v1.2.6-beta4 (2021/08/29)
 **ATTENTION:**
-- すいません。このバージョンをインストールする場合は[Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
+- すいません。以前 v1.2.6-beta～beta3 をインストールしたかたは、このバージョンをインストールしたあとに [Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
   - 詳細は Release ページをご確認ください。
 - [Settings]画面の[Beatsaver server url] は既定値の [Beatsaver] にしてください。[BeatSaberPlus] だと動きません。
 
