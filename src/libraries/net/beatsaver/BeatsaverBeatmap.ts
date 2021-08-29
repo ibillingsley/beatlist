@@ -138,26 +138,24 @@ function createDifficultiesMetadata(
     expertPlus: false,
   };
   for (const diff of version.diffs) {
-    if (diff.characteristic === "Standard") {
-      switch (diff.difficulty) {
-        case "ExpertPlus":
-          result.expertPlus = true;
-          break;
-        case "Expert":
-          result.expert = true;
-          break;
-        case "Hard":
-          result.hard = true;
-          break;
-        case "Normal":
-          result.normal = true;
-          break;
-        case "Easy":
-          result.easy = true;
-          break;
-        default:
-          break;
-      }
+    switch (diff.difficulty) {
+      case "ExpertPlus":
+        result.expertPlus = true;
+        break;
+      case "Expert":
+        result.expert = true;
+        break;
+      case "Hard":
+        result.hard = true;
+        break;
+      case "Normal":
+        result.normal = true;
+        break;
+      case "Easy":
+        result.easy = true;
+        break;
+      default:
+        break;
     }
   }
   return result;
