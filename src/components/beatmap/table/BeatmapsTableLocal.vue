@@ -18,6 +18,7 @@
         <template #actions="{ beatsaver }">
           <BeatmapButtonRemoveBeatmap :beatmap="beatsaver" small />
           <BeatmapButtonAddToNPlaylists :beatmap="beatsaver" small />
+          <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
         </template>
       </BeatmapsTable>
     </v-card>
@@ -32,8 +33,10 @@ import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
 import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
+import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
 import route from "@/plugins/route/route";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
+// import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import { BeatmapsTableDataUnit } from "./core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
@@ -43,6 +46,7 @@ export default Vue.extend({
     BeatmapsTableOuterHeader,
     BeatmapButtonAddToNPlaylists,
     BeatmapButtonRemoveBeatmap,
+    BeatmapButtonCopyBsr,
   },
   data: () => ({
     search: "",
@@ -59,6 +63,9 @@ export default Vue.extend({
     storedMaps(): BeatmapLocal[] {
       return BeatmapLibrary.GetAllMaps();
     },
+    // cacheLastUpdated() {
+    //   return BeatsaverCachedLibrary.GetCacheLastUpdated();
+    // },
     // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
     seeMoreRouteName: () => route.BEATMAPS_LOCAL_UNIT,
   },
@@ -69,6 +76,9 @@ export default Vue.extend({
     storedMaps() {
       this.fetchData();
     },
+    // cacheLastUpdated() {
+    //   this.fetchData();
+    // },
   },
   mounted(): void {
     this.fetchData();

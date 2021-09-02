@@ -58,6 +58,7 @@
           <BeatmapDownloadButton :beatmap="beatsaver" auto-hide small />
           <BeatmapButtonRemoveBeatmap :beatmap="beatsaver" auto-hide small />
           <BeatmapButtonOpenPreview :beatmap="beatsaver" small />
+          <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
         </template>
       </BeatmapsTable>
     </v-card>
@@ -87,6 +88,7 @@ import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.
 import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
 import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
 import BeatmapButtonOpenPreview from "@/components/beatmap/info/button/BeatmapButtonOpenPreview.vue";
+import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
 import route from "@/plugins/route/route";
 
 export default Vue.extend({
@@ -99,6 +101,7 @@ export default Vue.extend({
     BeatmapButtonOpenPreview,
     BeatmapButtonRemoveBeatmap,
     BeatmapButtonAddToNPlaylists,
+    BeatmapButtonCopyBsr,
   },
   data: () => ({
     selectedMode: "search",

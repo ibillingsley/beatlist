@@ -39,6 +39,17 @@
           Download ({{ beatmapNotDownloadedAndSelected.length }})
         </v-btn> -->
 
+        <v-btn
+          v-if="bulkCopyBsr && playlist"
+          outlined
+          small
+          color="success"
+          class="ml-4"
+          @click="performBulkCopyBsr"
+        >
+          Copy BSR
+        </v-btn>
+
         <span class="pl-3">
           {{ selected.length }} item{{ selected.length > 1 ? "s" : "" }}
           selected
@@ -50,6 +61,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
+import { clipboard } from "electron";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import PlaylistOperation from "@/libraries/playlist/PlaylistOperation";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
@@ -69,6 +81,7 @@ export default Vue.extend({
     bulkAdd: { type: Boolean, default: false },
     bulkRemove: { type: Boolean, default: false },
     bulkDownload: { type: Boolean, default: false },
+    bulkCopyBsr: { type: Boolean, default: false },
   },
   data: () => ({
     bulkAddLoading: false,
@@ -125,6 +138,32 @@ export default Vue.extend({
 
       this.bulkDownloadLoading = false;
       this.$emit("onDone");
+    },
+    performBulkCopyBsr() {
+      if (!this.playlist) return;
+
+      let text = "";
+      this.selected.forEach((s) => {
+        if (s.key != null && s.key !== "") {
+          text += `\r\n!bsr ${s.key}`;
+        }
+      });
+      if (text.length > 0) {
+        text = text.substring(2);
+      } else {
+        NotificationService.NotifyMessage(
+          "Coping BSR failed. No valid key selected.",
+          "warning"
+        );
+        return;
+      }
+      try {
+        clipboard.writeText(text);
+        NotificationService.NotifyMessage(`BSRs copied.`, "success");
+      } catch (error) {
+        console.error(error);
+        NotificationService.NotifyMessage("Coping BSR failed.", "warning");
+      }
     },
   },
 });

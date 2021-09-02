@@ -22,6 +22,7 @@
           :beatmap="beatsaver"
           small
         />
+        <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
       </template>
     </BeatmapsTable>
     <BeatmapsTableBulkActions
@@ -29,6 +30,7 @@
       :selected="selectedBeatmap"
       bulk-remove
       bulk-download
+      bulk-copy-bsr
       @onDone="selectedBeatmap = []"
     />
   </div>
@@ -45,6 +47,7 @@ import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
+import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
 import route from "@/plugins/route/route";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 
@@ -56,6 +59,7 @@ export default Vue.extend({
     BeatmapsTableBulkActions,
     PlaylistButtonRemoveFromPlaylist,
     BeatmapDownloadButton,
+    BeatmapButtonCopyBsr,
   },
   props: {
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
