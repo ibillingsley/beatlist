@@ -50,3 +50,14 @@ export enum PlaylistMapImportError {
   BeatsaverRequestError = 2,
   Unknown = 3,
 }
+
+export function isPlaylistLocal(
+  playlist: PlaylistRaw | PlaylistLocal
+): playlist is PlaylistLocal {
+  return (
+    "path" in playlist &&
+    "hash" in playlist &&
+    "format" in playlist &&
+    "loadState" in playlist
+  );
+}

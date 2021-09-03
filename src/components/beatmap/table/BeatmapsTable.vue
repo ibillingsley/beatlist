@@ -47,6 +47,16 @@
         <slot name="actions" :beatsaver="item.raw.data" />
         <Tooltip text="See more">
           <v-btn
+            v-if="inPlaylist"
+            icon
+            small
+            exact
+            @click="$emit('openInformation', item.raw.data.hash)"
+          >
+            <v-icon small>chevron_right</v-icon>
+          </v-btn>
+          <v-btn
+            v-else
             :to="{
               name: seeMoreRouteName,
               params: { hash: item.raw.data.hash },
@@ -164,6 +174,7 @@ export default Vue.extend({
       default: undefined,
     },
     search: { type: String, default: undefined },
+    inPlaylist: { type: Boolean, default: false },
   },
   data: () => ({
     filtersValue: {

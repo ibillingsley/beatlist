@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <transition name="slide-x-transition" mode="out-in">
-      <keep-alive exclude="BeatmapOnlineUnit,Settings,*Dialog">
+      <keep-alive exclude="BeatmapOnlineUnit,BeatmapLocalUnit,Settings,*Dialog">
         <router-view :key="$route.name" />
       </keep-alive>
     </transition>

@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import PlaylistDeserializer from "@/libraries/playlist/loader/deserializer/PlaylistDeserializer";
 import {
-  PlaylistBase,
+  // PlaylistBase,
   PlaylistLocalMap,
   PlaylistMapImportError,
   PlaylistRaw,
@@ -15,11 +15,13 @@ import {
 } from "@/libraries/beatmap/repo/BeatsaverItem";
 import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import { BeatsaverKeyType } from "@/libraries/beatmap/repo/BeatsaverKeyType";
+import PlaylistFormatType from "../../PlaylistFormatType";
 
 export const FILE_NOT_FOUND: Error = new Error("File not found");
 export const INVALID_JSON: Error = new Error("Invalid JSON");
 
 export default class JsonDeserializer extends PlaylistDeserializer {
+  /*
   public async deserialize(progress?: Progress): Promise<PlaylistBase> {
     if (!(await fs.pathExists(this.filepath))) {
       throw FILE_NOT_FOUND;
@@ -49,6 +51,7 @@ export default class JsonDeserializer extends PlaylistDeserializer {
       throw INVALID_JSON;
     }
   }
+  */
 
   public async deserializeAsRaw(): Promise<PlaylistRaw> {
     if (!(await fs.pathExists(this.filepath))) {
@@ -70,6 +73,8 @@ export default class JsonDeserializer extends PlaylistDeserializer {
           "base64"
         ),
         songs: json.songs ?? [],
+        path: this.filepath,
+        format: PlaylistFormatType.Json,
       } as PlaylistRaw;
     } catch (e) {
       throw INVALID_JSON;

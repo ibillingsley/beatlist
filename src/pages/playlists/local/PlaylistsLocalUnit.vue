@@ -32,7 +32,7 @@ import PlaylistEditor from "@/pages/playlists/local/components/PlaylistEditor.vu
 import route from "@/plugins/route/route";
 
 export default Vue.extend({
-  name: "PlaylistLocalUnit",
+  name: "PlaylistsLocalUnit",
   components: { PlaylistCoverAvatar, PlaylistEditor },
   data: () => ({
     playlist: undefined as PlaylistLocal | undefined,
@@ -44,24 +44,34 @@ export default Vue.extend({
     async playlists() {
       if (!this.playlist?.path) return;
 
-      const hash = PlaylistLibrary.GetByPath(this.playlist.path)?.hash;
+      try {
+        const hash = PlaylistLibrary.GetByPath(this.playlist.path)?.hash;
 
-      if (!hash) return;
-      if (hash === this.$route.params.hash) return;
+        if (!hash) return;
+        if (hash === this.$route.params.hash) return;
 
-      await this.$router.replace({
-        name: route.PLAYLISTS_LOCAL_UNIT,
-        params: { hash },
-      });
+        await this.$router.replace({
+          name: route.PLAYLISTS_LOCAL_UNIT,
+          params: { hash },
+        });
+      } catch (e) {
+        console.error(`[PlaylistsLocalUnit] watch playlists: error`);
+        console.error(e);
+      }
     },
     async playlist() {
       if (!this.playlist || !this.playlist.hash) return;
       if (this.playlist.hash === this.$route.params.hash) return;
 
-      await this.$router.replace({
-        name: route.PLAYLISTS_LOCAL_UNIT,
-        params: { hash: this.playlist.hash },
-      });
+      try {
+        await this.$router.replace({
+          name: route.PLAYLISTS_LOCAL_UNIT,
+          params: { hash: this.playlist.hash },
+        });
+      } catch (e) {
+        console.error(`[PlaylistsLocalUnit] watch playlist: error`);
+        console.error(e);
+      }
     },
     $route: {
       handler(): void {

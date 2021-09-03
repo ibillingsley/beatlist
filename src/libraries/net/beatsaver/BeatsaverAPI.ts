@@ -3,6 +3,7 @@ import { AxiosError, AxiosInstance, AxiosResponse } from "axios";
 import AxiosCachedFactory from "@/libraries/net/AxiosCachedFactory";
 import BeatsaverRateLimitManager from "@/libraries/net/beatsaver/BeatsaverRateLimitManager";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
+import Utilities from "@/libraries/helper/Utilities";
 import {
   BeatsaverBeatmap,
   BeatsaverNewBeatmap,
@@ -65,9 +66,6 @@ export enum BeatSaverAPIResponseStatus {
   RateLimited = 4, // rate-limit-remaining headers is at 0
   Timeout = 5, // timeout
 }
-
-const sleep = (msec: number) =>
-  new Promise((resolve) => setTimeout(resolve, msec));
 
 export default class BeatsaverAPI {
   public static Singleton: BeatsaverAPI = new BeatsaverAPI();
@@ -143,6 +141,7 @@ export default class BeatsaverAPI {
   //   }
 
   public updateBaseUrl(baseUrl: BeatsaverServerUrl) {
+    console.log(`updateBaseUrl: ${baseUrl}`);
     this.http = AxiosCachedFactory.getAxios(baseUrl);
   }
 
@@ -155,7 +154,7 @@ export default class BeatsaverAPI {
       return BeatsaverAPI.RateLimitedAnswer<T>();
     }
 
-    await sleep(150);
+    await Utilities.sleep(150);
 
     return this.http
       .get(apiPath, {
@@ -182,6 +181,8 @@ export default class BeatsaverAPI {
     if (validation !== undefined) {
       valid = validation(answer.data);
       if (!valid) {
+        // 新APIの応答に対して isBeatsaverBeatmap は false になる。
+        // TODO validation の意味がないので、isBeatsaverNewBeatmap を定義して if (valid) { に修正すべき。
         const newData = (answer.data as unknown) as BeatsaverNewBeatmap;
         const data = convertNewMapToMap(newData);
         return {

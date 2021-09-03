@@ -40,7 +40,6 @@ export default class BeatsaverCachedLibrary {
   }
 
   public static async LoadAll() {
-    // store.commit("beatmap/loadBeatmaps", { path });
     /*
     store
       .dispatch("beatmap/loadBeatmapsAsCache")
@@ -163,6 +162,10 @@ export default class BeatsaverCachedLibrary {
 
   public static GetAllInvalid(): Map<string, BeatsaverItemInvalid> {
     return store.getters["beatmap/beatsaverFailCached"];
+  }
+
+  public static GetCacheLastUpdated() {
+    return store.getters["beatmap/beatsaverCacheUpdated"];
   }
 
   public static Get(key: BeatsaverKey) {

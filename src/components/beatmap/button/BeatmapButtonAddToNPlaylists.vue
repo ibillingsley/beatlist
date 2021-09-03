@@ -7,7 +7,11 @@
         </v-icon>
       </v-btn>
     </Tooltip>
-    <AddRemoveFromPlaylistsDialog :open.sync="dialog" :beatmap="beatmap" />
+    <AddRemoveFromPlaylistsDialog
+      v-if="dialog"
+      :open.sync="dialog"
+      :beatmap="beatmap"
+    />
   </span>
 </template>
 

@@ -25,6 +25,7 @@ export interface BeatmapStoreState {
   beatsaverCached: Map<string, BeatsaverItemValid>;
   beatsaverFailCached: Map<string, BeatsaverItemInvalid>;
   beatsaverKeyToHashIndex: Map<string, string>;
+  beatsaverCacheUpdated: Date;
 }
 
 const state = {
@@ -33,6 +34,7 @@ const state = {
   beatsaverCached: new Map<string, BeatsaverItemInvalid>(),
   beatsaverFailCached: new Map<string, BeatsaverItemInvalid>(),
   beatsaverKeyToHashIndex: new Map<string, string>(),
+  beatsaverCacheUpdated: new Date(), // persistent 対象外
 };
 
 const getters = {
@@ -66,30 +68,6 @@ const mutations = {
       (value: BeatmapLocal) => !pathSet.has(value.folderPath.toLowerCase())
     );
   },
-  loadBeatmaps(context: BeatmapStoreState, payload: { path: string }) {
-    const beatmaps = JSON.parse(
-      fs.readFileSync(payload.path, { encoding: "utf8" })
-    ) as BeatsaverNewBeatmap[];
-    for (const newBeatmap of beatmaps) {
-      const beatmap = convertNewMapToMap(newBeatmap);
-      const hash = beatmap.hash.toUpperCase();
-      if (beatmap.coverURL?.startsWith("/cdn/")) {
-        beatmap.coverURL = `https://cdn.beatsaver.com/${hash.toLowerCase()}.jpg`;
-      }
-      const validMap = {
-        beatmap,
-        loadState: {
-          valid: true,
-          attemptedSource: {
-            type: BeatsaverKeyType.Hash,
-            value: hash,
-          },
-        },
-      } as BeatsaverItemValid;
-      context.beatsaverCached.set(hash, validMap);
-      context.beatsaverKeyToHashIndex.set(beatmap.key.toUpperCase(), hash);
-    }
-  },
   setBeatsaverCached(
     context: BeatmapStoreState,
     payload: { hash: string; item: BeatsaverItemValid }
@@ -99,6 +77,7 @@ const mutations = {
       payload.item.beatmap.key.toUpperCase(),
       payload.item.beatmap.hash.toUpperCase()
     );
+    context.beatsaverCacheUpdated = new Date();
   },
   addAllBeatsaverCached(
     context: BeatmapStoreState,
@@ -125,6 +104,9 @@ const mutations = {
         context.beatsaverFailCached.set(toStrKey(item.key), item.item);
       }
     }
+    if (payload.items.length > 0) {
+      context.beatsaverCacheUpdated = new Date();
+    }
   },
   addBeatsaverCachedInvalid(
     context: BeatmapStoreState,
@@ -150,11 +132,13 @@ const mutations = {
     context.beatsaverCached = new Map<string, BeatsaverItemValid>();
     context.beatsaverFailCached = new Map<string, BeatsaverItemInvalid>();
     context.beatsaverKeyToHashIndex = new Map<string, string>();
+    context.beatsaverCacheUpdated = new Date();
   },
 };
 
 const actions = {
   async loadBeatmapsAsCache(context: ActionContext<any, any>) {
+    // 未使用
     if (!fs.existsSync(CACHE_FILES_DIR)) {
       console.log(`no cache directory.`);
       return;
@@ -194,6 +178,7 @@ const actions = {
         );
       }
     }
+    context.state.beatsaverCacheUpdated = new Date();
   },
 };
 export default {

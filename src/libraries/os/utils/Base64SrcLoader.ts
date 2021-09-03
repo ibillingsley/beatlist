@@ -29,6 +29,9 @@ export default class Base64SrcLoader {
   }
 
   public static GetRawSrc(base64src: string): string {
+    if (base64src.startsWith("base64,")) {
+      return base64src.replace(/^base64,/, "");
+    }
     return base64src.replace(/^(data:.*;base64,)/, "");
   }
 }

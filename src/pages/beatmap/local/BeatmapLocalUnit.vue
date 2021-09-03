@@ -30,9 +30,27 @@ export default Vue.extend({
   data: () => ({
     beatmap: undefined as BeatsaverBeatmap | undefined,
   }),
+  computed: {
+    cacheLastUpdated() {
+      // console.log(`[BeatmapLocalUnit] computed: cacheLastUpdated`);
+      return BeatsaverCachedLibrary.GetCacheLastUpdated();
+    },
+  },
   watch: {
     $route() {
-      if (this.$route.name === route.BEATMAPS_LOCAL_UNIT) {
+      if (
+        this.$route.name === route.BEATMAPS_LOCAL_UNIT ||
+        this.$route.name === route.BEATMAPS_ONLINE_UNIT
+      ) {
+        this.fetchData();
+      }
+    },
+    cacheLastUpdated() {
+      // console.log(`[BeatmapLocalUnit] watch: cacheLastUpdated`);
+      if (
+        this.$route.name === route.BEATMAPS_LOCAL_UNIT ||
+        this.$route.name === route.BEATMAPS_ONLINE_UNIT
+      ) {
         this.fetchData();
       }
     },
@@ -42,7 +60,17 @@ export default Vue.extend({
   },
   methods: {
     fetchData(): void {
+      // Saved Beatmaps 画面では /beatmaps/local/:hash
+      // My Playlists 画面では /beatmaps/online/:hash で呼ばれる。
+      // -> v1.2.6 で My Playlists 画面からは呼ばれないようにしたが念のため条件は残しておく。
       this.beatmap = undefined;
+      if (
+        (this.$route.name !== route.BEATMAPS_LOCAL_UNIT &&
+          this.$route.name !== route.BEATMAPS_ONLINE_UNIT) ||
+        this.$route.params.hash == null
+      ) {
+        return;
+      }
       this.beatmap = BeatsaverCachedLibrary.GetByHash(
         this.$route.params.hash
       )?.beatmap;

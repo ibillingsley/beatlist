@@ -13,7 +13,8 @@
       :items-per-page.sync="itemsPerPage"
       :selected.sync="selectedBeatmap"
       :search="search"
-      :see-more-route-name="seeMoreRouteName"
+      :in-playlist="true"
+      @openInformation="openInformation"
     >
       <template #actions="{ beatsaver }">
         <BeatmapDownloadButton :beatmap="beatsaver" small />
@@ -33,6 +34,11 @@
       bulk-copy-bsr
       @onDone="selectedBeatmap = []"
     />
+    <BeatmapOnlineUnitDialog
+      :v-if="showDialog"
+      :open.sync="showDialog"
+      :maphash="targetHash"
+    />
   </div>
 </template>
 
@@ -48,8 +54,10 @@ import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTa
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
 import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
-import route from "@/plugins/route/route";
+// import route from "@/plugins/route/route";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
+import BeatmapOnlineUnitDialog from "@/components/dialogs/BeatmapOnlineUnitDialog.vue";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapList",
@@ -59,6 +67,7 @@ export default Vue.extend({
     BeatmapsTableBulkActions,
     PlaylistButtonRemoveFromPlaylist,
     BeatmapDownloadButton,
+    BeatmapOnlineUnitDialog,
     BeatmapButtonCopyBsr,
   },
   props: {
@@ -68,6 +77,8 @@ export default Vue.extend({
     selectedBeatmap: [] as BeatsaverBeatmap[],
     search: "",
     beatmaps: [] as BeatmapsTableDataUnit[],
+    targetHash: "",
+    showDialog: false,
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -79,10 +90,16 @@ export default Vue.extend({
     // beatmaps() {
     //   return PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(this.playlist);
     // },
-    seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+    // seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+    cacheLastUpdated() {
+      return BeatsaverCachedLibrary.GetCacheLastUpdated();
+    },
   },
   watch: {
     async playlist() {
+      this.fetchData();
+    },
+    cacheLastUpdated() {
       this.fetchData();
     },
   },
@@ -94,6 +111,10 @@ export default Vue.extend({
       this.beatmaps = await PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(
         this.playlist
       );
+    },
+    openInformation(hash: string) {
+      this.showDialog = true;
+      this.targetHash = hash;
     },
   },
 });

@@ -2,7 +2,8 @@ import crypto from "crypto";
 import {
   PlaylistBase,
   PlaylistLocal,
-  PlaylistMap,
+  PlaylistLocalMap,
+  // PlaylistMap,
   PlaylistRaw,
 } from "@/libraries/playlist/PlaylistLocal";
 import Progress from "@/libraries/common/Progress";
@@ -28,15 +29,23 @@ export default class PlaylistLoader {
     try {
       progress = progress ?? new Progress();
 
-      const format = PlaylistFilenameExtension.detectType(filepath);
-      const playlist = (await this.GetPlaylistBase(
-        filepath,
+      // const format = PlaylistFilenameExtension.detectType(filepath);
+      const playlistRaw = await this.GetPlaylistAsRaw(filepath);
+      const hash = this.computeHashOfRaw(playlistRaw, filepath);
+
+      const playlist = await this.ConvertRawToPlaylistLocal(
+        playlistRaw,
+        hash,
         progress
-      )) as PlaylistLocal;
-      playlist.loadState = { valid: true, format };
-      playlist.path = filepath;
-      playlist.hash = this.computeHash(playlist, filepath);
-      playlist.format = format;
+      );
+      // const playlist = (await this.GetPlaylistBase(
+      //   filepath,
+      //   progress
+      // )) as PlaylistLocal;
+      // playlist.loadState = { valid: true, format };
+      // playlist.path = filepath;
+      // playlist.hash = this.computeHash(playlist, filepath);
+      // playlist.format = format;
 
       return playlist;
     } catch (e) {
@@ -47,7 +56,7 @@ export default class PlaylistLoader {
   public static async LoadRaw(
     filepath: string,
     progress?: Progress
-  ): Promise<PlaylistRaw> {
+  ): Promise<PlaylistRaw | PlaylistLocal> {
     try {
       progress = progress ?? new Progress();
 
@@ -127,6 +136,7 @@ export default class PlaylistLoader {
       });
   }
 
+  /*
   private static async GetPlaylistBase(
     filepath: string,
     progress?: Progress
@@ -147,6 +157,7 @@ export default class PlaylistLoader {
 
     return deserializer.deserialize(progress);
   }
+  */
 
   private static async GetPlaylistAsRaw(
     filepath: string
@@ -196,7 +207,8 @@ export default class PlaylistLoader {
     }
   }
 
-  public static computeHash(playlist: PlaylistBase, filepath: string): string {
+  /*
+  private static computeHash(playlist: PlaylistBase, filepath: string): string {
     const safeEmptyPlaylist = {} as PlaylistBase;
     safeEmptyPlaylist.title = playlist.title;
     safeEmptyPlaylist.author = playlist.author;
@@ -213,6 +225,50 @@ export default class PlaylistLoader {
       .update(JSON.stringify(safeEmptyPlaylist) + filepath.toLowerCase())
       .digest("hex")
       .substr(0, 5);
+  }
+  */
+
+  public static computeHashOfRaw(
+    playlist: PlaylistRaw,
+    filepath: string
+  ): string {
+    const safeEmptyPlaylist = {} as PlaylistRaw;
+    safeEmptyPlaylist.title = playlist.title;
+    safeEmptyPlaylist.author = playlist.author;
+    safeEmptyPlaylist.description = playlist.description;
+    safeEmptyPlaylist.cover = playlist.cover;
+    safeEmptyPlaylist.songs = playlist.songs;
+
+    return crypto
+      .createHash("sha1")
+      .update(JSON.stringify(safeEmptyPlaylist) + filepath.toLowerCase())
+      .digest("hex")
+      .substr(0, 5);
+  }
+
+  public static async ConvertRawToPlaylistLocal(
+    playlistRaw: PlaylistRaw,
+    hash: string,
+    progress: Progress
+  ): Promise<PlaylistLocal> {
+    let playlistLocalMap: PlaylistLocalMap[] = [];
+    if (playlistRaw.songs != null) {
+      playlistLocalMap = await JsonDeserializer.convertToHash(
+        playlistRaw.songs,
+        progress
+      );
+    }
+    return {
+      title: playlistRaw.title,
+      author: playlistRaw.author,
+      description: playlistRaw.description,
+      cover: playlistRaw.cover,
+      maps: playlistLocalMap,
+      loadState: { valid: true, format: playlistRaw.format },
+      path: playlistRaw.path,
+      hash,
+      format: playlistRaw.format,
+    };
   }
 
   private static buildEmptyPlaylist(

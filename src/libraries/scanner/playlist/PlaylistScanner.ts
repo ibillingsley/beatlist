@@ -1,7 +1,8 @@
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 import {
-  PlaylistBase,
+  isPlaylistLocal,
+  // PlaylistBase,
   PlaylistLocal,
   PlaylistRaw,
 } from "@/libraries/playlist/PlaylistLocal";
@@ -12,7 +13,7 @@ import PlaylistScannerResult from "@/libraries/scanner/playlist/PlaylistScannerR
 import { ScannerInterface } from "@/libraries/scanner/ScannerInterface";
 import ScannerLocker from "@/libraries/scanner/ScannerLocker";
 import Progress from "@/libraries/common/Progress";
-import JsonDeserializer from "@/libraries/playlist/loader/deserializer/JsonDeserializer";
+// import JsonDeserializer from "@/libraries/playlist/loader/deserializer/JsonDeserializer";
 
 export default class PlaylistScanner
   implements ScannerInterface<PlaylistLocal> {
@@ -25,21 +26,42 @@ export default class PlaylistScanner
       const diff = await PlaylistScanner.GetTheDifferenceInPath();
 
       // 追加された playlist の内容を(ほぼ)そのまま取得
-      const playlistRaws: { playlist: PlaylistRaw; progress: Progress }[] = [];
+      const playlistRaws: {
+        playlist: PlaylistRaw;
+        hash: string;
+        progress: Progress;
+      }[] = [];
       for (const added of diff.added) {
         const progress = progressGroup.getNewOne();
         // eslint-disable-next-line no-await-in-loop
         const playlist = await PlaylistLoader.LoadRaw(added, progress);
-        playlistRaws.push({ playlist, progress });
+
+        if (isPlaylistLocal(playlist)) {
+          // PlaylistLoader.LoadRaw() で PlaylistLocal が返されるのはエラー時のみ。
+          // 不正な playlist は変換を行わない。
+          PlaylistLibrary.AddPlaylist(playlist);
+          this.result.newItems.push(playlist);
+        } else {
+          const hash = PlaylistLoader.computeHashOfRaw(playlist, added);
+
+          playlistRaws.push({ playlist, hash, progress });
+        }
       }
       // 追加された playlist の songs の key/hash から曲情報を取得し maps に格納
       // ※beatsaver.com へのアクセスを伴うので Rate Limit を避けるためひとつずつ実施
       for (const playlistData of playlistRaws) {
         const playlistRaw = playlistData.playlist;
-        const { progress } = playlistData;
+        const { hash, progress } = playlistData;
 
         if (playlistRaw.songs != null) {
           // eslint-disable-next-line no-await-in-loop
+          const playlistLocal = await PlaylistLoader.ConvertRawToPlaylistLocal(
+            playlistRaw,
+            hash,
+            progress
+          );
+          this.result.newItems.push(playlistLocal);
+          /*
           const playlistLocalMap = await JsonDeserializer.convertToHash(
             playlistRaw.songs,
             progress
@@ -66,6 +88,7 @@ export default class PlaylistScanner
             hash,
             format: playlistRaw.format,
           });
+          */
         }
       }
       /*
@@ -137,7 +160,98 @@ export default class PlaylistScanner
   private async checkForChange(
     paths: string[],
     progress: ProgressGroup
-  ): Promise<void[]> {
+  ): Promise<void> {
+    // 基本1000個も playlist はない想定
+    let playlistRaws: {
+      playlist: PlaylistRaw | PlaylistLocal;
+      hash: string;
+      progress: Progress;
+    }[] = [];
+
+    const promiseResults: Promise<any>[] = [];
+    for (const path of paths) {
+      promiseResults.push(
+        new Promise((resolve) => {
+          PlaylistLoader.LoadRaw(path)
+            .then((newPlaylist) => {
+              const fileHash = PlaylistLoader.computeHashOfRaw(
+                newPlaylist,
+                path
+              );
+              if (isPlaylistLocal(newPlaylist)) {
+                // PlaylistLoader.LoadRaw() で PlaylistLocal が返されるのはエラー時のみ。
+                // 不正な playlist は変換を行わない。
+                console.log(`invalid json: ${newPlaylist.path}`);
+                resolve({
+                  playlist: newPlaylist,
+                  hash: fileHash,
+                  progress: progress.getNewOne(),
+                });
+                return;
+              }
+              const libHash = PlaylistLibrary.GetByPath(path)?.hash;
+              if (fileHash !== libHash || fileHash === undefined) {
+                if (fileHash === undefined && libHash === undefined) {
+                  resolve(null); // we got nothing new, so that's not an update
+                  return;
+                }
+                resolve({
+                  playlist: newPlaylist,
+                  hash: fileHash,
+                  progress: progress.getNewOne(),
+                });
+                return;
+              }
+              resolve(null);
+            })
+            .catch((error) => {
+              // 原則としてエラーにはならない。
+              console.error(error);
+              resolve(null);
+            });
+        })
+      );
+    }
+    playlistRaws = await Promise.all(promiseResults);
+    playlistRaws = playlistRaws.filter((item) => item != null);
+
+    // 追加された playlist の songs の key/hash から曲情報を取得し maps に格納
+    // ※beatsaver.com へのアクセスを伴うので Rate Limit を避けるためひとつずつ実施
+    for (const playlistData of playlistRaws) {
+      const playlistRaw = playlistData.playlist;
+      const { hash } = playlistData;
+      const playlistProgress = playlistData.progress;
+
+      const oldPlaylist = PlaylistLibrary.GetByPath(playlistRaw.path ?? ""); // 実際は空文字になることはない
+      if (isPlaylistLocal(playlistRaw)) {
+        // PlaylistLoader.LoadRaw() で PlaylistLocal が返されるのはエラー時のみ。
+        console.log(`invalid json: ${playlistRaw.path}`);
+        if (oldPlaylist) {
+          PlaylistLibrary.ReplacePlaylist(oldPlaylist, playlistRaw);
+        } else {
+          PlaylistLibrary.AddPlaylist(playlistRaw);
+        }
+        this.result.updatedItems += 1;
+        return;
+      }
+      if (playlistRaw.songs != null) {
+        // eslint-disable-next-line no-await-in-loop
+        const newPlaylist = await PlaylistLoader.ConvertRawToPlaylistLocal(
+          playlistRaw,
+          hash,
+          playlistProgress
+        );
+
+        if (oldPlaylist) {
+          PlaylistLibrary.ReplacePlaylist(oldPlaylist, newPlaylist);
+        } else {
+          PlaylistLibrary.AddPlaylist(newPlaylist);
+        }
+
+        this.result.updatedItems += 1;
+      }
+    }
+    /*
     return Promise.all(
       paths.map(async (path: string) => {
         const newPlaylist = await PlaylistLoader.Load(
@@ -164,5 +278,6 @@ export default class PlaylistScanner
         }
       })
     );
+    */
   }
 }

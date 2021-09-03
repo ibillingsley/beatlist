@@ -13,7 +13,15 @@ const vuexLocalCachedData = new VuexPersistence<StoreState>({
   asyncStorage: true,
   strictMode: true,
   reducer: (state) => ({
-    beatmap: state.beatmap,
+    // beatmap: state.beatmap,
+    beatmap: {
+      lastScan: state.beatmap.lastScan,
+      beatmaps: state.beatmap.beatmaps,
+      beatsaverCached: state.beatmap.beatsaverCached,
+      beatsaverFailCached: state.beatmap.beatsaverFailCached,
+      beatsaverKeyToHashIndex: state.beatmap.beatsaverKeyToHashIndex,
+      // beatsaverCacheUpdated は除外
+    },
     playlist: state.playlist,
   }),
 });

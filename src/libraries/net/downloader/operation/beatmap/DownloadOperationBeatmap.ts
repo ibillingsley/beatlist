@@ -9,6 +9,7 @@ import {
   DownloadOperationTypeBeatmap,
 } from "@/libraries/net/downloader/operation/DownloadOperation";
 import DownloadUnit from "@/libraries/net/downloader/DownloadUnit";
+import Utilities from "@/libraries/helper/Utilities";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatsaverUtilities from "@/libraries/net/beatsaver/BeatsaverUtilities";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
@@ -22,8 +23,6 @@ import {
 } from "@/libraries/net/downloader/DownloadUnitProgress";
 
 const ON_COMPLETED: string = "completed";
-const sleep = (msec: number) =>
-  new Promise((resolve) => setTimeout(resolve, msec));
 
 export default class DownloadOperationBeatmap
   implements DownloadOperationBase, DownloadOperationTypeBeatmap {
@@ -83,7 +82,7 @@ export default class DownloadOperationBeatmap
 
           try {
             stream.close(); // 明示的に閉じる
-            await sleep(1000); // 少し待機しないとエラーになる
+            await Utilities.sleep(1000); // 少し待機しないとエラーになる
             const extractResult = await this.handleExtraction(zipPath);
             if (extractResult) {
               this.onSuccess();

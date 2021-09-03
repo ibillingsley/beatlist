@@ -36,7 +36,7 @@ import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/Beatmap
 import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
 import route from "@/plugins/route/route";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
-// import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import { BeatmapsTableDataUnit } from "./core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
@@ -61,11 +61,13 @@ export default Vue.extend({
       "settings/beatmapsTable@localBeatmaps.itemsPerPage"
     ),
     storedMaps(): BeatmapLocal[] {
+      // console.log(`[BeatmapsTableLocal] computed: storedMap called`);
       return BeatmapLibrary.GetAllMaps();
     },
-    // cacheLastUpdated() {
-    //   return BeatsaverCachedLibrary.GetCacheLastUpdated();
-    // },
+    cacheLastUpdated() {
+      // console.log(`[BeatmapsTableLocal] computed: cacheLastUpdated called`);
+      return BeatsaverCachedLibrary.GetCacheLastUpdated();
+    },
     // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
     seeMoreRouteName: () => route.BEATMAPS_LOCAL_UNIT,
   },
@@ -74,17 +76,20 @@ export default Vue.extend({
       this.page = 1;
     },
     storedMaps() {
+      // console.log(`[BeatmapsTableLocal] watch: storedMaps called`);
       this.fetchData();
     },
-    // cacheLastUpdated() {
-    //   this.fetchData();
-    // },
+    cacheLastUpdated() {
+      // console.log(`[BeatmapsTableLocal] watch: cacheLastUpdated called`);
+      this.fetchData();
+    },
   },
   mounted(): void {
     this.fetchData();
   },
   methods: {
     async fetchData(): Promise<void> {
+      // console.log(`[BeatmapsTableLocal] fetchData called`);
       this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
     },
   },

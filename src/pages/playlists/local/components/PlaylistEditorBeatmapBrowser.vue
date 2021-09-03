@@ -13,7 +13,8 @@
       :items-per-page.sync="itemsPerPage"
       :selected.sync="selectedBeatmap"
       :search="search"
-      :see-more-route-name="seeMoreRouteName"
+      :in-playlist="true"
+      @openInformation="openInformation"
     >
       <template #actions="{ beatsaver }">
         <PlaylistButtonAddToPlaylist
@@ -29,6 +30,11 @@
       bulk-add
       @onDone="selectedBeatmap = []"
     />
+    <BeatmapOnlineUnitDialog
+      :v-if="showDialog"
+      :open.sync="showDialog"
+      :maphash="targetHash"
+    />
   </div>
 </template>
 
@@ -42,8 +48,10 @@ import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
-import route from "@/plugins/route/route";
+// import route from "@/plugins/route/route";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
+import BeatmapOnlineUnitDialog from "@/components/dialogs/BeatmapOnlineUnitDialog.vue";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapBrowser",
@@ -52,6 +60,7 @@ export default Vue.extend({
     BeatmapsTable,
     PlaylistButtonAddToPlaylist,
     BeatmapsTableBulkActions,
+    BeatmapOnlineUnitDialog,
   },
   props: {
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
@@ -60,6 +69,8 @@ export default Vue.extend({
     selectedBeatmap: [] as BeatsaverBeatmap[],
     search: "",
     beatmaps: [] as BeatmapsTableDataUnit[],
+    targetHash: "",
+    showDialog: false,
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -69,7 +80,15 @@ export default Vue.extend({
       "settings/beatmapsTable@playlistBrowser.itemsPerPage"
     ),
     // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
-    seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+    // seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+    cacheLastUpdated() {
+      return BeatsaverCachedLibrary.GetCacheLastUpdated();
+    },
+  },
+  watch: {
+    cacheLastUpdated() {
+      this.fetchData();
+    },
   },
   // ここでは watch playlist は今のところ必要ないと思われる
   mounted(): void {
@@ -79,6 +98,10 @@ export default Vue.extend({
     async fetchData(): Promise<void> {
       // TODO playlist.maps に含まれている譜面は除外すべき？
       this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+    },
+    openInformation(hash: string) {
+      this.showDialog = true;
+      this.targetHash = hash;
     },
   },
 });
