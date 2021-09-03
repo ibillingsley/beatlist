@@ -1,21 +1,30 @@
 # Changelog
 
-## v1.2.6 (NOT RELEASED)
+## v1.2.6 (04/09/2021)
 **Features:**
  - Support the new beatsaver api.
+ - Add [Copy BSR] button.
+
+**Improvement:**
  - Changed to load beatsaver.com data as of August 2021 as a cache when executing [CLEAR CACHE] & [UPDATE LIBRARY] in the Settings screen.
+ - When the [UPDATE LIBRARY] button is pressed, songs that could not be retrieved are now retrieved again.
+   - exclude 404 error.
+ - Improved the processing speed when editing a playlist in the My Playlists screen.
 
 **Bug fixes:**
  - Fixed a problem that the songs deleted from beatsaver.com are not displayed in playlist even if they exist in the CustomLevels directory.
- - Fixed a bug that caused memory usage to increase when executing [UPDATE LIBRARY].
  - Fixed a bug that may use a large amount of memory when executing [UPDATE LIBRARY] in the Settings screen.
  - Fixed a problem where a zip file downloaded from beatsaver.com would remain locked, resulting in a "`Couldn't extract beatmap. [undefined]: undefined`" error.
  - Fixed a problem where zip files downloaded from beatsaver.com would sometime remain under `%APPDATA%\..\Local\Temp`.
- 
+ - Fixed a bug that caused an error when closing a dialog with the ESC key.
+ - Fixed a bug that the cover images of some playlists could not be loaded.
+ - etc.
+
 **Others:**
  - DiscordRichPresense disabled by default.
  - Changed the Home screen to show the change history in Japanese if the browser language is Japanese.
  - Batch downloads in the My Playlists screen are being disabled.
+ - Added [Refresh the Data] button to the [Saved Beatmaps] screen.
 
 <br>
 

@@ -1,5 +1,27 @@
 # Changelog
 
+**ATTENTION:**
+- beatlist に自動アップデート機能はありませんので、最新版は上記 github アイコンをクリックして Release ページからダウンロードしてください。
+- v1.2.6-beta～beta3 からアップグレードされる場合は、最新バージョンをインストールしたあとに [Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
+
+<br>
+
+---
+
+## v1.2.6 (2021/09/04)
+**Improvement:**
+- [My Playlists]画面でプレイリストを編集した時の処理速度を改善。
+  - 高速化の都合上、playlist 編集画面からは Beatmap Information 画面をダイアログ形式で開くように変更。
+
+**Features:**
+- [Copy BSR]ボタン追加。
+  - ただし beatsaver.com から削除された曲の値は取得できません。
+
+**Bug fixes:**
+- [Beatmap Information]画面の[Refresh the data]ボタンを押しても最新情報が画面に反映されないのを修正。
+- playlist のカバー画像を読み込めないことがあるのを修正。
+
+
 ## v1.2.6-beta4 (2021/08/29)
 **ATTENTION:**
 - すいません。以前 v1.2.6-beta～beta3 をインストールしたかたは、このバージョンをインストールしたあとに [Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
