@@ -46,6 +46,14 @@ const mutations = {
   addBeatmap(context: BeatmapStoreState, payload: { beatmap: BeatmapLocal }) {
     context.beatmaps.push(payload.beatmap);
   },
+  addBeatmaps(
+    context: BeatmapStoreState,
+    payload: { beatmaps: BeatmapLocal[] }
+  ) {
+    for (const beatmap of payload.beatmaps) {
+      context.beatmaps.push(beatmap);
+    }
+  },
   removeBeatmap(
     context: BeatmapStoreState,
     payload: { beatmap: BeatmapLocal }

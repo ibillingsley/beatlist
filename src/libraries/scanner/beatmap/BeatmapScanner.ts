@@ -7,11 +7,17 @@ import { ScannerInterface } from "@/libraries/scanner/ScannerInterface";
 import ScannerLocker from "@/libraries/scanner/ScannerLocker";
 import BeatsaverCacheManager from "@/libraries/beatmap/repo/BeatsaverCacheManager";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
-import { BeatsaverKeyType } from "@/libraries/beatmap/repo/BeatsaverKeyType";
-import { BeatsaverItemInvalid } from "@/libraries/beatmap/repo/BeatsaverItem";
-import { BeatmapLocal } from "../../beatmap/BeatmapLocal";
-import BeatmapLoader from "../../beatmap/BeatmapLoader";
-import BeatmapLibrary from "../../beatmap/BeatmapLibrary";
+import {
+  BeatsaverKey,
+  BeatsaverKeyType,
+} from "@/libraries/beatmap/repo/BeatsaverKeyType";
+import {
+  BeatsaverItem,
+  BeatsaverItemInvalid,
+} from "@/libraries/beatmap/repo/BeatsaverItem";
+import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
+import BeatmapLoader from "@/libraries/beatmap/BeatmapLoader";
+import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 
 export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
   public result: BeatmapScannerResult = new BeatmapScannerResult();
@@ -36,6 +42,7 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
       // 追加された曲
       this.result.newItems = [];
       const notCached: string[] = [];
+      let addedBeatmapList: BeatmapLocal[] = [];
       // Scan added beatmaps under the CustomLevels directory
       for (let i = 0; i < diff.added.length; i += 25) {
         const addedPaths = diff.added.slice(i, i + 25);
@@ -44,8 +51,14 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
         );
         // eslint-disable-next-line no-await-in-loop
         const addedBeatmaps = await Promise.all(addedBeatmapPromise); // 最大25件分、非同期で実行し完了を待機
+        addedBeatmapList = addedBeatmapList.concat(addedBeatmaps);
+        if (addedBeatmapList.length >= 1000) {
+          // store への登録は 1000件単位
+          BeatmapLibrary.AddBeatmaps(addedBeatmapList);
+          addedBeatmapList = [];
+        }
         for (const beatmap of addedBeatmaps) {
-          BeatmapLibrary.AddBeatmap(beatmap);
+          // BeatmapLibrary.AddBeatmap(beatmap);
           if (!beatmap.loadState.valid || beatmap.hash == null) {
             // 読み込めなかった or HASHが計算できなかった beatmapLocal は beatsaver API を呼ばないのでカウントアップ
             progress.plusOne();
@@ -65,23 +78,36 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
         }
         this.result.newItems = this.result.newItems.concat(addedBeatmaps);
       }
+      if (addedBeatmapList.length > 0) {
+        BeatmapLibrary.AddBeatmaps(addedBeatmapList);
+        addedBeatmapList = [];
+      }
       // Get an information of not cached beatmaps from beatsaver.com in order.
       console.log(
         `not cached: ${notCached.length} item(s). retry target: ${retryTargetItems.length} item(s).`
       );
-      // TODO ひとつずつ登録するのではなく、ある程度まとめて登録すべし。
+      const notCachedItems: {
+        key: BeatsaverKey;
+        item: BeatsaverItem;
+      }[] = [];
       for (const hash of notCached.concat(
         retryTargetItems.map((value) =>
           value.loadState.attemptedSource.value.toUpperCase()
         )
       )) {
-        // eslint-disable-next-line no-await-in-loop
-        await BeatsaverCacheManager.forceGetCacheBeatmap({
+        const beatsaverKey: BeatsaverKey = {
           type: BeatsaverKeyType.Hash,
           value: hash,
-        });
+        };
+        // eslint-disable-next-line no-await-in-loop
+        const item = await BeatsaverCacheManager.forceGetCacheBeatmap(
+          beatsaverKey,
+          true
+        );
+        notCachedItems.push({ key: beatsaverKey, item });
         progress.plusOne();
       }
+      BeatsaverCachedLibrary.AddAll(notCachedItems);
       //   // エラーが発生した場合の考慮が足りない？
       //   this.result.newItems = await Throttle.all(
       //     diff.added.map((path: string) => () =>

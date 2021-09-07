@@ -205,6 +205,10 @@ export default class BeatmapLibrary {
     store.commit("beatmap/addBeatmap", { beatmap });
   }
 
+  public static AddBeatmaps(beatmaps: BeatmapLocal[]) {
+    store.commit("beatmap/addBeatmaps", { beatmaps });
+  }
+
   public static RemoveBeatmap(beatmap: BeatmapLocal) {
     store.commit("beatmap/removeBeatmap", { beatmap });
   }
