@@ -24,13 +24,14 @@ import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
 export default class PlaylistLoader {
   public static async Load(
     filepath: string,
-    progress?: Progress
+    progress?: Progress,
+    withImageType = false
   ): Promise<PlaylistLocal> {
     try {
       progress = progress ?? new Progress();
 
       // const format = PlaylistFilenameExtension.detectType(filepath);
-      const playlistRaw = await this.GetPlaylistAsRaw(filepath);
+      const playlistRaw = await this.GetPlaylistAsRaw(filepath, withImageType);
       const hash = this.computeHashOfRaw(playlistRaw, filepath);
 
       const playlist = await this.ConvertRawToPlaylistLocal(
@@ -160,14 +161,15 @@ export default class PlaylistLoader {
   */
 
   private static async GetPlaylistAsRaw(
-    filepath: string
+    filepath: string,
+    withImageType = false
   ): Promise<PlaylistRaw> {
     let deserializer: PlaylistDeserializer;
     const format = PlaylistFilenameExtension.detectType(filepath);
 
     switch (format) {
       case PlaylistFormatType.Json:
-        deserializer = new JsonDeserializer(filepath);
+        deserializer = new JsonDeserializer(filepath, withImageType);
         break;
 
       case PlaylistFormatType.Blist:
@@ -263,6 +265,7 @@ export default class PlaylistLoader {
       author: playlistRaw.author,
       description: playlistRaw.description,
       cover: playlistRaw.cover,
+      coverImageType: playlistRaw.coverImageType,
       maps: playlistLocalMap,
       loadState: { valid: true, format: playlistRaw.format },
       path: playlistRaw.path,

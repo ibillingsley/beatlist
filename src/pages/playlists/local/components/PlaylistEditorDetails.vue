@@ -173,6 +173,13 @@ export default Vue.extend({
       );
     },
   },
+  activated() {
+    this.LoadCover();
+    this.playlistTitle = this.playlist.title;
+    this.playlistAuthor = this.playlist.author;
+    this.playlistDescription = this.playlist.description ?? "";
+    this.playlistFormat = this.playlist.format;
+  },
   mounted(): void {
     this.LoadCover();
     this.playlistTitle = this.playlist.title;
@@ -184,13 +191,17 @@ export default Vue.extend({
     async LoadCover() {
       this.imageChanged = false;
       let { cover } = this.playlist;
+      const { coverImageType } = this.playlist;
 
       if (!cover && this.playlist.path) {
         cover = await PlaylistLoader.LoadCover(this.playlist.path);
       }
 
       if (cover) {
-        this.imageData = Base64SrcLoader.FromBuffer(cover, "png");
+        this.imageData = Base64SrcLoader.FromBuffer(
+          cover,
+          coverImageType ?? "png"
+        );
       } else {
         this.imageData = "";
       }

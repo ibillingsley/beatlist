@@ -4,8 +4,11 @@ import Progress from "@/libraries/common/Progress";
 export default abstract class PlaylistDeserializer {
   protected filepath: string;
 
-  public constructor(filepath: string) {
+  protected withImageType: boolean;
+
+  public constructor(filepath: string, withImageType = false) {
     this.filepath = filepath;
+    this.withImageType = withImageType;
   }
 
   // public abstract deserialize(progress?: Progress): Promise<PlaylistBase>;

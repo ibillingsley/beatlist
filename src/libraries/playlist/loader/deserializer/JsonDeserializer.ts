@@ -61,17 +61,32 @@ export default class JsonDeserializer extends PlaylistDeserializer {
     const rawJson = await fs.readFile(this.filepath);
 
     try {
-      const json = JSON.parse(rawJson.toString());
+      let jsonText = rawJson.toString();
+      if (jsonText.length > 0 && jsonText.charCodeAt(0) === 0xfeff) {
+        // BOM付きの場合は先頭のBOMを除外
+        jsonText = jsonText.substring(1);
+      }
+      const json = JSON.parse(jsonText);
       JsonDeserializer.validateJson(json);
 
+      let coverImageType: string | undefined;
+      if (json.image != null) {
+        const match = json.image.match(/^data:image\/(.*);base64,/);
+        if (match != null && match.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          coverImageType = match[1];
+        }
+      }
+      const cover = Buffer.from(
+        Base64SrcLoader.GetRawSrc(json.image ?? ""),
+        "base64"
+      );
       return {
         title: json.playlistTitle,
         author: json.playlistAuthor ?? "",
         description: json.playlistDescription ?? "",
-        cover: Buffer.from(
-          Base64SrcLoader.GetRawSrc(json.image ?? ""),
-          "base64"
-        ),
+        cover,
+        coverImageType,
         songs: json.songs ?? [],
         path: this.filepath,
         format: PlaylistFormatType.Json,

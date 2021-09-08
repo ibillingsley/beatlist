@@ -15,7 +15,10 @@ export default class JsonSerializer extends PlaylistSerializer {
       playlistAuthor: playlist.author,
       playlistDescription: playlist.description,
       image: playlist.cover
-        ? Base64SrcLoader.FromBuffer(playlist.cover, "png")
+        ? Base64SrcLoader.FromBuffer(
+            playlist.cover,
+            playlist.coverImageType ?? "png"
+          )
         : "",
       songs: playlist.maps.map((beatmap: PlaylistMap) => ({
         hash: beatmap.hash,

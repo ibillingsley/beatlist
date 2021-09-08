@@ -25,7 +25,7 @@ export default class PlaylistFetcher {
 
     await this.download(url, fs.createWriteStream(tmpFile));
 
-    const playlist = await PlaylistLoader.Load(tmpFile, progress);
+    const playlist = await PlaylistLoader.Load(tmpFile, progress, true);
 
     await fs.unlink(tmpFile);
 

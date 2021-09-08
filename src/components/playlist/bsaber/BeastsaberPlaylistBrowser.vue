@@ -50,6 +50,7 @@ import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import NotificationService, {
   NOTIFICATION_ICON_SUCCESS,
 } from "@/libraries/notification/NotificationService";
+import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
 
 export default Vue.extend({
   name: "BeastsaberPlaylistBrowser",
@@ -126,9 +127,11 @@ export default Vue.extend({
         return;
       }
 
-      const filename = this.currentPlaylistBeast.playlistTitle
+      let filename = this.currentPlaylistBeast.playlistTitle
         .replace(/[\s]/g, "-")
         .replace(/[^a-zA-Z0-9-]*/g, "");
+      // PlaylistLocal 画面で編集した時のファイル名に合わせる
+      filename = PlaylistFilename.computeFilenameFor(filename);
 
       this.loadingPlaylistInstall = true;
       PlaylistInstaller.Install(

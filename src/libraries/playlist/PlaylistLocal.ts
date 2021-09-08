@@ -7,6 +7,7 @@ export interface PlaylistBase {
   author: string;
   description: string | null;
   cover: Buffer | null;
+  coverImageType?: string; // png か jpeg
   maps: PlaylistMap[];
 }
 
@@ -15,6 +16,7 @@ export interface PlaylistRaw {
   author: string;
   description: string | null;
   cover: Buffer | null;
+  coverImageType?: string; // png か jpeg
   songs?: { hash: string | undefined; key: string | undefined }[];
   maps?: PlaylistMap[];
   path: string | undefined;
