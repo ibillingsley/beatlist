@@ -8,6 +8,21 @@
 
 ---
 
+## v1.2.7 (2021/09/08)
+**Improvement:**
+- CustomLevels ディレクトリ以下のファイルの読み込み速度を改善。
+
+**Bug fixes:**
+- CustomLevels 以下に数千件データがある場合、初回起動時または[CLEAR CACHE]後の[UPDATE LIBRARY]でメモリ使用量が急増する不具合を修正。
+- BOM付きの playlist ファイルを読み込めない不具合を修正。
+- playlist の編集画面で、別の playlist を選択しても最初に選択したカバー画像・タイトルなどが表示されたままになる不具合を修正。
+- [Beastsaber Playlists]画面でダウンロードしたばかりの playlist を編集した場合、編集が画面に反映されないことがある不具合を修正。
+  - 初回編集時のみ。v1.2.6 以前でも編集画面を開きなおせばそれ以降は反映されていたと思われます。
+- Beastsaber からダウンロードした playlist のカバー画像が jpeg でも、ダウンロード時に png とみなして保存してしまう不具合を修正。
+  - "cover":"data:image/jpeg;base64,xxxx" を "xxxx" 部分はそのまま "cover":"data:image/png;base64,xxxx" で保存してしまう。
+
+<br>
+
 ## v1.2.6 (2021/09/04)
 **Improvement:**
 - [My Playlists]画面でプレイリストを編集した時の処理速度を改善。
@@ -21,6 +36,7 @@
 - [Beatmap Information]画面の[Refresh the data]ボタンを押しても最新情報が画面に反映されないのを修正。
 - playlist のカバー画像を読み込めないことがあるのを修正。
 
+<br>
 
 ## v1.2.6-beta4 (2021/08/29)
 **ATTENTION:**

@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.2.7 (xx/09/2021)
+**Improvement:**
+ - Improved loading speed for files under the CustomLevels directory.
+
+**Bug fixes:**
+ - Fixed a bug that may use a large amount of memory (Fix again).
+ - Fixed a bug that the playlist with BOM could not be loaded.
+ - Fixed a bug in the playlist edit screen that the first selected cover image, title, etc. is still displayed even if another playlist is selected.
+ - Fixed a bug where editing a newly downloaded playlist from Beastsaber would not be reflected on the screen.
+ - etc.
+
+<br>
+
 ## v1.2.6 (04/09/2021)
 **Features:**
  - Support the new beatsaver api.
