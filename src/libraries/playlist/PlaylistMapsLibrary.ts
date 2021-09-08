@@ -6,6 +6,7 @@ import {
 } from "@/libraries/playlist/PlaylistLocal";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import Logger from "@/libraries/helper/Logger";
 import BeatmapLibrary from "../beatmap/BeatmapLibrary";
 import { BeatmapLocal } from "../beatmap/BeatmapLocal";
 import { BeatsaverBeatmap } from "../net/beatsaver/BeatsaverBeatmap";
@@ -59,20 +60,28 @@ export default class PlaylistMapsLibrary {
       }))
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
     */
+    Logger.debug(`start GetAllValidMapAsTableDataFor`, "PlaylistMapsLibrary");
     const validMaps = playlist.maps.filter((map) => {
       // console.log(map.hash);
       return map.hash !== undefined;
     }) as PlaylistValidMap[];
 
+    Logger.debug(`    start GetAllValidMap`, "PlaylistMapsLibrary");
     const localValidMaps = BeatmapLibrary.GetAllValidMap();
     const result: BeatmapsTableDataUnit[] = [];
     const promiseResults: Promise<{
       local: BeatmapLocal;
       data: BeatsaverBeatmap | undefined;
     }>[] = [];
+    Logger.debug(
+      `    start validMaps loop ${validMaps.length}`,
+      "PlaylistMapsLibrary"
+    );
+    const validCache = BeatsaverCachedLibrary.GetAllValid();
     for (const playlistMap of validMaps) {
       const playlistMapHash = playlistMap.hash.toUpperCase();
-      const mydata = BeatsaverCachedLibrary.GetByHash(playlistMapHash)?.beatmap;
+      // const mydata = BeatsaverCachedLibrary.GetByHash(playlistMapHash)?.beatmap;
+      const mydata = validCache.get(playlistMapHash)?.beatmap;
       if (mydata != null) {
         result.push({
           local: undefined,
@@ -102,7 +111,13 @@ export default class PlaylistMapsLibrary {
         })
       );
     }
+    Logger.debug(
+      `    end   validMaps loop ${validMaps.length}`,
+      "PlaylistMapsLibrary"
+    );
+    Logger.debug(`    start promise.all`, "PlaylistMapsLibrary");
     const resolved = await Promise.all(promiseResults);
+    Logger.debug(`    end   promise.all`, "PlaylistMapsLibrary");
     return result.concat(
       resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
     );

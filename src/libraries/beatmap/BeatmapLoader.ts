@@ -60,7 +60,8 @@ export default class BeatmapLoader {
       console.log(e);
       this.beatmap.loadState.valid = false;
       this.beatmap.loadState.errorType = BeatmapLoadStateError.Unknown;
-      this.beatmap.loadState.errorMessage = e.message;
+      this.beatmap.loadState.errorMessage =
+        typeof e === "string" ? e : (e as any).message;
       return this.beatmap;
     }
   }

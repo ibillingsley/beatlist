@@ -14,6 +14,7 @@
         :search="search"
         :page.sync="page"
         :see-more-route-name="seeMoreRouteName"
+        :loading="loading"
       >
         <template #actions="{ beatsaver }">
           <BeatmapButtonRemoveBeatmap :beatmap="beatsaver" small />
@@ -52,6 +53,7 @@ export default Vue.extend({
     search: "",
     page: 1,
     beatmaps: [] as BeatmapsTableDataUnit[],
+    loading: false,
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -89,8 +91,13 @@ export default Vue.extend({
   },
   methods: {
     async fetchData(): Promise<void> {
-      // console.log(`[BeatmapsTableLocal] fetchData called`);
-      this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+      this.loading = true;
+      try {
+        // console.log(`[BeatmapsTableLocal] fetchData called`);
+        this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

@@ -8,10 +8,14 @@ import {
 } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import Logger from "@/libraries/helper/Logger";
+import Utilities from "@/libraries/helper/Utilities";
 import PlaylistLibrary from "../playlist/PlaylistLibrary";
 import { PlaylistLocal } from "../playlist/PlaylistLocal";
 
 export default class BeatmapLibrary {
+  static generatedBeatmapCache = new Map<string, BeatsaverBeatmap>();
+
   public static GetAllMaps(): BeatmapLocal[] {
     // 純粋に store に保存されている曲のみ返却
     return store.getters["beatmap/beatmaps"] as BeatmapLocal[];
@@ -42,22 +46,50 @@ export default class BeatmapLibrary {
       }))
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
     */
+    Logger.debug(`start GetAllValidBeatmapAsTableData`, "BeatmapLibrary");
 
     const localValidMaps = BeatmapLibrary.GetAllValidMap();
+
+    Logger.debug(
+      `    start localValidMaps loop: ${localValidMaps.length}`,
+      "BeatmapLibrary"
+    );
+
     const result: BeatmapsTableDataUnit[] = [];
     const promiseResults: Promise<{
       local: BeatmapLocal;
       data: BeatsaverBeatmap | undefined;
     }>[] = [];
     // TODO 1000件ずつくらいに分割しないと、Local に 40000件くらいあったら 40000件の promise が作成されてしまう。
+    const validCache = BeatsaverCachedLibrary.GetAllValid();
+    let cnt = 0;
     for (const beatmap of localValidMaps) {
+      cnt += 1;
+      if (cnt > 200) {
+        // イベントループやレンダリングの機会を提供するため sleep
+        // eslint-disable-next-line no-await-in-loop
+        await Utilities.sleep(50);
+        Logger.debug(`    await sleep....`);
+        cnt = 0;
+      }
       let mydata: BeatsaverBeatmap | undefined;
       if (beatmap.hash) {
-        mydata = BeatsaverCachedLibrary.GetByHash(beatmap.hash)?.beatmap;
+        const hash = beatmap.hash.toUpperCase();
+        // mydata = BeatsaverCachedLibrary.GetByHash(hash)?.beatmap;
+        mydata = validCache.get(hash)?.beatmap;
         if (mydata != null) {
           result.push({
             local: undefined,
             data: mydata,
+          });
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        const generatedCache = BeatmapLibrary.generatedBeatmapCache.get(hash);
+        if (generatedCache != null) {
+          result.push({
+            local: beatmap,
+            data: generatedCache,
           });
           // eslint-disable-next-line no-continue
           continue;
@@ -77,7 +109,26 @@ export default class BeatmapLibrary {
         );
       }
     }
-    const resolved = await Promise.all(promiseResults);
+    Logger.debug(
+      `    end   localValidMaps loop: ${localValidMaps.length}`,
+      "BeatmapLibrary"
+    );
+    let resolved: {
+      local: BeatmapLocal;
+      data: BeatsaverBeatmap | undefined;
+    }[] = [];
+    if (promiseResults.length > 0) {
+      Logger.debug(
+        `    start promise.all: ${promiseResults.length}`,
+        "BeatmapLibrary"
+      );
+      resolved = await Promise.all(promiseResults);
+      Logger.debug(
+        `    end   promise.all: ${promiseResults.length}`,
+        "BeatmapLibrary"
+      );
+    }
+    Logger.debug(`end   GetAllValidBeatmapAsTableData`, "BeatmapLibrary");
     return result.concat(
       resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
     );
@@ -106,6 +157,17 @@ export default class BeatmapLibrary {
     if (beatmap?.hash === undefined) {
       return undefined;
     }
+
+    Logger.debug(`start GenerateBeatmap`);
+
+    const hash = beatmap.hash.toUpperCase();
+    const cache = BeatmapLibrary.generatedBeatmapCache.get(hash);
+    if (cache != null) {
+      Logger.debug(`end   GenerateBeatmap (cache hit): ${hash}`);
+      return cache;
+    }
+
+    Logger.debug(`    cache miss: ${hash}`);
     let beatmapDescription;
     try {
       const infoDat = await fs.readFile(`${beatmap.folderPath}/info.dat`);
@@ -174,6 +236,9 @@ export default class BeatmapLibrary {
       downloadURL: "",
       coverURL: "",
     };
+    // const item = await BeatmapGenerator.generate(hash, beatmap.folderPath);
+    BeatmapLibrary.generatedBeatmapCache.set(hash, item);
+    Logger.debug(`end   GenerateBeatmap: ${hash}`);
     return item;
   }
 

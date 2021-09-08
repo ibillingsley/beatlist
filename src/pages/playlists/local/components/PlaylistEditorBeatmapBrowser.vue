@@ -14,6 +14,7 @@
       :selected.sync="selectedBeatmap"
       :search="search"
       :in-playlist="true"
+      :loading="loading"
       @openInformation="openInformation"
     >
       <template #actions="{ beatsaver }">
@@ -41,6 +42,7 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import { sync } from "vuex-pathify";
+import store from "@/plugins/store";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
 import BeatmapsTable from "@/components/beatmap/table/BeatmapsTable.vue";
 import PlaylistButtonAddToPlaylist from "@/components/playlist/button/PlaylistButtonAddToPlaylist.vue";
@@ -52,6 +54,7 @@ import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTa
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatmapOnlineUnitDialog from "@/components/dialogs/BeatmapOnlineUnitDialog.vue";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import Logger from "@/libraries/helper/Logger";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapBrowser",
@@ -71,6 +74,7 @@ export default Vue.extend({
     beatmaps: [] as BeatmapsTableDataUnit[],
     targetHash: "",
     showDialog: false,
+    loading: false,
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -86,7 +90,18 @@ export default Vue.extend({
     },
   },
   watch: {
-    cacheLastUpdated() {
+    cacheLastUpdated(newValue: Date, oldValue: Date) {
+      if (store.getters["appState/lockPlaylistModification"]) {
+        Logger.debug(
+          `watch cacheLastUpdated called. but skip. ${oldValue?.toISOString()} -> ${newValue?.toISOString()}`,
+          "PlaylistEditorBeatmapBrowser"
+        );
+        return;
+      }
+      Logger.debug(
+        `watch cacheLastUpdated called. ${oldValue?.toISOString()} -> ${newValue?.toISOString()}`,
+        "PlaylistEditorBeatmapBrowser"
+      );
       this.fetchData();
     },
   },
@@ -96,8 +111,13 @@ export default Vue.extend({
   },
   methods: {
     async fetchData(): Promise<void> {
-      // TODO playlist.maps に含まれている譜面は除外すべき？
-      this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+      this.loading = true;
+      try {
+        // TODO playlist.maps に含まれている譜面は除外すべき？
+        this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+      } finally {
+        this.loading = false;
+      }
     },
     openInformation(hash: string) {
       this.showDialog = true;

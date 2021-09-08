@@ -14,6 +14,7 @@
       :selected.sync="selectedBeatmap"
       :search="search"
       :in-playlist="true"
+      :loading="loading"
       @openInformation="openInformation"
     >
       <template #actions="{ beatsaver }">
@@ -45,6 +46,7 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import { sync } from "vuex-pathify";
+import store from "@/plugins/store";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
 import BeatmapsTable from "@/components/beatmap/table/BeatmapsTable.vue";
 import PlaylistButtonRemoveFromPlaylist from "@/components/playlist/button/PlaylistButtonRemoveFromPlaylist.vue";
@@ -58,6 +60,7 @@ import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButton
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatmapOnlineUnitDialog from "@/components/dialogs/BeatmapOnlineUnitDialog.vue";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import Logger from "@/libraries/helper/Logger";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapList",
@@ -79,6 +82,7 @@ export default Vue.extend({
     beatmaps: [] as BeatmapsTableDataUnit[],
     targetHash: "",
     showDialog: false,
+    loading: false,
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -97,20 +101,39 @@ export default Vue.extend({
   },
   watch: {
     async playlist() {
+      Logger.debug(`watch playlist called.`, "PlaylistEditorBeatmapList");
       this.fetchData();
     },
-    cacheLastUpdated() {
+    cacheLastUpdated(newValue: Date, oldValue: Date) {
+      if (store.getters["appState/lockPlaylistModification"]) {
+        Logger.debug(
+          `watch cacheLastUpdated called. but skip. ${oldValue?.toISOString()} -> ${newValue?.toISOString()}`,
+          "PlaylistEditorBeatmapList"
+        );
+        return;
+      }
+      Logger.debug(
+        `watch cacheLastUpdated called. ${oldValue?.toISOString()} -> ${newValue?.toISOString()}`,
+        "PlaylistEditorBeatmapList"
+      );
       this.fetchData();
     },
   },
   mounted(): void {
+    Logger.debug(`mounted called.`, "PlaylistEditorBeatmapList");
     this.fetchData();
   },
   methods: {
     async fetchData(): Promise<void> {
-      this.beatmaps = await PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(
-        this.playlist
-      );
+      this.loading = true;
+      try {
+        Logger.debug(`fetchData called.`, "PlaylistEditorBeatmapList");
+        this.beatmaps = await PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(
+          this.playlist
+        );
+      } finally {
+        this.loading = false;
+      }
     },
     openInformation(hash: string) {
       this.showDialog = true;
