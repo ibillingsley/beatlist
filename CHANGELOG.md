@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2.7 (xx/09/2021)
+## v1.2.7 (08/09/2021)
 **Improvement:**
  - Improved loading speed for files under the CustomLevels directory.
 
