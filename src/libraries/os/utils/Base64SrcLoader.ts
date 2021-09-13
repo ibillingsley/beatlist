@@ -2,16 +2,16 @@ import fs from "fs-extra";
 import mime from "mime-types";
 
 export default class Base64SrcLoader {
-  public static Format(base64: string, type: string): string {
-    return `data:${type};base64,${base64}`;
+  public static Format(base64: string, mimeType: string): string {
+    return `data:${mimeType};base64,${base64}`;
   }
 
   public static async FromFile(filepath: string): Promise<string> {
     const data = await fs.readFile(filepath);
-    const type = mime.lookup(filepath);
+    const mimeType = mime.lookup(filepath);
 
-    if (type) {
-      return this.FromBuffer(data, type);
+    if (mimeType) {
+      return this.Format(Buffer.from(data).toString("base64"), mimeType || "");
     }
 
     return this.FromBuffer(data, "");
@@ -33,5 +33,29 @@ export default class Base64SrcLoader {
       return base64src.replace(/^base64,/, "");
     }
     return base64src.replace(/^(data:.*;base64,)/, "");
+  }
+
+  public static GetFileType(data: Buffer): string | undefined {
+    const byteArray = Array.from(data);
+    if (byteArray.length < 4) {
+      return undefined;
+    }
+    if (
+      byteArray[0] === 0xff &&
+      byteArray[1] === 0xd8 &&
+      byteArray[byteArray.length - 2] === 0xff &&
+      byteArray[byteArray.length - 1] === 0xd9
+    ) {
+      return "jpeg";
+    }
+    if (
+      byteArray[0] === 0x89 &&
+      byteArray[1] === 0x50 &&
+      byteArray[2] === 0x4e &&
+      byteArray[3] === 0x47
+    ) {
+      return "png";
+    }
+    return undefined;
   }
 }

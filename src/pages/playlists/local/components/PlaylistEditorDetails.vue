@@ -214,17 +214,24 @@ export default Vue.extend({
       playlist.author = this.playlistAuthor;
       playlist.description = this.playlistDescription;
       playlist.cover = Base64SrcLoader.ToBuffer(this.imageData);
+      playlist.coverImageType = undefined;
+      if (this.imageData != null) {
+        const match = this.imageData.match(/^data:image\/(.*);base64,/);
+        if (match != null && match.length > 0) {
+          // eslint-disable-next-line prefer-destructuring
+          playlist.coverImageType = match[1];
+        }
+      }
       playlist.format = this.playlistFormat;
 
       PlaylistOperation.UpdatePlaylist(playlist)
         .then((updatedPlaylist: PlaylistLocal | undefined) => {
           if (
             updatedPlaylist === undefined ||
-            !(
-              updatedPlaylist.hash &&
-              updatedPlaylist.hash !== this.playlist.hash
-            )
+            updatedPlaylist.hash == null ||
+            updatedPlaylist.hash === ""
           ) {
+            // 保存できなかった場合、etc
             return;
           }
 

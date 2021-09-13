@@ -69,18 +69,21 @@ export default class JsonDeserializer extends PlaylistDeserializer {
       const json = JSON.parse(jsonText);
       JsonDeserializer.validateJson(json);
 
-      let coverImageType: string | undefined;
-      if (json.image != null) {
-        const match = json.image.match(/^data:image\/(.*);base64,/);
-        if (match != null && match.length > 0) {
-          // eslint-disable-next-line prefer-destructuring
-          coverImageType = match[1];
-        }
-      }
       const cover = Buffer.from(
         Base64SrcLoader.GetRawSrc(json.image ?? ""),
         "base64"
       );
+      let coverImageType: string | undefined;
+      if (json.image != null) {
+        coverImageType = Base64SrcLoader.GetFileType(cover);
+        if (coverImageType == null) {
+          const match = json.image.match(/^data:image\/(.*);base64,/);
+          if (match != null && match.length > 0) {
+            // eslint-disable-next-line prefer-destructuring
+            coverImageType = match[1];
+          }
+        }
+      }
       return {
         title: json.playlistTitle,
         author: json.playlistAuthor ?? "",
