@@ -20,6 +20,15 @@
           </v-btn>
         </v-btn-toggle>
       </v-col>
+      <v-col cols="auto">
+        <BeatmapsTableOnlineFilter
+          :enabled="isFilterEnabled"
+          :enable-a-i-filter="enableAIFilter"
+          :enable-rank-filter="enableRankFilter"
+          :enable-f-s-filter="enableFSFilter"
+          @input="updateFilter"
+        />
+      </v-col>
       <v-col>
         <v-text-field
           v-model="search"
@@ -89,10 +98,12 @@ import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/Beatmap
 import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
 import BeatmapButtonOpenPreview from "@/components/beatmap/info/button/BeatmapButtonOpenPreview.vue";
 import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
+import BeatmapsTableOnlineFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineFilter.vue";
 import route from "@/plugins/route/route";
+import { BeatsaverFilter } from "@/libraries/net/beatsaver/BeatsaverFilter";
 
 export default Vue.extend({
-  name: "BeatmapTableLocal",
+  name: "BeatmapsTableOnline",
   components: {
     BeatmapsTableColumnSelector,
     BeatmapsTable,
@@ -102,6 +113,7 @@ export default Vue.extend({
     BeatmapButtonRemoveBeatmap,
     BeatmapButtonAddToNPlaylists,
     BeatmapButtonCopyBsr,
+    BeatmapsTableOnlineFilter,
   },
   data: () => ({
     selectedMode: "search",
@@ -116,6 +128,9 @@ export default Vue.extend({
       { name: "key", value: "Key", icon: "vpn_key" },
       { name: "hash", value: "Hash", text: "#" },
     ],
+    enableAIFilter: false,
+    enableRankFilter: false,
+    enableFSFilter: false,
     search: "",
     beatsaverPage: undefined as BeatsaverPage | undefined,
     totalDocs: 0,
@@ -138,6 +153,9 @@ export default Vue.extend({
       );
     },
     seeMoreRouteName: () => route.BEATMAPS_ONLINE_UNIT,
+    isFilterEnabled(): boolean {
+      return ["search", "rating", "latest"].indexOf(this.selectedMode) >= 0;
+    },
   },
   watch: {
     beatsaverPage(): void {
@@ -163,6 +181,29 @@ export default Vue.extend({
     this.fetchData();
   },
   methods: {
+    updateFilter(params: BeatsaverFilter): void {
+      let changed = false;
+      if (this.enableAIFilter !== params.ai) {
+        this.enableAIFilter = params.ai ?? false;
+        changed = true;
+      }
+      if (this.enableRankFilter !== params.ranked) {
+        this.enableRankFilter = params.ranked ?? false;
+        changed = true;
+      }
+      if (this.enableFSFilter !== params.fs) {
+        this.enableFSFilter = params.fs ?? false;
+        changed = true;
+      }
+      if (
+        changed &&
+        ["search", "rating", "latest"].indexOf(this.selectedMode) >= 0
+      ) {
+        this.page = 1;
+        this.clearPage();
+        this.fetchData();
+      }
+    },
     fetchData(): void {
       if (this.$route.name !== route.BEATMAPS_ONLINE) {
         return;
@@ -181,7 +222,8 @@ export default Vue.extend({
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
             this.search,
             "Relevance",
-            this.page - 1
+            this.page - 1,
+            this.createFilter()
           );
           break;
 
@@ -194,7 +236,8 @@ export default Vue.extend({
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
             this.search,
             "Rating",
-            this.page - 1
+            this.page - 1,
+            this.createFilter()
           );
           break;
         case "latest":
@@ -202,7 +245,8 @@ export default Vue.extend({
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
             this.search,
             "Latest",
-            this.page - 1
+            this.page - 1,
+            this.createFilter()
           );
           break;
 
@@ -298,6 +342,25 @@ export default Vue.extend({
     },
     clearPage() {
       this.beatsaverPage = undefined;
+    },
+    createFilter() {
+      const filter: BeatsaverFilter = {};
+      // automapper フィルターは仕様変更するかもしれないそうなので現時点では無効
+      /*
+      if (this.enableAIFilter) {
+        filter.ai = true;
+      }
+      */
+      if (this.enableRankFilter) {
+        filter.ranked = true;
+      }
+      if (this.enableFSFilter) {
+        filter.fs = true;
+      }
+      if (Object.keys(filter).length === 0) {
+        return undefined;
+      }
+      return filter;
     },
   },
 });

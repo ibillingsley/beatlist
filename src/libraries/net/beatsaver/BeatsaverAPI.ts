@@ -11,6 +11,7 @@ import {
   convertNewMapToMap,
   isBeatsaverBeatmap,
 } from "./BeatsaverBeatmap";
+import { BeatsaverFilter } from "./BeatsaverFilter";
 
 const GET_BY_HASH = "maps/hash";
 const GET_BY_KEY = "maps/id";
@@ -97,13 +98,24 @@ export default class BeatsaverAPI {
   public async searchBeatmaps(
     search: string,
     sortOrder = "Relevance",
-    page: number = 0
+    page: number = 0,
+    filters?: BeatsaverFilter
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
-    return this.makeRequest<BeatsaverPage>(
-      `${SEARCH}/${page}?q=${search ?? ""}&sortOrder=${sortOrder}`,
-      undefined,
-      page
-    );
+    const query: string[] = [];
+    if (filters?.ai) {
+      query.push(`automapper=true`);
+    }
+    if (filters?.ranked) {
+      query.push(`ranked=true`);
+    }
+    if (filters?.fs) {
+      query.push(`fullSpread=true`);
+    }
+    let path = `${SEARCH}/${page}?q=${search ?? ""}&sortOrder=${sortOrder}`;
+    if (query.length > 0) {
+      path += `&${query.join("&")}`;
+    }
+    return this.makeRequest<BeatsaverPage>(path, undefined, page);
   }
 
   //   public async getByHot(
