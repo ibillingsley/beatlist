@@ -8,6 +8,24 @@
 
 ---
 
+## v1.2.8 (2021/09/19)
+**Features:**
+- [Beatmap Online via beatsaver]画面に Ranked と FullSpread の絞り込みを追加。
+- CustomLevels 以下の曲について、どの playlist にも含まれない曲を抽出するフィルターを追加。
+  - [Saved Beatmaps]画面または各 playlist 編集画面の [Browser]欄で [Playlists]列を表示し、そのフィルターをONにすると抽出されます。
+  - ただし、[Playlists]列の表示および絞り込みは曲数が多い場合遅いので必要な時だけ有効化してください。
+
+**Bug fixes:**
+- v1.2.7 以降に追加した playlist のカバー画像が jpeg の場合、png 画像に差し替えても cover画像が `data:image/png;base64,xxxx` にならず `data:image/jpeg;base64,xxxx` のままになるのを修正。
+- playlist の編集画面で、画像だけ変更して [SAVE]ボタンを押した場合、[Saved]の通知が出ないのを修正。
+- [Playlists]列を表示してもカバー画像が表示されないことがあるのを修正。
+- [Add/Remove from playlists]ダイアログをESCキーで閉じると、それ以降開けなくなることがあるのを修正。
+
+**Others:**
+- 事前に読み込んでおくキャッシュデータを2021/09中旬のもの(約50,000件)に更新。
+
+<br>
+
 ## v1.2.7 (2021/09/08)
 **Improvement:**
 - CustomLevels ディレクトリ以下のファイルの読み込み速度を改善。

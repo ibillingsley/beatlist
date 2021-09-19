@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.2.8 (19/09/2021)
+**Features:**
+ - Added Ranked and FullSpread filter to the [Beatmap Online via beatsaver] screen.
+ - Added a filter to extract songs that are not included in any playlist.
+   - Display the [Playlists] column in the [Saved Beatmaps] screen or in the [Browser] pane of each playlist editing screen, and turn on the filter.
+   - However, the display and refinement of the [Playlists] column is slow when there are many songs, so enable it only when necessary.
+
+**Bug fixes:**
+ - Fixed a bug that the content of cover image is not `data:image/png;base64,xxxx` but remains `data:image/jpeg;base64,xxxx` even if the cover image of playlist is replaced from jpeg image to png image.
+ - Fixed a bug in the playlist edit screen that the [Saved] notification did not appear when only the image was changed and the [SAVE] button was pressed.
+ - Fixed a bug that the cover image may not be displayed when the [Playlists] column is displayed.
+ - Fixed a bug that the [Add/Remove from playlists] dialog could not be opened after closing it with the ESC key.
+
+**Others:**
+ - Updated the cache data to be loaded in advance to mid-September 2021 (about 50,000 items).
+
+<br>
+
 ## v1.2.7 (08/09/2021)
 **Improvement:**
  - Improved loading speed for files under the CustomLevels directory.
