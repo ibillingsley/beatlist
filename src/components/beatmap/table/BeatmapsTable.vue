@@ -137,6 +137,7 @@ import BeatmapsTableTemplateRating from "@/components/beatmap/table/core/templat
 import BeatmapsTableColumnSelector from "@/components/beatmap/table/core/BeatmapsTableColumnSelector.vue";
 import BeatmapsTableFooter from "@/components/beatmap/table/core/BeatmapsTableFooter.vue";
 import BeatmapsTableFilterRow from "@/components/beatmap/table/core/BeatmapsTableFilterRow.vue";
+import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 
 export default Vue.extend({
   name: "BeatmapsTable",
@@ -190,6 +191,7 @@ export default Vue.extend({
       uploaded: {} as DateRange,
       key: "",
       hash: "",
+      playlists: false,
     },
     itemsDisplayed: [] as { raw: BeatmapsTableDataUnit }[],
     selectedItem: [] as { hash: string; key: string }[],
@@ -268,9 +270,11 @@ export default Vue.extend({
           value: "playlists",
           text: "Playlists",
           template: BeatmapsTableHeadersTemplate.Playlists,
-          align: "left",
+          align: "center",
           sortable: false,
-          filterable: false,
+          filterType: BeatmapsTableFilterType.Playlists,
+          filterable: true,
+          // localFilter は定義しない
           width: 110,
         },
         {
@@ -491,9 +495,35 @@ export default Vue.extend({
       );
     },
     filterWithFilters() {
-      return this.beatmapAsTableData.filter((entry: any) =>
+      let tableData: { raw: BeatmapsTableDataUnit }[] = this.beatmapAsTableData;
+      if (this.filtersValue.playlists) {
+        const allValidPlaylists = PlaylistLibrary.GetAllValidPlaylists();
+        // 全 playlist から map の hash を抽出して格納
+        const hashSet = new Set<string>();
+        for (const playlist of allValidPlaylists) {
+          if (playlist.maps != null) {
+            for (const map of playlist.maps) {
+              if (map.hash != null) {
+                hashSet.add(map.hash.toUpperCase());
+              }
+            }
+          }
+        }
+        // playlist に含まれない曲を抽出
+        tableData = tableData.filter(
+          (entry: { raw: BeatmapsTableDataUnit }) => {
+            return !hashSet.has(entry.raw.data.hash?.toUpperCase());
+          }
+        );
+      }
+
+      return tableData.filter((entry: any) =>
         this.headers.every((header: BeatmapsTableHeader) => {
           if (!header.filterable) {
+            return true;
+          }
+          if (header.value === "playlists") {
+            // 上で絞り込み済なのでここでは絞り込みしない
             return true;
           }
 

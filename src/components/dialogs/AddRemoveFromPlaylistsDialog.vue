@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="open"
+    v-model="isOpen"
     width="500"
     @click:outside="$emit('update:open', false)"
   >
@@ -44,8 +44,27 @@ export default Vue.extend({
     open: { type: Boolean, required: true },
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },
   },
+  data: () => ({
+    // props の値を直接 v-model に渡すべきではないので別の変数を用意する。
+    isOpen: false,
+  }),
   computed: {
     playlists: () => PlaylistLibrary.GetAllValidPlaylists(),
+  },
+  watch: {
+    open() {
+      if (this.isOpen !== this.open) {
+        this.isOpen = this.open;
+      }
+    },
+    isOpen() {
+      if (this.isOpen !== this.open) {
+        this.$emit("update:open", this.isOpen);
+      }
+    },
+  },
+  mounted(): void {
+    this.isOpen = this.open;
   },
   methods: {
     closeDialog() {

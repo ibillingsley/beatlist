@@ -10,7 +10,8 @@
               style="width: 100%; background-color: #000000a0;"
             >
               <v-btn icon>
-                <v-icon :size="iconExpandSize" @click="imageOverlay = true">
+                <!-- <v-icon :size="iconExpandSize" @click="imageOverlay = true"> -->
+                <v-icon :size="iconExpandSize" @click="zoomOut">
                   zoom_out_map
                 </v-icon>
               </v-btn>
@@ -52,5 +53,11 @@ export default Vue.extend({
   data: () => ({
     imageOverlay: false,
   }),
+  methods: {
+    zoomOut() {
+      this.imageOverlay = true;
+      this.$emit("zoom");
+    },
+  },
 });
 </script>

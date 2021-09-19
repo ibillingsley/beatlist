@@ -290,7 +290,8 @@ export default class BeatmapLibrary {
     return PlaylistLibrary.GetAllValidPlaylists().filter((playlist) =>
       playlist.maps.find(
         (map) =>
-          map.hash !== undefined && map.hash.toUpperCase() === beatmap.hash
+          map.hash !== undefined &&
+          map.hash.toUpperCase() === beatmap.hash?.toUpperCase()
       )
     );
   }

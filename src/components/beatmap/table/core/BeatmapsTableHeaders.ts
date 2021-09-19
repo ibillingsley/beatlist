@@ -14,6 +14,7 @@ export enum BeatmapsTableFilterType {
   Text = "Text",
   Difficulties = "Difficulties",
   Date = "Date",
+  Playlists = "Playlists",
 }
 
 export interface BeatmapsTableHeader {

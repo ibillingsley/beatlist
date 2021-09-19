@@ -19,6 +19,7 @@ import BeatmapsTableFilterText from "@/components/beatmap/table/core/filter/Beat
 import BeatmapsTableFilterRange from "@/components/beatmap/table/core/filter/BeatmapsTableFilterRange.vue";
 import BeatmapsTableFilterDifficulties from "@/components/beatmap/table/core/filter/BeatmapsTableFilterDifficulties.vue";
 import BeatmapsTableFilterDate from "@/components/beatmap/table/core/filter/BeatmapsTableFilterDate.vue";
+import BeatmapsTableFilterPlaylists from "@/components/beatmap/table/core/filter/BeatmapsTableFilterPlaylists.vue";
 
 export default Vue.extend({
   name: "BeatmapsTableFilterRow",
@@ -27,6 +28,7 @@ export default Vue.extend({
     BeatmapsTableFilterRange,
     BeatmapsTableFilterDifficulties,
     BeatmapsTableFilterDate,
+    BeatmapsTableFilterPlaylists,
   },
   props: {
     headers: { type: Array as PropType<BeatmapsTableHeader[]>, required: true },

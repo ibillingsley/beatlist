@@ -1,6 +1,11 @@
 <template>
   <v-container class="pa-0 pl-3">
-    <v-tooltip v-for="playlist in playlists" :key="playlist.key" top>
+    <v-tooltip
+      v-for="playlist in playlists"
+      :key="playlist.key"
+      ref="playlistTooltip"
+      top
+    >
       <template #activator="{ on }">
         <v-avatar :size="24" class="mx-1" v-on="on">
           <PlaylistCover
@@ -8,6 +13,7 @@
             :avatar-size="24"
             :icon-expand-size="16"
             contains
+            @zoom="closeTooltip"
           />
         </v-avatar>
       </template>
@@ -33,6 +39,22 @@ export default Vue.extend({
   computed: {
     playlists(): PlaylistLocal[] {
       return BeatmapLibrary.GetPlaylists(this.item.data);
+    },
+  },
+  methods: {
+    closeTooltip() {
+      if (this.$refs.playlistTooltip != null) {
+        try {
+          // Tooltip を閉じる
+          for (const tooltip of this.$refs.playlistTooltip as any[]) {
+            // 暫定。これだけだとマウスカーソルが画面外に出て戻ってきたときにまた表示されてしまう。
+            tooltip.deactivate();
+          }
+        } catch (error) {
+          // log only
+          console.error(error);
+        }
+      }
     },
   },
 });
