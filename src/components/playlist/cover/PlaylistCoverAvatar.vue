@@ -26,7 +26,7 @@
       opacity="0.7"
       @click="imageOverlay = false"
     >
-      <PlaylistCover :playlist="playlist" :max-height="512" contain />
+      <PlaylistCover :playlist="playlist" :max-width="512" contain />
       <v-btn icon large class="mt-2" @click="imageOverlay = false">
         <v-icon large>
           mdi-close

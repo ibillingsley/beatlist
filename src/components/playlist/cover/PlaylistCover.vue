@@ -1,5 +1,5 @@
 <template>
-  <v-img v-if="cover" :src="cover" :max-height="maxHeight" :contain="contain">
+  <v-img v-if="cover" :src="cover" :max-width="maxWidth" :contain="contain">
     <slot />
   </v-img>
 </template>
@@ -14,7 +14,7 @@ export default Vue.extend({
   name: "PlaylistCover",
   props: {
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
-    maxHeight: { type: Number, default: undefined },
+    maxWidth: { type: Number, default: undefined },
     contain: { type: Boolean, default: undefined },
   },
   data: () => ({
