@@ -7,6 +7,8 @@ import path from "path";
 import registerIpc from "@/libraries/ipc";
 import BeatsaverLinkOpener from "@/libraries/ipc/BeatsaverLinkOpener";
 
+require("@electron/remote/main").initialize();
+
 class Background {
   private win: BrowserWindow | null = null;
 
@@ -35,7 +37,9 @@ class Background {
       minHeight: 750,
       frame: false,
       webPreferences: {
+        enableRemoteModule: true,
         nodeIntegration: true,
+        contextIsolation: false,
       },
       icon: path.join(__dirname, "../public/icon_bold_64.png"),
       backgroundColor: "#303030",

@@ -18,7 +18,7 @@ export default Vue.extend({
   methods: {
     async openFolder() {
       const folderPath = await BeatSaber.getPlaylistFolder();
-      shell.openItem(folderPath);
+      await shell.openPath(folderPath);
     },
   },
 });

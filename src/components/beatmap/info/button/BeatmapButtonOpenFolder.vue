@@ -20,11 +20,11 @@ export default Vue.extend({
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },
   },
   methods: {
-    openFolder(): void {
+    async openFolder() {
       const local = BeatmapLibrary.GetMapByHash(this.beatmap.hash);
 
       if (local) {
-        shell.openItem(local.folderPath);
+        await shell.openPath(local.folderPath);
       }
     },
   },
