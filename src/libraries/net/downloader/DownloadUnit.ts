@@ -1,9 +1,10 @@
 import request from "request";
-import { remote } from "electron";
 import {
   DownloadUnitProgress,
   DownloadUnitProgressFactory,
 } from "@/libraries/net/downloader/DownloadUnitProgress";
+
+const remote = require("@electron/remote");
 
 export default class DownloadUnit {
   public static TimeoutMs = 10 * 1e3;

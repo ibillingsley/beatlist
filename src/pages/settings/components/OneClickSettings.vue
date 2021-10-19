@@ -32,7 +32,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { sync } from "vuex-pathify";
-import { remote } from "electron";
+
+const remote = require("@electron/remote");
 
 export default Vue.extend({
   name: "OneClickSettings",

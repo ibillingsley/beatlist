@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import AdmZip from "adm-zip";
 import events from "events";
-import { remote } from "electron";
+
 import {
   DownloadOperationBase,
   DownloadOperationType,
@@ -21,6 +21,8 @@ import {
   DownloadUnitProgress,
   DownloadUnitProgressFactory,
 } from "@/libraries/net/downloader/DownloadUnitProgress";
+
+const remote = require("@electron/remote");
 
 const ON_COMPLETED: string = "completed";
 
