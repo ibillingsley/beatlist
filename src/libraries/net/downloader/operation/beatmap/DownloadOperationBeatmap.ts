@@ -1,3 +1,4 @@
+import * as remote from "@electron/remote";
 import fs from "fs-extra";
 import path from "path";
 import AdmZip from "adm-zip";
@@ -21,8 +22,6 @@ import {
   DownloadUnitProgress,
   DownloadUnitProgressFactory,
 } from "@/libraries/net/downloader/DownloadUnitProgress";
-
-const remote = require("@electron/remote");
 
 const ON_COMPLETED: string = "completed";
 

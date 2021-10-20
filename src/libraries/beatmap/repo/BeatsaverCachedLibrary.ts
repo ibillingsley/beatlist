@@ -1,4 +1,5 @@
 import fs from "fs-extra";
+import path from "path";
 import {
   BeatsaverKey,
   BeatsaverKeyType,
@@ -15,7 +16,7 @@ import {
   convertNewMapToMap,
 } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 
-const CACHE_FILES_DIR = "resources/cache";
+const CACHE_FILES_DIR = "cache";
 
 export default class BeatsaverCachedLibrary {
   static beatsaverCache = new Map<string, BeatsaverItemValid>();
@@ -50,12 +51,18 @@ export default class BeatsaverCachedLibrary {
         return Promise.reject(error);
       });
     */
-    if (!fs.existsSync(CACHE_FILES_DIR)) {
+    const cacheDir =
+      process.env.NODE_ENV === "development"
+        ? // npm run serve のとき process.resourcesPath は "node_modules/electron/dist/resources" を返す
+          path.join(process.resourcesPath, `../../../../${CACHE_FILES_DIR}`)
+        : path.join(process.resourcesPath, CACHE_FILES_DIR);
+    console.log(`cacheDir: ${cacheDir}`);
+    if (!fs.existsSync(cacheDir)) {
       console.log(`no cache directory.`);
       return;
     }
 
-    const files = fs.readdirSync(CACHE_FILES_DIR, { withFileTypes: true });
+    const files = fs.readdirSync(cacheDir, { withFileTypes: true });
     const fileNames = files
       .filter(
         (dirent) =>
@@ -66,7 +73,7 @@ export default class BeatsaverCachedLibrary {
     for (const fileName of fileNames) {
       const beatmaps = JSON.parse(
         // eslint-disable-next-line no-await-in-loop
-        await fs.readFile(`${CACHE_FILES_DIR}/${fileName}`, {
+        await fs.readFile(`${cacheDir}/${fileName}`, {
           encoding: "utf8",
         })
       ) as BeatsaverNewBeatmap[];

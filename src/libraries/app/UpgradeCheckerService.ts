@@ -1,9 +1,8 @@
+import * as remote from "@electron/remote";
 import semver from "semver";
 import localforage from "localforage";
 import store from "@/plugins/store";
 import MigrateTo123 from "@/libraries/app/migration/MigrationVersion1.2.3";
-
-const remote = require("@electron/remote");
 
 export default class UpgradeCheckerService {
   public static async Initialize() {

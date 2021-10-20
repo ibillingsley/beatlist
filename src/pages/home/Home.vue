@@ -28,7 +28,7 @@ import { shell } from "electron";
 import { get } from "vuex-pathify";
 import ChangelogDisplayer from "@/components/github/changelog/ChangelogDisplayer.vue";
 // import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
-const remote = require("@electron/remote");
+import * as remote from "@electron/remote";
 
 const titleWhite = require("@/assets/title_white.png");
 const titleDark = require("@/assets/title_dark.png");
