@@ -8,6 +8,15 @@
 
 ---
 
+## v1.3.0 (2021/10/20)
+**Bug fixes:**
+- 譜面をダウンロードしようとすると以下のエラーが出る不具合を修正。
+  - "Couldn't download beatmap. [Error]: certificate has expired"
+- playlist のカバー画像が巨大だと、[Saved Beatmaps]画面や各playlist編集画面のカバー画像のプレビュー画面(※)を閉じることができなくなる不具合を修正。  
+  ※ [Playlists]列をクリックすることで表示されるプレビュー
+
+<br>
+
 ## v1.2.8 (2021/09/19)
 **Features:**
 - [Beatmap Online via beatsaver]画面に Ranked と FullSpread の絞り込みを追加。

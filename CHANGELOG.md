@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.3.0 (20/10/2021)
+**Bug fixes:**
+ - Fixed a bug that following error occurs when downloading songs.
+    - "Couldn't download beatmap. [Error]: certificate has expired"
+ - Fixed a bug that the preview screen of the cover image in the [Saved Beatmaps] screen and each playlist editing screen could not be closed when the cover image of the playlist was huge.
+
+<br>
+
 ## v1.2.8 (19/09/2021)
 **Features:**
  - Added Ranked and FullSpread filter to the [Beatmap Online via beatsaver] screen.
