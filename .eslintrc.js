@@ -54,6 +54,10 @@ module.exports = {
     "vuetify/no-legacy-grid": "error",
   },
   settings: {
+    "import/core-modules": [
+      "vue-cli-plugin-electron-builder/lib",
+      "electron-devtools-installer",
+    ],
     "import/resolver": {
       node: {
         paths: ["src"],

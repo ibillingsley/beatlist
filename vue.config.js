@@ -3,6 +3,7 @@ const path = require("path");
 module.exports = {
   pluginOptions: {
     electronBuilder: {
+      nodeIntegration: true,
       builderOptions: {
         appId: "com.alaanor.beatlist",
         win: {
