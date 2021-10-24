@@ -5,7 +5,10 @@ import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import BeatmapLoader from "@/libraries/beatmap/BeatmapLoader";
 import Progress from "@/libraries/common/Progress";
 
-jest.mock("@/plugins/store", () => {});
+jest.mock("@/plugins/store", () => ({
+  getters: { "settings/defaultExportFormat": "Json" },
+  commit: () => {},
+}));
 
 describe("beatmap beatmapScanner", () => {
   it("should only scan the difference", async () => {
@@ -24,11 +27,12 @@ describe("beatmap beatmapScanner", () => {
         { folderPath: "baz" } as BeatmapLocal,
       ]);
 
-    jest
-      .spyOn(BeatmapLoader, "Load")
-      .mockImplementation((path: string) =>
-        Promise.resolve({ folderPath: path } as BeatmapLocal)
-      );
+    jest.spyOn(BeatmapLoader, "Load").mockImplementation((path: string) =>
+      Promise.resolve({
+        folderPath: path,
+        loadState: { valid: true },
+      } as BeatmapLocal)
+    );
 
     jest.spyOn(BeatmapLibrary, "UpdateAllMaps").mockImplementation();
 

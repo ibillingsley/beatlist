@@ -34,6 +34,11 @@ jest.mock("@/libraries/beatmap/repo/BeatsaverCachedLibrary", () => ({
       loadState: { valid: true },
     };
   },
+  AddAll: async () => {},
+}));
+
+jest.mock("@/libraries/beatmap/BeatmapLibrary", () => ({
+  GetAllValidMap: () => [],
 }));
 
 describe("playlist loader, using the JSON as format", () => {
