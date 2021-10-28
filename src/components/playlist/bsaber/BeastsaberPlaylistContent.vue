@@ -41,7 +41,10 @@ export default Vue.extend({
       default: undefined,
     },
     progress: { type: Object as PropType<Progress>, default: undefined },
-    error: { type: Object as PropType<string | undefined>, default: undefined },
+    // 親から string を渡すとエラーになるので Object as PropType<string | undefined> から String に変更。
+    // ただしこの画面では error の値を使用していない。
+    // error: { type: Object as PropType<string | undefined>, default: undefined },
+    error: { type: String, default: undefined },
     loading: { type: Boolean, default: false },
   },
 });

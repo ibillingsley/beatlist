@@ -16,7 +16,7 @@
         icon
         x-large
         :disabled="!currentPlaylistLocal || isPlaylistDownloaded(playlist)"
-        @click.stop="installPlaylist(currentPlaylistLocal)"
+        @click.stop="installPlaylist()"
       >
         <v-icon color="success" x-large>
           {{ isPlaylistDownloaded(playlist) ? "done" : "file_download" }}
@@ -45,9 +45,9 @@ import Progress from "@/libraries/common/Progress";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
 import BeastsaberPlaylistContent from "@/components/playlist/bsaber/BeastsaberPlaylistContent.vue";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
-import PlaylistInstaller from "@/libraries/os/beatSaber/installer/PlaylistInstaller";
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import NotificationService, {
+  NOTIFICATION_ICON_FAILED,
   NOTIFICATION_ICON_SUCCESS,
 } from "@/libraries/notification/NotificationService";
 import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
@@ -107,6 +107,12 @@ export default Vue.extend({
         })
         .catch((e: Error) => {
           this.errorPlaylist = e.message;
+          NotificationService.NotifyMessage(
+            `${e?.message ?? e}`,
+            "warning",
+            NOTIFICATION_ICON_FAILED,
+            2500
+          );
         })
         .finally(() => {
           this.loadingPlaylistLocal = false;
@@ -122,7 +128,8 @@ export default Vue.extend({
         }) !== undefined
       );
     },
-    installPlaylist(playlist: PlaylistLocal) {
+    // installPlaylist(playlist: PlaylistLocal) {
+    installPlaylist() {
       if (!this.currentPlaylistBeast) {
         return;
       }
@@ -133,6 +140,34 @@ export default Vue.extend({
       // PlaylistLocal 画面で編集した時のファイル名に合わせる
       filename = PlaylistFilename.computeFilenameFor(filename);
 
+      this.loadingPlaylistInstall = true;
+      PlaylistFetcher.Install(
+        this.currentPlaylistBeast.playlistURL,
+        filename,
+        PlaylistFormatType.Json
+      )
+        .then(() => {
+          NotificationService.NotifyMessage(
+            `${this.currentPlaylistBeast?.playlistTitle} has been installed`,
+            "success",
+            NOTIFICATION_ICON_SUCCESS,
+            2500
+          );
+        })
+        .catch((e: Error) => {
+          this.errorPlaylist = e.message;
+          NotificationService.NotifyMessage(
+            `${this.currentPlaylistBeast?.playlistTitle} installation failed`,
+            "warning",
+            NOTIFICATION_ICON_FAILED,
+            2500
+          );
+        })
+        .finally(() => {
+          this.loadingPlaylistInstall = false;
+        });
+
+      /*
       this.loadingPlaylistInstall = true;
       PlaylistInstaller.Install(
         playlist,
@@ -147,6 +182,7 @@ export default Vue.extend({
           2500
         );
       });
+      */
     },
   },
 });

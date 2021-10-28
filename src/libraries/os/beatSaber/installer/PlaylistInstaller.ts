@@ -32,7 +32,7 @@ export default class PlaylistInstaller {
 
   public static async InstallNewEmpty(): Promise<PlaylistLocal> {
     const randNum = Math.floor(Math.random() * 1e6 - 1) + 1e5;
-    const name = `new-playlist-${randNum}`;
+    const name = `new_playlist_${randNum}`;
     const cover = Buffer.from(await fs.readFile(defaultCoverPath));
     const format = store.getters[
       "settings/defaultExportFormat"

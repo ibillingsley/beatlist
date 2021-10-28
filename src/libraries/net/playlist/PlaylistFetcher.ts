@@ -8,6 +8,10 @@ import Progress from "@/libraries/common/Progress";
 import util from "util";
 import stream from "stream";
 import crypto from "crypto";
+import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
+import PlaylistFilenameExtension from "@/libraries/playlist/PlaylistFilenameExtension";
+import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
+import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
 
 const streamPipeline = util.promisify(stream.pipeline);
 
@@ -30,6 +34,40 @@ export default class PlaylistFetcher {
     await fs.unlink(tmpFile);
 
     return playlist;
+  }
+
+  public static async Install(
+    url: string,
+    filename: string,
+    format: PlaylistFormatType
+  ): Promise<string> {
+    const playlistFolder = await BeatSaber.getPlaylistFolder();
+    const filepath = path.join(
+      playlistFolder,
+      `${filename}.${PlaylistFilenameExtension.GetFor(format)}`
+    );
+    const extension = url.split(".").slice(-1)[0] ?? ".json";
+    const randHex = crypto.randomBytes(6).toString("hex");
+    const tmpFile = path.join(
+      os.tmpdir(),
+      `beatlist-playlist-${randHex}.${extension}`
+    );
+
+    // await this.download(url, fs.createWriteStream(filepath));
+    let writeStream;
+    try {
+      writeStream = fs.createWriteStream(tmpFile);
+      await this.download(url, writeStream);
+    } finally {
+      if (writeStream != null) {
+        writeStream.close();
+      }
+    }
+    await fs.move(tmpFile, filepath, { overwrite: true });
+
+    new PlaylistScanner().scanOne(filepath);
+
+    return filepath;
   }
 
   private static async download(url: string, writeStream: stream.Writable) {
