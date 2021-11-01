@@ -113,11 +113,11 @@ export default Vue.extend({
   watch: {
     stringMin() {
       this.dateMin =
-        this.stringMin !== undefined ? new Date(this.stringMin) : undefined;
+        this.stringMin != null ? new Date(this.stringMin) : undefined;
     },
     stringMax() {
       this.dateMax =
-        this.stringMax !== undefined ? new Date(this.stringMax) : undefined;
+        this.stringMax != null ? new Date(this.stringMax) : undefined;
     },
   },
   activated(): void {
