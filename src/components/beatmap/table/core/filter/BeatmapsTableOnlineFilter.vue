@@ -12,7 +12,16 @@
           icon
           small
           :color="
-            enabled && (aiFilter || rankFilter || fsFilter) ? 'success' : ''
+            enabled &&
+            (aiFilter ||
+              rankFilter ||
+              fsFilter ||
+              chromaFilter ||
+              noodleFilter ||
+              meFilter ||
+              cinemaFilter)
+              ? 'success'
+              : ''
           "
         >
           <v-icon>filter_list</v-icon>
@@ -27,6 +36,7 @@
         v-model="rankFilter"
         color="accent"
         label="Ranked"
+        hide-details="auto"
         dense
         inset
       />
@@ -36,6 +46,41 @@
         v-model="fsFilter"
         color="accent"
         label="Full Spread"
+        hide-details="auto"
+        dense
+        inset
+      />
+      <br />
+      <hr />
+      <v-switch
+        v-model="chromaFilter"
+        color="accent"
+        label="Chroma"
+        hide-details="auto"
+        dense
+        inset
+      />
+      <v-switch
+        v-model="noodleFilter"
+        color="accent"
+        label="Noodle"
+        hide-details="auto"
+        dense
+        inset
+      />
+      <v-switch
+        v-model="meFilter"
+        color="accent"
+        label="Mapping Extensions"
+        hide-details="auto"
+        dense
+        inset
+      />
+      <v-switch
+        v-model="cinemaFilter"
+        color="accent"
+        label="Cinema"
+        hide-details="auto"
         dense
         inset
       />
@@ -54,12 +99,20 @@ export default Vue.extend({
     enableAIFilter: { type: Boolean, required: true },
     enableRankFilter: { type: Boolean, required: true },
     enableFSFilter: { type: Boolean, required: true },
+    enableChromaFilter: { type: Boolean, required: true },
+    enableNoodleFilter: { type: Boolean, required: true },
+    enableMEFilter: { type: Boolean, required: true },
+    enableCinemaFilter: { type: Boolean, required: true },
   },
   data: () => ({
-    filterText: "",
+    filterText: "Filter",
     aiFilter: false,
     rankFilter: false,
     fsFilter: false,
+    chromaFilter: false,
+    noodleFilter: false,
+    meFilter: false,
+    cinemaFilter: false,
   }),
   watch: {
     enableAIFilter() {
@@ -77,6 +130,26 @@ export default Vue.extend({
         this.fsFilter = this.enableFSFilter;
       }
     },
+    enableChromaFilter() {
+      if (this.chromaFilter !== this.enableChromaFilter) {
+        this.chromaFilter = this.enableChromaFilter;
+      }
+    },
+    enableNoodleFilter() {
+      if (this.noodleFilter !== this.enableNoodleFilter) {
+        this.noodleFilter = this.enableNoodleFilter;
+      }
+    },
+    enableMEFilter() {
+      if (this.meFilter !== this.enableMEFilter) {
+        this.meFilter = this.enableMEFilter;
+      }
+    },
+    enableCinemaFilter() {
+      if (this.cinemaFilter !== this.enableCinemaFilter) {
+        this.cinemaFilter = this.enableCinemaFilter;
+      }
+    },
   },
   activated(): void {
     this.reset();
@@ -91,6 +164,10 @@ export default Vue.extend({
       this.aiFilter = this.enableAIFilter;
       this.rankFilter = this.enableRankFilter;
       this.fsFilter = this.enableFSFilter;
+      this.chromaFilter = this.enableChromaFilter;
+      this.noodleFilter = this.enableNoodleFilter;
+      this.meFilter = this.enableMEFilter;
+      this.cinemaFilter = this.enableCinemaFilter;
     },
     updateFilterText() {
       const filters: string[] = [];
@@ -103,14 +180,36 @@ export default Vue.extend({
       if (this.fsFilter) {
         filters.push("fs");
       }
-      this.filterText = filters.join(",");
+      if (this.chromaFilter) {
+        filters.push("chroma");
+      }
+      if (this.noodleFilter) {
+        filters.push("noodle");
+      }
+      if (this.meFilter) {
+        filters.push("me");
+      }
+      if (this.cinemaFilter) {
+        filters.push("cinema");
+      }
+      const text = filters.join(",");
+      if (text === "") {
+        this.filterText = "Filter";
+      } else {
+        this.filterText = text.length > 22 ? `${text.slice(0, 20)}...` : text;
+      }
     },
     update() {
       this.updateFilterText();
       const filter: BeatsaverFilter = {
+        mode: "filter",
         ai: this.aiFilter,
         ranked: this.rankFilter,
         fs: this.fsFilter,
+        chroma: this.chromaFilter,
+        noodle: this.noodleFilter,
+        me: this.meFilter,
+        cinema: this.cinemaFilter,
       };
       this.$emit("input", filter);
     },

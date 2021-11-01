@@ -111,6 +111,29 @@ export default class BeatsaverAPI {
     if (filters?.fs) {
       query.push(`fullSpread=true`);
     }
+    const extraFilters: (keyof BeatsaverFilter)[] = [
+      "chroma",
+      "noodle",
+      "me",
+      "cinema",
+    ];
+    for (const extraFilter of extraFilters) {
+      if (filters != null && filters[extraFilter]) {
+        query.push(`${extraFilter}=true`);
+      }
+    }
+    if (filters?.minNps != null) {
+      query.push(`minNps=${filters.minNps}`);
+    }
+    if (filters?.maxNps != null) {
+      query.push(`maxNps=${filters.maxNps}`);
+    }
+    if (filters?.minDate != null) {
+      query.push(`from=${filters.minDate.toISOString().substring(0, 10)}`);
+    }
+    if (filters?.maxDate != null) {
+      query.push(`to=${filters.maxDate.toISOString().substring(0, 10)}`);
+    }
     let path = `${SEARCH}/${page}?q=${search ?? ""}&sortOrder=${sortOrder}`;
     if (query.length > 0) {
       path += `&${query.join("&")}`;

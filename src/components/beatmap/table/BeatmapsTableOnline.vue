@@ -26,6 +26,25 @@
           :enable-a-i-filter="enableAIFilter"
           :enable-rank-filter="enableRankFilter"
           :enable-f-s-filter="enableFSFilter"
+          :enable-chroma-filter="enableChromaFilter"
+          :enable-noodle-filter="enableNoodleFilter"
+          :enable-m-e-filter="enableMEFilter"
+          :enable-cinema-filter="enableCinemaFilter"
+          @input="updateFilter"
+        />
+      </v-col>
+      <v-col cols="auto">
+        <BeatmapsTableOnlineNpsFilter
+          :enabled="isFilterEnabled"
+          :min-nps="minNps"
+          :max-nps="maxNps"
+          @input="updateFilter"
+        />
+      </v-col>
+      <v-col cols="auto">
+        <BeatmapsTableOnlineDateFilter
+          :enabled="isFilterEnabled"
+          :value="dateRange"
           @input="updateFilter"
         />
       </v-col>
@@ -99,8 +118,11 @@ import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapBut
 import BeatmapButtonOpenPreview from "@/components/beatmap/info/button/BeatmapButtonOpenPreview.vue";
 import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
 import BeatmapsTableOnlineFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineFilter.vue";
+import BeatmapsTableOnlineDateFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineDateFilter.vue";
+import BeatmapsTableOnlineNpsFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineNpsFilter.vue";
 import route from "@/plugins/route/route";
 import { BeatsaverFilter } from "@/libraries/net/beatsaver/BeatsaverFilter";
+import { DateRange } from "@/libraries/common/Range";
 
 export default Vue.extend({
   name: "BeatmapsTableOnline",
@@ -114,6 +136,8 @@ export default Vue.extend({
     BeatmapButtonAddToNPlaylists,
     BeatmapButtonCopyBsr,
     BeatmapsTableOnlineFilter,
+    BeatmapsTableOnlineNpsFilter,
+    BeatmapsTableOnlineDateFilter,
   },
   data: () => ({
     selectedMode: "search",
@@ -131,6 +155,13 @@ export default Vue.extend({
     enableAIFilter: false,
     enableRankFilter: false,
     enableFSFilter: false,
+    enableChromaFilter: false,
+    enableNoodleFilter: false,
+    enableMEFilter: false,
+    enableCinemaFilter: false,
+    minNps: null as number | null,
+    maxNps: null as number | null,
+    dateRange: {} as DateRange,
     search: "",
     beatsaverPage: undefined as BeatsaverPage | undefined,
     totalDocs: 0,
@@ -166,7 +197,7 @@ export default Vue.extend({
     },
     selectedMode(): void {
       if (
-        ["hot", "rating", "latest", "download", "plays"].includes(
+        ["hot", "rating", "latest", "download", "plays", "search"].includes(
           this.selectedMode
         )
       ) {
@@ -183,17 +214,55 @@ export default Vue.extend({
   methods: {
     updateFilter(params: BeatsaverFilter): void {
       let changed = false;
-      if (this.enableAIFilter !== params.ai) {
-        this.enableAIFilter = params.ai ?? false;
-        changed = true;
+      if (params.mode === "filter" || params.mode === "all") {
+        if (this.enableAIFilter !== params.ai) {
+          this.enableAIFilter = params.ai ?? false;
+          changed = true;
+        }
+        if (this.enableRankFilter !== params.ranked) {
+          this.enableRankFilter = params.ranked ?? false;
+          changed = true;
+        }
+        if (this.enableFSFilter !== params.fs) {
+          this.enableFSFilter = params.fs ?? false;
+          changed = true;
+        }
+        if (this.enableChromaFilter !== params.chroma) {
+          this.enableChromaFilter = params.chroma ?? false;
+          changed = true;
+        }
+        if (this.enableNoodleFilter !== params.noodle) {
+          this.enableNoodleFilter = params.noodle ?? false;
+          changed = true;
+        }
+        if (this.enableMEFilter !== params.me) {
+          this.enableMEFilter = params.me ?? false;
+          changed = true;
+        }
+        if (this.enableCinemaFilter !== params.cinema) {
+          this.enableCinemaFilter = params.cinema ?? false;
+          changed = true;
+        }
       }
-      if (this.enableRankFilter !== params.ranked) {
-        this.enableRankFilter = params.ranked ?? false;
-        changed = true;
+      if (params.mode === "nps" || params.mode === "all") {
+        if (this.minNps !== params.minNps) {
+          this.minNps = params.minNps ?? null; // undefined or null -> null
+          changed = true;
+        }
+        if (this.maxNps !== params.maxNps) {
+          this.maxNps = params.maxNps ?? null; // undefined or null -> null
+          changed = true;
+        }
       }
-      if (this.enableFSFilter !== params.fs) {
-        this.enableFSFilter = params.fs ?? false;
-        changed = true;
+      if (params.mode === "date" || params.mode === "all") {
+        if (!this.dateEquals(this.dateRange.min, params.minDate)) {
+          this.dateRange.min = params.minDate ?? undefined; // undefined or null -> undefined
+          changed = true;
+        }
+        if (!this.dateEquals(this.dateRange.max, params.maxDate)) {
+          this.dateRange.max = params.maxDate ?? undefined; // undefined or null -> undefined
+          changed = true;
+        }
       }
       if (
         changed &&
@@ -203,6 +272,18 @@ export default Vue.extend({
         this.clearPage();
         this.fetchData();
       }
+    },
+    dateEquals(date1: Date | undefined, date2: Date | undefined): boolean {
+      if (date1 == null) {
+        if (date2 == null) {
+          return true;
+        }
+        return false;
+      }
+      if (date2 == null) {
+        return false;
+      }
+      return date1.getTime() === date2.getTime();
     },
     fetchData(): void {
       if (this.$route.name !== route.BEATMAPS_ONLINE) {
@@ -344,7 +425,9 @@ export default Vue.extend({
       this.beatsaverPage = undefined;
     },
     createFilter() {
-      const filter: BeatsaverFilter = {};
+      const filter: BeatsaverFilter = {
+        mode: "all",
+      };
       // automapper フィルターは仕様変更するかもしれないそうなので現時点では無効
       /*
       if (this.enableAIFilter) {
@@ -356,6 +439,30 @@ export default Vue.extend({
       }
       if (this.enableFSFilter) {
         filter.fs = true;
+      }
+      if (this.enableChromaFilter) {
+        filter.chroma = true;
+      }
+      if (this.enableNoodleFilter) {
+        filter.noodle = true;
+      }
+      if (this.enableMEFilter) {
+        filter.me = true;
+      }
+      if (this.enableCinemaFilter) {
+        filter.cinema = true;
+      }
+      if (this.minNps != null) {
+        filter.minNps = this.minNps;
+      }
+      if (this.maxNps != null) {
+        filter.maxNps = this.maxNps;
+      }
+      if (this.dateRange.min != null) {
+        filter.minDate = this.dateRange.min;
+      }
+      if (this.dateRange.max != null) {
+        filter.maxDate = this.dateRange.max;
       }
       if (Object.keys(filter).length === 0) {
         return undefined;
