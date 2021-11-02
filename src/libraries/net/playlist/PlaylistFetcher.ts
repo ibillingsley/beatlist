@@ -42,10 +42,12 @@ export default class PlaylistFetcher {
     format: PlaylistFormatType
   ): Promise<string> {
     const playlistFolder = await BeatSaber.getPlaylistFolder();
-    const filepath = path.join(
-      playlistFolder,
-      `${filename}.${PlaylistFilenameExtension.GetFor(format)}`
-    );
+    const filepath = path
+      .join(
+        playlistFolder,
+        `${filename}.${PlaylistFilenameExtension.GetFor(format)}`
+      )
+      .toLowerCase();
     const extension = url.split(".").slice(-1)[0] ?? ".json";
     const randHex = crypto.randomBytes(6).toString("hex");
     const tmpFile = path.join(
