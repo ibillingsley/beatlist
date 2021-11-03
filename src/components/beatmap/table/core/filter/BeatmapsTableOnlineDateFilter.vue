@@ -26,20 +26,18 @@
       <v-menu
         ref="menuMin"
         v-model="menuMin"
-        :return-value.sync="stringMin"
         :close-on-content-click="false"
         transition="scale-transition"
         offset-y
         min-width="290px"
       >
-        <template v-slot:activator="{ on, attrs }">
+        <template v-slot:activator="{ on }">
           <v-text-field
             v-model="stringMin"
             label="From"
             prepend-icon="event"
             readonly
             clearable
-            v-bind="attrs"
             @click:clear="clearMin"
             v-on="on"
           />
@@ -54,20 +52,18 @@
       <v-menu
         ref="menuMax"
         v-model="menuMax"
-        :return-value.sync="stringMax"
         :close-on-content-click="false"
         transition="scale-transition"
         offset-y
         min-width="290px"
       >
-        <template v-slot:activator="{ on, attrs }">
+        <template v-slot:activator="{ on }">
           <v-text-field
             v-model="stringMax"
             label="To"
             prepend-icon="event"
             readonly
             clearable
-            v-bind="attrs"
             @click:clear="clearMax"
             v-on="on"
           />

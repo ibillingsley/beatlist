@@ -11,8 +11,9 @@
     </v-btn>
     <template v-slot:input>
       <v-menu
-        ref="menu"
+        ref="menuMin"
         v-model="menuMin"
+        :close-on-content-click="false"
         transition="scale-transition"
         offset-y
         min-width="290px"
@@ -28,11 +29,15 @@
             v-on="on"
           />
         </template>
-        <v-date-picker v-model="stringMin" />
+        <v-date-picker
+          v-model="stringMin"
+          @change="$refs.menuMin.save(stringMin)"
+        />
       </v-menu>
       <v-menu
-        ref="menu"
+        ref="menuMax"
         v-model="menuMax"
+        :close-on-content-click="false"
         transition="scale-transition"
         offset-y
         min-width="290px"
@@ -48,7 +53,10 @@
             v-on="on"
           />
         </template>
-        <v-date-picker v-model="stringMax" />
+        <v-date-picker
+          v-model="stringMax"
+          @change="$refs.menuMax.save(stringMax)"
+        />
       </v-menu>
     </template>
   </v-edit-dialog>
