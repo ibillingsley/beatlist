@@ -44,15 +44,12 @@
             v-on="on"
           />
         </template>
-        <v-date-picker v-model="stringMin" no-title type="date">
-          <v-spacer />
-          <v-btn text color="primary" @click="menuMin = false">
-            Cancel
-          </v-btn>
-          <v-btn text color="primary" @click="$refs.menuMin.save(stringMin)">
-            OK
-          </v-btn>
-        </v-date-picker>
+        <v-date-picker
+          v-model="stringMin"
+          no-title
+          type="date"
+          @change="$refs.menuMin.save(stringMin)"
+        />
       </v-menu>
       <v-menu
         ref="menuMax"
@@ -75,15 +72,12 @@
             v-on="on"
           />
         </template>
-        <v-date-picker v-model="stringMax" no-title type="date">
-          <v-spacer />
-          <v-btn text color="primary" @click="menuMax = false">
-            Cancel
-          </v-btn>
-          <v-btn text color="primary" @click="$refs.menuMax.save(stringMax)">
-            OK
-          </v-btn>
-        </v-date-picker>
+        <v-date-picker
+          v-model="stringMax"
+          no-title
+          type="date"
+          @change="$refs.menuMax.save(stringMax)"
+        />
       </v-menu>
     </template>
   </v-edit-dialog>
