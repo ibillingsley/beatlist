@@ -455,6 +455,9 @@ export default Vue.extend({
     updatePage(page: number): void {
       this.$emit("update:page", page);
     },
+    moveFirst(): void {
+      this.currentPage = 1;
+    },
     selectAllItems(select: boolean): void {
       if (select) {
         this.$emit(

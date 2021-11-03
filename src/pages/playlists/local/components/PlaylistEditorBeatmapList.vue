@@ -8,6 +8,7 @@
       :search.sync="search"
     />
     <BeatmapsTable
+      ref="editorBeatmapsTable"
       :items="beatmaps"
       :shown-column="shownColumn"
       :items-per-page.sync="itemsPerPage"
@@ -118,6 +119,9 @@ export default Vue.extend({
       );
       this.fetchData();
     },
+  },
+  activated() {
+    (this.$refs.editorBeatmapsTable as any).moveFirst();
   },
   mounted(): void {
     Logger.debug(`mounted called.`, "PlaylistEditorBeatmapList");

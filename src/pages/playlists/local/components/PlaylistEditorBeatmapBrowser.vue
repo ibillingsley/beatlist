@@ -8,6 +8,7 @@
       :search.sync="search"
     />
     <BeatmapsTable
+      ref="browserBeatmapsTable"
       :items="beatmaps"
       :shown-column="shownColumn"
       :items-per-page.sync="itemsPerPage"
@@ -106,6 +107,9 @@ export default Vue.extend({
     },
   },
   // ここでは watch playlist は今のところ必要ないと思われる
+  activated() {
+    (this.$refs.browserBeatmapsTable as any).moveFirst();
+  },
   mounted(): void {
     this.fetchData();
   },
