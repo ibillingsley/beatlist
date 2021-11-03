@@ -129,7 +129,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import NotificationService, {
   NOTIFICATION_ICON_DELETE,
   NOTIFICATION_ICON_FAILED,

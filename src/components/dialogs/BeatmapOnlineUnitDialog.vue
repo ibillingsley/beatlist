@@ -36,11 +36,10 @@ import BeatsaverAPI, {
   BeatSaverAPIResponse,
   BeatSaverAPIResponseStatus,
 } from "@/libraries/net/beatsaver/BeatsaverAPI";
+import Logger from "@/libraries/helper/Logger";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatsaverUtilities from "@/libraries/net/beatsaver/BeatsaverUtilities";
 import LoadingPage from "@/components/helper/LoadingPage.vue";
-// import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
-// import { BeatsaverKeyType } from "@/libraries/beatmap/repo/BeatsaverKeyType";
 
 export default Vue.extend({
   name: "BeatmapOnlineUnitDialog",
@@ -79,16 +78,17 @@ export default Vue.extend({
   mounted(): void {
     this.fetchData();
   },
-  created() {
-    console.log(`[BeatmapOnlineUnitDialog] created.`);
-  },
-  destroyed() {
-    console.log(`[BeatmapOnlineUnitDialog] destroyed.`);
-  },
+  // created() {
+  //   Logger.debug(`created`, "BeatmapOnlineUnitDialog");
+  // },
+  // destroyed() {
+  //   Logger.debug(`destroyed`, "BeatmapOnlineUnitDialog");
+  // },
   methods: {
     fetchData(): void {
-      console.log(
-        `[BeatmapOnlineUnitDialog] methods: fetchData called. hash=${this.maphash}`
+      Logger.debug(
+        `methods: fetchData called. hash=${this.maphash}`,
+        "BeatmapOnlineUnitDialog"
       );
       if (this.maphash == null || this.maphash === "") {
         return;

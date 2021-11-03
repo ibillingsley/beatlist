@@ -58,7 +58,7 @@
 
 <script>
 import Vue from "vue";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 
 const logo = require("@/assets/logo.png");
 

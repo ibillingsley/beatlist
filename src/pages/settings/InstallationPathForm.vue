@@ -35,7 +35,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { sync } from "vuex-pathify";
-import { remote } from "electron";
+import * as remote from "@electron/remote";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import PathResolver from "@/libraries/ipc/PathResolver.ipc";
 
