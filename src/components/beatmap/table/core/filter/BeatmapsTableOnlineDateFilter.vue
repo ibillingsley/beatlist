@@ -46,6 +46,7 @@
           v-model="stringMin"
           no-title
           type="date"
+          min="2018-05-01"
           @change="$refs.menuMin.save(stringMin)"
         />
       </v-menu>
@@ -72,6 +73,7 @@
           v-model="stringMax"
           no-title
           type="date"
+          min="2018-05-01"
           @change="$refs.menuMax.save(stringMax)"
         />
       </v-menu>
