@@ -8,6 +8,24 @@
 
 ---
 
+## v1.3.1 (2021/11/05)
+**Improvement:**
+- [Beatmap Online via Beatsaver]画面に chroma/noodle/mapping extensions/cinema、NPS、日付の絞り込みを追加。
+- [Beastsaber Playlists]画面での playlist ダウンロードでは playlist の内容をそのままダウンロードするように修正。
+  - 以前のバージョンでは、playlist ダウンロード時に title、author、description、カバー画像および譜面のhash以外の情報を削除してダウンロードしていたので、消さないように修正しました。
+  - ただしダウンロードした playlist を beatlist で編集すると、従来通り syncURL や難易度のハイライト表示指定は消えますのでご注意ください。
+
+**Bug fixes:**
+- [My Playlists]画面から playlist 編集画面を開いたとき [Contents] 欄や [Browser] 欄は常に先頭ページを表示するように修正。
+  - ある playlist の編集画面を開き[Contents] 欄でページ移動後[My Playlists]画面に戻り、別の playlist の編集画面を表示するとページ移動がリセットされていない不具合の修正です。
+- Uploaded 列の日付範囲フィルターで、月を選択したり年を選択するたび DatePicker が閉じてしまうのを修正。
+- etc.
+
+**Others:**
+- 事前に読み込んでおくキャッシュデータを2021/11初旬のもの(約52,000件)に更新。
+
+<br>
+
 ## v1.3.0 (2021/10/20)
 **Bug fixes:**
 - 譜面をダウンロードしようとすると以下のエラーが出る不具合を修正。

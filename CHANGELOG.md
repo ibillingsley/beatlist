@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.3.1 (05/11/2021)
+**Improvement:**
+ - Added chroma/noodle/mapping extensions/cinema, NPS, and date filter to the [Beatmap Online via Beatsaver] screen.
+ - In [Beastsaber Playlists] screen, the contents of the playlist are now downloaded as is.
+    - In previous versions, when downloading a playlist from the [Beastsaber Playlists] screen, all information except for the title, author, description, cover image, and hash of the songs was deleted. This fixed the problem.
+    - However, if you edit the downloaded playlist, syncURL, difficulty highlighting, etc. will disappear as before.
+
+**Bug fixes:**
+ - Fixed the [Contents] and [Browser] panes to always show the first page when the playlist editing screen is opened from the [My Playlists] screen.
+ - Fixed a bug that DatePicker closing every time you select a month or year in the Uploaded column's date range filter.
+ - etc.
+
+**Others:**
+ - Updated the cache data to be loaded in advance to early November 2021 (about 52,000 items).
+
+<br>
+
 ## v1.3.0 (20/10/2021)
 **Bug fixes:**
  - Fixed a bug that following error occurs when downloading songs.
