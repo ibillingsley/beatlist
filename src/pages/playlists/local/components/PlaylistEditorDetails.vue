@@ -256,7 +256,7 @@ export default Vue.extend({
     Delete() {
       PlaylistOperation.DeletePlaylist(this.playlist).then(() => {
         NotificationService.NotifyMessage(
-          "The playlist has been deleted",
+          "The playlist has been moved to recycle bin",
           undefined,
           NOTIFICATION_ICON_DELETE,
           2500
