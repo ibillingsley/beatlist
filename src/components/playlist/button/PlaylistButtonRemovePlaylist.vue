@@ -43,7 +43,7 @@ export default Vue.extend({
     async deletePlaylist() {
       await PlaylistOperation.DeletePlaylist(this.playlist);
       NotificationService.NotifyMessage(
-        "The playlist has been deleted",
+        "The playlist has been moved to recycle bin",
         "",
         NOTIFICATION_ICON_DELETE
       );

@@ -1,4 +1,5 @@
-import fs from "fs-extra";
+// import fs from "fs-extra";
+import trash from "trash";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import DownloadOperationBeatmap from "@/libraries/net/downloader/operation/beatmap/DownloadOperationBeatmap";
 import DownloadManager from "@/libraries/net/downloader/DownloadManager";
@@ -21,6 +22,7 @@ export default class BeatmapInstaller {
   }
 
   public static async Uninstall(beatmap: BeatmapLocal): Promise<void> {
-    await fs.remove(beatmap.folderPath);
+    // await fs.remove(beatmap.folderPath);
+    await trash(beatmap.folderPath);
   }
 }

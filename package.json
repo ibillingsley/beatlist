@@ -49,6 +49,7 @@
     "roboto-fontface": "*",
     "semver": "^7.3.2",
     "throttleit": "^1.0.0",
+    "trash": "^7.2.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.4.2",

@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import trash from "trash";
 import {
   PlaylistBase,
   PlaylistLocal,
@@ -59,7 +60,8 @@ export default class PlaylistInstaller {
 
   public static async Uninstall(playlist: PlaylistLocal): Promise<void> {
     if (playlist.path) {
-      await fs.unlink(playlist.path);
+      // await fs.unlink(playlist.path);
+      await trash(playlist.path);
     }
 
     PlaylistLibrary.RemovePlaylist(playlist);
