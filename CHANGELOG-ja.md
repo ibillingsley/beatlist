@@ -8,6 +8,21 @@
 
 ---
 
+## v1.3.2 (2021/11/23)
+**ATTENTION:**
+- v1.3.2 より前のバージョンからアップデートする場合、初回起動時に playlist のキャッシュを再作成します。  
+  キャッシュを再作成している間、スキャン中のダイアログが表示されるのでしばらくお待ちください。
+
+**Improvement:**
+- [My Playlists] 画面に title/author/date modified のソートと検索ボックスを追加。
+- playlist への曲追加・削除ダイアログに title/author/date modified のソートを追加。
+- playlist を上書き保存するとき、難易度のハイライトや syncURL などを消さないように修正。
+- [Settings] 画面に playlist 保存時のインデント指定を追加。
+  - playlist をテキストエディタなどで直接編集しない場合は気にしなくて結構です。
+- playlist や譜面を削除する場合、ゴミ箱に移動するように修正。
+
+<br>
+
 ## v1.3.1 (2021/11/05)
 **Improvement:**
 - [Beatmap Online via Beatsaver]画面に chroma/noodle/mapping extensions/cinema、NPS、日付の絞り込みを追加。

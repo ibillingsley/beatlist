@@ -1,5 +1,21 @@
 # Changelog
 
+
+## v1.3.2 (23/11/2021)
+**ATTENTION:**
+ - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
+   While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
+
+**Improvement:**
+ - Added title/author/date modified sorting and text searching to the [My Playlists] screen.
+ - Added title/author/date modified sorting to the add/remove songs from playlist dialog.
+ - When overwriting the playlist, the difficulty highlight, syncURL, etc. are now preserved (maybe).
+ - Added indentation settings for saving playlists in the [Settings] screen.
+   - If you are not going to edit the playlist directly with a text editor, don't worry about it.
+ - Deleting playlists and maps now moves them to the recycle bin.
+
+<br>
+
 ## v1.3.1 (05/11/2021)
 **Improvement:**
  - Added chroma/noodle/mapping extensions/cinema, NPS, and date filter to the [Beatmap Online via Beatsaver] screen.
