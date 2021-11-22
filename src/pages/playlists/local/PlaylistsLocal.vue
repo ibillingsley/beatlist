@@ -150,7 +150,6 @@ export default Vue.extend({
         this.sortColumn,
         this.sortOrder
       );
-      console.log(`sorted: ${list.length}`);
       if (this.search != null && this.search !== "") {
         list = list.filter((entry) => {
           const searchText = this.search.toLowerCase();
@@ -161,7 +160,6 @@ export default Vue.extend({
           );
         });
       }
-      console.log(`filtered: ${list.length}`);
       this.sortedPlaylists = list;
     },
     switchSortOrder(): void {
