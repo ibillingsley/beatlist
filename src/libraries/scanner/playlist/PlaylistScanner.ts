@@ -168,14 +168,16 @@ export default class PlaylistScanner
       progress: Progress;
     }[] = [];
 
+    // paths は filePath が前回と変わっていないものの一覧
     const promiseResults: Promise<any>[] = [];
     for (const path of paths) {
       promiseResults.push(
         new Promise((resolve) => {
           PlaylistLoader.LoadRaw(path)
             .then((newPlaylist) => {
+              // 空の json がふたつあったとしても filePath も hash 計算に使用しているため重複しないはず。
               const fileHash = PlaylistLoader.computeHashOfRaw(
-                newPlaylist,
+                newPlaylist as PlaylistRaw,
                 path
               );
               if (isPlaylistLocal(newPlaylist)) {
@@ -189,8 +191,10 @@ export default class PlaylistScanner
                 });
                 return;
               }
-              const libHash = PlaylistLibrary.GetByPath(path)?.hash;
+              const libPlaylist = PlaylistLibrary.GetByPath(path);
+              const libHash = libPlaylist?.hash;
               if (fileHash !== libHash || fileHash === undefined) {
+                // 既存 playlist の hash 値が変わった場合 ※fileHash が undefined になることは基本的にはないはず
                 if (fileHash === undefined && libHash === undefined) {
                   resolve(null); // we got nothing new, so that's not an update
                   return;
@@ -202,6 +206,22 @@ export default class PlaylistScanner
                 });
                 return;
               }
+              // 既存 playlist の hash 値に変化なし
+              if (
+                newPlaylist.modified.getTime() !==
+                libPlaylist?.modified?.getTime()
+              ) {
+                // 更新日付が変わっている場合
+                const tmpPlaylist = { ...libPlaylist } as PlaylistLocal;
+                tmpPlaylist.modified = newPlaylist.modified;
+                resolve({
+                  playlist: tmpPlaylist,
+                  hash: fileHash,
+                  progress: progress.getNewOne(),
+                });
+                return;
+              }
+              // hash 値も更新日付も変化なし
               resolve(null);
             })
             .catch((error) => {
@@ -224,8 +244,8 @@ export default class PlaylistScanner
 
       const oldPlaylist = PlaylistLibrary.GetByPath(playlistRaw.path ?? ""); // 実際は空文字になることはない
       if (isPlaylistLocal(playlistRaw)) {
-        // PlaylistLoader.LoadRaw() で PlaylistLocal が返されるのはエラー時のみ。
-        console.log(`invalid json: ${playlistRaw.path}`);
+        // playlistData.playlist が PlaylistLocal になるのは、
+        // PlaylistLoader.LoadRaw() がエラーを返したときか hash に変更はないが更新日時だけ変わった場合。
         if (oldPlaylist) {
           PlaylistLibrary.ReplacePlaylist(oldPlaylist, playlistRaw);
         } else {

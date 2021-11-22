@@ -38,6 +38,40 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
     return BeatsaverCacheManager.forceGetCacheBeatmap(k, skipStore);
   }
 
+  public static async convertOne(
+    identifier: { key?: string; hash?: string },
+    cacheItems: {
+      key: BeatsaverKey;
+      item: BeatsaverItem;
+    }[]
+  ) {
+    // fromAny の中で store 取得を行っているので連続で convertOne を呼び出すと遅い
+    const item = await this.fromAny(identifier);
+    if (item != null) {
+      // キャッシュ情報を作成
+      cacheItems.push({
+        key: {
+          type: identifier.hash ? BeatsaverKeyType.Hash : BeatsaverKeyType.Key,
+          value: identifier.hash
+            ? identifier.hash.toUpperCase()
+            : identifier.key?.toUpperCase() ?? "",
+        },
+        item,
+      });
+    }
+    if (!item?.beatmap) {
+      const newItem: BeatsaverItemInvalidForPlaylist = {
+        originalHash: identifier.hash ? identifier.hash : "",
+        ...(item as BeatsaverItemInvalid),
+      };
+      return newItem;
+    }
+    if (item != null) {
+      return item;
+    }
+    return undefined;
+  }
+
   public static async convert(
     identifiers: { key?: string; hash?: string }[],
     progress: Progress

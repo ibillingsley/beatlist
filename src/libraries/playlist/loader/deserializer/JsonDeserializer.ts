@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 import fs from "fs-extra";
 import PlaylistDeserializer from "@/libraries/playlist/loader/deserializer/PlaylistDeserializer";
 import {
@@ -5,16 +6,25 @@ import {
   PlaylistLocalMap,
   PlaylistMapImportError,
   PlaylistRaw,
+  PlaylistRawMap,
 } from "@/libraries/playlist/PlaylistLocal";
 import Base64SrcLoader from "@/libraries/os/utils/Base64SrcLoader";
 import Progress from "@/libraries/common/Progress";
+import Utilities from "@/libraries/helper/Utilities";
 import PlaylistDeserializeBeatsaverBeatmap from "@/libraries/playlist/loader/deserializer/helper/PlaylistDeserializeBeatsaverBeatmap";
 import {
   BeatsaverItem,
   BeatsaverItemLoadError,
+  BeatsaverItemValid,
+  BeatsaverItemInvalidForPlaylist,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
 import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
-import { BeatsaverKeyType } from "@/libraries/beatmap/repo/BeatsaverKeyType";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import {
+  BeatsaverKeyType,
+  BeatsaverKey,
+} from "@/libraries/beatmap/repo/BeatsaverKeyType";
+import Logger from "@/libraries/helper/Logger";
 import PlaylistFormatType from "../../PlaylistFormatType";
 
 export const FILE_NOT_FOUND: Error = new Error("File not found");
@@ -53,20 +63,26 @@ export default class JsonDeserializer extends PlaylistDeserializer {
   }
   */
 
+  public static async readJson(filepath: string) {
+    const rawJson = await fs.readFile(filepath);
+
+    let jsonText = rawJson.toString();
+    if (jsonText.length > 0 && jsonText.charCodeAt(0) === 0xfeff) {
+      // BOM付きの場合は先頭のBOMを除外
+      jsonText = jsonText.substring(1);
+    }
+    const json = JSON.parse(jsonText);
+
+    return json;
+  }
+
   public async deserializeAsRaw(): Promise<PlaylistRaw> {
     if (!(await fs.pathExists(this.filepath))) {
       throw FILE_NOT_FOUND;
     }
 
-    const rawJson = await fs.readFile(this.filepath);
-
     try {
-      let jsonText = rawJson.toString();
-      if (jsonText.length > 0 && jsonText.charCodeAt(0) === 0xfeff) {
-        // BOM付きの場合は先頭のBOMを除外
-        jsonText = jsonText.substring(1);
-      }
-      const json = JSON.parse(jsonText);
+      const json = await JsonDeserializer.readJson(this.filepath);
       JsonDeserializer.validateJson(json);
 
       const cover = Buffer.from(
@@ -84,16 +100,26 @@ export default class JsonDeserializer extends PlaylistDeserializer {
           }
         }
       }
-      return {
+      const stat = await fs.stat(this.filepath);
+      const result = {
         title: json.playlistTitle,
         author: json.playlistAuthor ?? "",
         description: json.playlistDescription ?? "",
         cover,
         coverImageType,
+        modified: stat.mtime,
         songs: json.songs ?? [],
         path: this.filepath,
         format: PlaylistFormatType.Json,
       } as PlaylistRaw;
+
+      if (json.syncURL != null) {
+        result.syncURL = json.syncURL;
+      }
+      if (json.customData != null) {
+        result.customData = json.customData;
+      }
+      return result;
     } catch (e) {
       throw INVALID_JSON;
     }
@@ -107,9 +133,134 @@ export default class JsonDeserializer extends PlaylistDeserializer {
   }
 
   public static async convertToHash(
-    songs: { hash: string | undefined; key: string | undefined }[],
+    songs: PlaylistRawMap[],
     progress: Progress
   ): Promise<PlaylistLocalMap[]> {
+    const resultList: PlaylistLocalMap[] = new Array(songs.length);
+    progress.setTotal(songs.length);
+
+    const cacheItems: {
+      key: BeatsaverKey;
+      item: BeatsaverItem;
+    }[] = [];
+
+    let busyCount = 0;
+    // 開始時点での有効な localMap
+    const currentAllValidMap = BeatmapLibrary.GetAllValidMap();
+    // 開始時点での有効な beatsaver cache
+    const currentAllValidBeatsaverItems = BeatsaverCachedLibrary.GetAllValid();
+
+    for (let idx = 0; idx < songs.length; idx += 1) {
+      const song = songs[idx];
+
+      let mapHash = song.hash?.toUpperCase();
+
+      let localMap:
+        | BeatsaverItemValid
+        | BeatsaverItemInvalidForPlaylist
+        | undefined;
+      if (mapHash == null) {
+        if (song.key == null) {
+          Logger.debug(
+            `Neither key or hash specified: ${JSON.stringify(song)}`,
+            "JsonDeserializer"
+          );
+          progress.plusOne();
+          continue;
+        }
+        // ------------------------------
+        // key specified
+        // ------------------------------
+        mapHash = BeatsaverCachedLibrary.KeyToHash(song.key);
+        if (mapHash == null) {
+          busyCount = 0;
+          // The data is not in the cache, so retrieve it from beatsaver.com.
+          // eslint-disable-next-line no-await-in-loop
+          localMap = await PlaylistDeserializeBeatsaverBeatmap.convertOne(
+            song,
+            cacheItems
+          ); // return BeatsaverItemValid or BeatsaverItemInvalidForPlaylist or undefined
+          if (localMap != null) {
+            resultList[idx] = {
+              dateAdded: new Date(),
+              hash: localMap?.beatmap?.hash
+                ? localMap?.beatmap?.hash
+                : (localMap as any).originalHash,
+              originalData: { ...song },
+              attemptedSource: localMap.loadState.attemptedSource,
+              ...this.getErrorFor(localMap),
+            } as PlaylistLocalMap;
+          } else {
+            console.error(`Cannot get data: ${JSON.stringify(song)}`);
+          }
+          progress.plusOne();
+          continue;
+        }
+        // else {} // hash specified
+      }
+      // ------------------------------
+      // hash specified
+      // ------------------------------
+      const beatmap = currentAllValidMap.find(
+        (value) => value.hash?.toUpperCase() === mapHash
+      );
+      if (beatmap != null) {
+        // キャッシュにある場合はそれを配列に設定
+        resultList[idx] = {
+          dateAdded: new Date(),
+          hash: beatmap.hash,
+          originalData: { ...song },
+          attemptedSource: {
+            type: BeatsaverKeyType.Hash,
+            value: song.hash,
+          },
+        } as PlaylistLocalMap;
+        progress.plusOne();
+      } else {
+        // beatsaver のキャッシュ確認
+        localMap = currentAllValidBeatsaverItems.get(mapHash); // return only BeatsaverItemValid
+        if (localMap == null) {
+          busyCount = 0; // await 呼ぶので busyCount をリセット
+          // キャッシュにない場合は beatsaver.com に問い合わせ、その結果を配列に設定
+          // ※beatsaver.com の制限に抵触しないように1件ずつ処理する
+          // eslint-disable-next-line no-await-in-loop
+          localMap = await PlaylistDeserializeBeatsaverBeatmap.convertOne(
+            song,
+            cacheItems
+          ); // return BeatsaverItemValid or BeatsaverItemInvalidForPlaylist or undefined
+        }
+        if (localMap != null) {
+          resultList[idx] = {
+            dateAdded: new Date(),
+            hash: localMap?.beatmap?.hash
+              ? localMap?.beatmap?.hash
+              : (localMap as any).originalHash,
+            originalData: { ...song },
+            attemptedSource: localMap.loadState.attemptedSource,
+            ...this.getErrorFor(localMap),
+          } as PlaylistLocalMap;
+        } else {
+          console.error(`Cannot get data: ${mapHash}`);
+        }
+
+        progress.plusOne();
+      }
+      busyCount += 1;
+      if (busyCount > 100) {
+        // busy loop が連続した時に Renderer process に描画処理させるためのダミーウェイト
+        // ※本当は deserialize 処理等 main process で処理させたほうがいいのだが vuex store が絡むと難しい。
+        // eslint-disable-next-line no-await-in-loop
+        await Utilities.sleep(100);
+        busyCount = 0;
+      }
+    }
+    if (cacheItems.length > 0) {
+      BeatsaverCachedLibrary.AddAll(cacheItems);
+    }
+
+    // 取得できなかったデータは除外
+    return resultList.filter((item) => item != null);
+    /*
     const resultList: PlaylistLocalMap[] = [];
 
     // ダウンロード済の曲(CustomLevels 以下に存在する曲)はそれを返す
@@ -158,6 +309,7 @@ export default class JsonDeserializer extends PlaylistDeserializer {
       );
     // 取得できたものをダウンロード済みの曲とマージして返却
     return resultList.concat(newPlaylistLocalMaps);
+    */
 
     // return (await PlaylistDeserializeBeatsaverBeatmap.convert(songs, progress))
     //   .filter((item): item is BeatsaverItem => item !== undefined)

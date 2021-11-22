@@ -7,9 +7,42 @@
       <v-subheader>actions</v-subheader>
       <PlaylistButtonNewPlaylist />
       <PlaylistButtonOpenFolder />
+      <v-container
+        class="d-flex align-center"
+        style="flex-direction: row; justify-content: flex-end;"
+      >
+        <v-select
+          v-model="sortColumn"
+          :items="sortColumnList"
+          item-text="text"
+          item-value="value"
+          class="ml-2 flex-grow-0"
+          color="accent"
+          label="Sort"
+          dense
+          inset
+          hide-details="auto"
+          style="width: 10em;"
+        />
+        <v-btn icon @click="switchSortOrder">
+          <v-icon v-if="sortOrder === 'asc'">arrow_upward</v-icon>
+          <v-icon v-else>arrow_downward</v-icon>
+        </v-btn>
+        <v-text-field
+          v-model="search"
+          solo
+          dense
+          hide-details
+          append-icon="search"
+          clearable
+          class="flex-grow-0"
+          @input="sortPlaylists"
+          @click:clear="search = ''"
+        />
+      </v-container>
     </v-container>
 
-    <PlaylistsListViewer :playlists="playlists" :action="openPlaylist">
+    <PlaylistsListViewer :playlists="sortedPlaylists" :action="openPlaylist">
       <template #actions="{ playlist }">
         <div class="d-flex">
           <PlaylistButtonRemovePlaylist :playlist="playlist" />
@@ -32,6 +65,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import store from "@/plugins/store";
 import PlaylistsListViewer from "@/components/playlist/list/PlaylistsListViewer.vue";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
@@ -44,6 +78,8 @@ import NotificationService, {
 import PlaylistButtonOpenFolder from "@/components/playlist/button/PlaylistButtonOpenFolder.vue";
 import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 import route from "@/plugins/route/route";
+import PlaylistSortColumnType from "@/libraries/playlist/PlaylistSortColumnType";
+import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
 
 export default Vue.extend({
   name: "PlaylistsLocal",
@@ -60,11 +96,80 @@ export default Vue.extend({
     DiscordRichPresence.UpdateStatus("Browsing local playlist", amountText);
     next();
   },
+  data: () => ({
+    search: "",
+    sortColumn: PlaylistSortColumnType.Title,
+    sortOrder: PlaylistSortOrderType.Asc,
+    sortedPlaylists: [] as PlaylistLocal[],
+  }),
   computed: {
     playlists: () => PlaylistLibrary.GetAllValidPlaylists(),
     playlistLocalUnitRouteName: () => route.PLAYLISTS_LOCAL_UNIT,
+    sortColumnList: () => PlaylistLibrary.GetSortColumnList(),
+    sortOrderList: () => PlaylistLibrary.GetSortOrderList(),
+  },
+  watch: {
+    playlists() {
+      this.sortPlaylists();
+    },
+    sortColumn() {
+      if (this.sortColumn != null) {
+        store.commit("settings/SET_MY_PLAYLISTS", {
+          sortColumn: this.sortColumn,
+          sortOrder: this.sortOrder,
+        });
+      }
+      this.sortPlaylists();
+    },
+    sortOrder() {
+      if (this.sortOrder != null) {
+        store.commit("settings/SET_MY_PLAYLISTS", {
+          sortColumn: this.sortColumn,
+          sortOrder: this.sortOrder,
+        });
+      }
+      this.sortPlaylists();
+    },
+  },
+  mounted(): void {
+    const myPlaylistsSettings: {
+      sortColumn: PlaylistSortColumnType.Title;
+      sortOrder: PlaylistSortOrderType.Asc;
+    } = store.getters["settings/myPlaylists"];
+
+    this.sortColumn =
+      myPlaylistsSettings.sortColumn ?? PlaylistSortColumnType.Title;
+    this.sortOrder = myPlaylistsSettings.sortOrder ?? PlaylistSortOrderType.Asc;
+
+    this.sortPlaylists();
   },
   methods: {
+    sortPlaylists(): void {
+      let list = PlaylistLibrary.SortPlaylists(
+        this.playlists,
+        this.sortColumn,
+        this.sortOrder
+      );
+      console.log(`sorted: ${list.length}`);
+      if (this.search != null && this.search !== "") {
+        list = list.filter((entry) => {
+          const searchText = this.search.toLowerCase();
+          return (
+            entry.title?.toLowerCase().includes(searchText) ||
+            entry.author?.toLowerCase().includes(searchText) ||
+            entry.description?.toLowerCase().includes(searchText)
+          );
+        });
+      }
+      console.log(`filtered: ${list.length}`);
+      this.sortedPlaylists = list;
+    },
+    switchSortOrder(): void {
+      this.sortOrder =
+        this.sortOrder === PlaylistSortOrderType.Asc
+          ? PlaylistSortOrderType.Desc
+          : PlaylistSortOrderType.Asc;
+    },
     openPlaylist(playlist: PlaylistLocal): void {
       if (playlist.hash) {
         this.$router.push({

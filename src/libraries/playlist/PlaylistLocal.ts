@@ -6,18 +6,33 @@ export interface PlaylistBase {
   title: string;
   author: string;
   description: string | null;
+  syncURL?: string;
+  customData?: { [key: string]: any };
   cover: Buffer | null;
   coverImageType?: string; // png か jpeg
+  modified: Date | undefined;
   maps: PlaylistMap[];
+}
+
+export interface PlaylistRawMap {
+  hash: string | undefined;
+  key: string | undefined;
+  levelid?: string;
+  difficulties: { [key: string]: any }[] | undefined;
+  // ここの customData は beatlist では使い道がないので省略。
 }
 
 export interface PlaylistRaw {
   title: string;
   author: string;
   description: string | null;
+  // BeastSaber の playlist では customData の中ではなく直下に定義されている。
+  syncURL?: string;
+  customData?: { [key: string]: any };
   cover: Buffer | null;
   coverImageType?: string; // png か jpeg
-  songs?: { hash: string | undefined; key: string | undefined }[];
+  modified: Date;
+  songs?: PlaylistRawMap[];
   maps?: PlaylistMap[];
   path: string | undefined;
   format: PlaylistFormatType;
@@ -33,6 +48,8 @@ export interface PlaylistLocal extends PlaylistBase {
 
 export interface PlaylistMap {
   hash: string | undefined;
+  difficulties: { [key: string]: any }[] | undefined;
+  originalData: PlaylistRawMap | undefined;
   dateAdded: Date;
 }
 

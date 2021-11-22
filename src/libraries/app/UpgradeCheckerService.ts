@@ -3,6 +3,7 @@ import semver from "semver";
 import localforage from "localforage";
 import store from "@/plugins/store";
 import MigrateTo123 from "@/libraries/app/migration/MigrationVersion1.2.3";
+import MigrateTo132 from "@/libraries/app/migration/MigrationVersion1.3.2";
 
 export default class UpgradeCheckerService {
   public static async Initialize() {
@@ -35,6 +36,11 @@ export default class UpgradeCheckerService {
   private static UpgradeFor(previousVersion: string) {
     if (semver.gt("1.2.3", previousVersion)) {
       MigrateTo123();
+    }
+
+    if (semver.gt("1.3.2", previousVersion)) {
+      // previousVersion is under 1.3.2
+      MigrateTo132();
     }
   }
 

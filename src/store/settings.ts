@@ -1,5 +1,8 @@
 import { make } from "vuex-pathify";
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
+import PlaylistIndentType from "@/libraries/playlist/loader/serializer/PlaylistIndentType";
+import PlaylistSortColumnType from "@/libraries/playlist/PlaylistSortColumnType";
+import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
 import { ColorblindMode } from "@/libraries/app/Colorblind";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
 
@@ -10,6 +13,7 @@ export interface SettingsStoreState {
   darkTheme: boolean;
   enableDiscordRichPresence: boolean;
   defaultExportFormat: PlaylistFormatType;
+  playlistIndentType: PlaylistIndentType;
   beatmapsTable: {
     localBeatmaps: BeatmapTableStoreState;
     beatsaverBeatmaps: BeatmapTableStoreState;
@@ -25,6 +29,14 @@ export interface SettingsStoreState {
     colorBlindMode: ColorblindMode;
   };
   beatsaverServerUrl: BeatsaverServerUrl;
+  addRemoveFromPlaylistsDialog: {
+    sortColumn: PlaylistSortColumnType;
+    sortOrder: PlaylistSortOrderType;
+  };
+  myPlaylists: {
+    sortColumn: PlaylistSortColumnType;
+    sortOrder: PlaylistSortOrderType;
+  };
 }
 
 export interface BeatmapTableStoreState {
@@ -44,6 +56,7 @@ const state = {
   darkTheme: true,
   enableDiscordRichPresence: false,
   defaultExportFormat: PlaylistFormatType.Json,
+  playlistIndentType: PlaylistIndentType.None,
   beatmapsTable: {
     localBeatmaps: { ...defaultTableSettings },
     beatsaverBeatmaps: { ...defaultTableSettings },
@@ -60,6 +73,14 @@ const state = {
     colorBlindMode: ColorblindMode.None,
   },
   beatsaverServerUrl: BeatsaverServerUrl.Beatsaver,
+  addRemoveFromPlaylistsDialog: {
+    sortColumn: PlaylistSortColumnType.Title,
+    sortOrder: PlaylistSortOrderType.Asc,
+  },
+  myPlaylists: {
+    sortColumn: PlaylistSortColumnType.Title,
+    sortOrder: PlaylistSortOrderType.Asc,
+  },
 };
 
 const mutations = {

@@ -1,3 +1,4 @@
+import fs from "fs-extra";
 import crypto from "crypto";
 import {
   PlaylistBase,
@@ -7,6 +8,7 @@ import {
   PlaylistRaw,
 } from "@/libraries/playlist/PlaylistLocal";
 import Progress from "@/libraries/common/Progress";
+import Utilities from "@/libraries/helper/Utilities";
 import PlaylistLoadStateError from "@/libraries/playlist/loader/PlaylistLoadStateError";
 import JsonSerializer from "@/libraries/playlist/loader/serializer/JsonSerializer";
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
@@ -20,6 +22,7 @@ import JsonDeserializer, {
 import PlaylistDeserializer from "@/libraries/playlist/loader/deserializer/PlaylistDeserializer";
 import PlaylistSerializer from "@/libraries/playlist/loader/serializer/PlaylistSerializer";
 import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
+import Logger from "@/libraries/helper/Logger";
 
 export default class PlaylistLoader {
   public static async Load(
@@ -122,6 +125,9 @@ export default class PlaylistLoader {
     }
 
     await serializer.serialize(playlist);
+
+    const stat = await fs.stat(filepath);
+    playlist.modified = stat.mtime;
   }
 
   public static LoadCover(playlistPath: string): Promise<Buffer | null> {
@@ -253,6 +259,12 @@ export default class PlaylistLoader {
     hash: string,
     progress: Progress
   ): Promise<PlaylistLocal> {
+    Logger.debug(
+      `start path: ${playlistRaw.path}, songs: ${
+        playlistRaw.songs?.length ?? 0
+      }`,
+      "PlaylistLoader"
+    );
     let playlistLocalMap: PlaylistLocalMap[] = [];
     if (playlistRaw.songs != null) {
       playlistLocalMap = await JsonDeserializer.convertToHash(
@@ -260,18 +272,31 @@ export default class PlaylistLoader {
         progress
       );
     }
-    return {
+
+    // Renderer process に描画処理させるためのダミーウェイト
+    await Utilities.sleep(50);
+
+    Logger.debug("end", "PlaylistLoader");
+    const result = {
       title: playlistRaw.title,
       author: playlistRaw.author,
       description: playlistRaw.description,
       cover: playlistRaw.cover,
       coverImageType: playlistRaw.coverImageType,
+      modified: playlistRaw.modified,
       maps: playlistLocalMap,
       loadState: { valid: true, format: playlistRaw.format },
       path: playlistRaw.path,
       hash,
       format: playlistRaw.format,
-    };
+    } as PlaylistLocal;
+    if (playlistRaw.syncURL != null) {
+      result.syncURL = playlistRaw.syncURL;
+    }
+    if (playlistRaw.customData != null) {
+      result.customData = playlistRaw.customData;
+    }
+    return Promise.resolve(result);
   }
 
   private static buildEmptyPlaylist(
@@ -294,6 +319,7 @@ export default class PlaylistLoader {
         format: undefined,
       },
       format: PlaylistFormatType.Unset,
+      modified: undefined,
     } as PlaylistLocal;
   }
 }

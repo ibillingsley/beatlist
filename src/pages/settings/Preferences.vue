@@ -32,6 +32,17 @@
       dense
       filled
     />
+    <v-select
+      v-model="playlistIndentType"
+      color="accent"
+      :items="playlistIndentTypeList"
+      item-text="text"
+      item-value="value"
+      label="Indent"
+      messages="The type of indentation used to save a playlist."
+      dense
+      filled
+    />
     <p class="title pt-5">Beatsaver</p>
     <v-select
       v-model="beatsaverServerUrl"
@@ -81,6 +92,8 @@ import OneClickSettings from "@/pages/settings/components/OneClickSettings.vue";
 import { ColorblindMode } from "@/libraries/app/Colorblind";
 import BeatsaverAPI from "@/libraries/net/beatsaver/BeatsaverAPI";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
+import PlaylistIndentType from "@/libraries/playlist/loader/serializer/PlaylistIndentType";
+import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 
 export default Vue.extend({
   name: "Preferences",
@@ -95,6 +108,7 @@ export default Vue.extend({
     defaultExportFormat: sync<PlaylistFormatType>(
       "settings/defaultExportFormat"
     ),
+    playlistIndentType: sync<PlaylistIndentType>("settings/playlistIndentType"),
     showLetterInDifficulty: sync<boolean>(
       "settings/accessibility@showLetterInDifficulty"
     ),
@@ -111,6 +125,7 @@ export default Vue.extend({
         (format) =>
           ![PlaylistFormatType.Unset, PlaylistFormatType.Blist].includes(format)
       ),
+    playlistIndentTypeList: () => PlaylistLibrary.GetIndentTypeList(),
     beatsaverUrlList: () =>
       Object.entries(BeatsaverServerUrl).map((entry) => ({
         text: `${entry[0]} (${entry[1]})`,

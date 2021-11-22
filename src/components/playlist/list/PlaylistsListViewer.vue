@@ -19,6 +19,9 @@
             ` - ${playlist.maps.length} maps`
           }}</span>
         </v-list-item-title>
+        <v-list-item-subtitle class="text-no-wrap grey--text">
+          {{ dateToString(playlist.modified) }}
+        </v-list-item-subtitle>
         <v-list-item-subtitle class="text-no-wrap">
           {{ playlist.description }}
         </v-list-item-subtitle>
@@ -50,6 +53,12 @@ export default Vue.extend({
     },
   },
   methods: {
+    dateToString(value: Date): string {
+      if (value == null) {
+        return "";
+      }
+      return value.toLocaleString();
+    },
     openPlaylist(playlist: PlaylistLocal): void {
       if (this.action) {
         this.action(playlist);

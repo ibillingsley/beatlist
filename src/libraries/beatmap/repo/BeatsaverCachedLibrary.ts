@@ -125,6 +125,13 @@ export default class BeatsaverCachedLibrary {
     );
   }
 
+  public static KeyToHash(key: string): string | undefined {
+    const hash =
+      this.GetKeyToHashIndex().get(key.toUpperCase()) ??
+      BeatsaverCachedLibrary.beatsaverCacheKeyToIndex.get(key.toUpperCase());
+    return hash;
+  }
+
   public static GetByHash(hash: string): BeatsaverItem | undefined {
     hash = hash.toUpperCase();
 

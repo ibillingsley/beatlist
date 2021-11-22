@@ -51,6 +51,7 @@ export default class PlaylistInstaller {
       author: "",
       description: "",
       cover,
+      modified: undefined,
       maps: [],
     } as PlaylistBase;
 
