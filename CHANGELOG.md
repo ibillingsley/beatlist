@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v1.3.3 (06/12/2021)
+**ATTENTION:**
+ - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
+   While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
+
+**Bug fixes:**
+ - When editing a playlist, the file name will not be changed to match the playlistTitle.
+   - From v1.2.4 to v1.3.2, when editing a playlist in beatlist, the file name would change to "playlistTitle with non-alphanumeric characters replaced with underscores" + ".json".  
+     ex) title: "My playlists 2021" -> filename: "my_playlists_2021.json"
+   - This version has been modified to not change (to keep) the file name.
+ - When creating a new playlist in the [My Playlists] screen, the playlist title input dialog will now be displayed.
+ - When a playlist file is deleted or renamed by an external program while the playlist editing screen is open, it will return to the [My Playlists] screen.
+
+**Others:**
+ - The default indent for saving a playlist in the [Settings] screen has been changed from `None` to `Space (2)`.
+
+<br>
+
 ## v1.3.2 (23/11/2021)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
