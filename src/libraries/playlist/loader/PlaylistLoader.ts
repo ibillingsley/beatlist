@@ -21,7 +21,7 @@ import JsonDeserializer, {
 } from "@/libraries/playlist/loader/deserializer/JsonDeserializer";
 import PlaylistDeserializer from "@/libraries/playlist/loader/deserializer/PlaylistDeserializer";
 import PlaylistSerializer from "@/libraries/playlist/loader/serializer/PlaylistSerializer";
-import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
+// import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
 import Logger from "@/libraries/helper/Logger";
 
 export default class PlaylistLoader {
@@ -91,6 +91,7 @@ export default class PlaylistLoader {
     format = format ?? playlist.format;
     await this.SaveAt(playlist.path, playlist, format);
 
+    /*
     if (!PlaylistFilename.isFilenameCorrect(playlist.path, playlist.title)) {
       playlist.path = await PlaylistFilename.renameToItsTitle(
         playlist.path,
@@ -104,6 +105,7 @@ export default class PlaylistLoader {
         format
       );
     }
+    */
 
     return playlist;
   }

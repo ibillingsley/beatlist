@@ -105,7 +105,7 @@
         <v-btn
           text
           color="success"
-          :disabled="!IsThereChange"
+          :disabled="!IsSaveEnabled"
           :loading="loading"
           @click="Save"
         >
@@ -172,6 +172,18 @@ export default Vue.extend({
         !this.imageChanged
       );
     },
+    IsSaveEnabled(): boolean {
+      return (
+        this.IsThereChange &&
+        this.playlistTitle != null &&
+        this.playlistTitle.trim() !== ""
+      );
+    },
+  },
+  watch: {
+    playlist() {
+      this.Load();
+    },
   },
   activated() {
     this.LoadCover();
@@ -207,6 +219,15 @@ export default Vue.extend({
       }
     },
     Save() {
+      if (this.playlistTitle == null || this.playlistTitle.trim() === "") {
+        NotificationService.NotifyMessage(
+          "Title not specified.",
+          "error",
+          "save",
+          5000
+        );
+        return;
+      }
       this.loading = true;
 
       const playlist = { ...this.playlist };
@@ -306,5 +327,13 @@ export default Vue.extend({
   position: absolute;
   width: 100%;
   height: 100%;
+}
+</style>
+<style>
+label.theme--dark.v-label {
+  color: grey !important;
+}
+label.theme--light.v-label {
+  color: #bdbdbd !important;
 }
 </style>

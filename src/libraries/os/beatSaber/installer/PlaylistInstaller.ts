@@ -31,9 +31,36 @@ export default class PlaylistInstaller {
     return PlaylistLoader.SaveAt(filepath, playlist, format);
   }
 
-  public static async InstallNewEmpty(): Promise<PlaylistLocal> {
-    const randNum = Math.floor(Math.random() * 1e6 - 1) + 1e5;
-    const name = `new_playlist_${randNum}`;
+  public static GetFilename(title: string) {
+    if (title == null || title === "") {
+      return "";
+    }
+    const extension = this.getDefaultExtension();
+    return `${PlaylistFilename.computeFilenameFor(title)}.${extension}`;
+  }
+
+  public static async ExistsPlaylist(title: string) {
+    if (title == null || title === "") {
+      return false;
+    }
+    const extension = this.getDefaultExtension();
+    const filepath = path
+      .join(
+        await BeatSaber.getPlaylistFolder(),
+        `${PlaylistFilename.computeFilenameFor(title)}.${extension}`
+      )
+      .toLowerCase();
+    return fs.existsSync(filepath);
+  }
+
+  public static async InstallNewEmpty(
+    playlistTitle?: string
+  ): Promise<PlaylistLocal> {
+    let name = playlistTitle;
+    if (name == null || name === "") {
+      const randNum = Math.floor(Math.random() * 1e6 - 1) + 1e5;
+      name = `new_playlist_${randNum}`;
+    }
     const cover = Buffer.from(await fs.readFile(defaultCoverPath));
     const format = store.getters[
       "settings/defaultExportFormat"
@@ -66,5 +93,13 @@ export default class PlaylistInstaller {
     }
 
     PlaylistLibrary.RemovePlaylist(playlist);
+  }
+
+  private static getDefaultExtension() {
+    const format = store.getters[
+      "settings/defaultExportFormat"
+    ] as PlaylistFormatType;
+    const extension = PlaylistFilenameExtension.GetFor(format);
+    return extension;
   }
 }

@@ -56,7 +56,7 @@ const state = {
   darkTheme: true,
   enableDiscordRichPresence: false,
   defaultExportFormat: PlaylistFormatType.Json,
-  playlistIndentType: PlaylistIndentType.None,
+  playlistIndentType: PlaylistIndentType.Space2,
   beatmapsTable: {
     localBeatmaps: { ...defaultTableSettings },
     beatsaverBeatmaps: { ...defaultTableSettings },

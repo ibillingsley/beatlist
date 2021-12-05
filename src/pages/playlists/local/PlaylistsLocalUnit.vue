@@ -47,7 +47,15 @@ export default Vue.extend({
       try {
         const hash = PlaylistLibrary.GetByPath(this.playlist.path)?.hash;
 
-        if (!hash) return;
+        // if (!hash) return;
+        if (hash == null) {
+          // hash が取れなくなった場合は My Playlists に戻る。
+          // ※beatlist管轄外(エクスプローラー, etc)で playlist ファイル名が変更された、playlist が削除された、等
+          await this.$router.replace({
+            name: route.PLAYLISTS_LOCAL,
+          });
+          return;
+        }
         if (hash === this.$route.params.hash) return;
 
         await this.$router.replace({

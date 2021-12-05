@@ -8,8 +8,10 @@ import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 
 export default class PlaylistOperation {
-  public static async CreateNewPlaylist(): Promise<PlaylistLocal> {
-    return PlaylistInstaller.InstallNewEmpty();
+  public static async CreateNewPlaylist(
+    playlistTitle: string
+  ): Promise<PlaylistLocal> {
+    return PlaylistInstaller.InstallNewEmpty(playlistTitle);
   }
 
   public static async DeletePlaylist(playlist: PlaylistLocal): Promise<void> {
