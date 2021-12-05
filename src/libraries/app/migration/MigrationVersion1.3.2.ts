@@ -21,7 +21,7 @@ function SetDefaultSortSettingsOfPlaylists() {
 }
 
 function SetPlaylistIndentType() {
-  store.commit("settings/SET_PLAYLIST_INDENT_TYPE", PlaylistIndentType.None);
+  store.commit("settings/SET_PLAYLIST_INDENT_TYPE", PlaylistIndentType.Space2);
 }
 
 export default () => {
