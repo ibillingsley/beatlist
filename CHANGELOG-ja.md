@@ -20,6 +20,7 @@
 - 上記に伴い [My Playlists]画面での playlist 新規作成時、playlist の title 入力ダイアログを表示するように変更。
 
 - playlist 編集画面を開いた状態で playlist のファイルが外部プログラムなどによって削除またはリネームされた時、[My Playlists]画面に戻るように修正。
+- playlist 編集画面で、title が空欄でも保存できてしまっていたのを修正。
 
 **Others:**
 - [Settings]画面の playlist 保存時のインデントの既定値を `None` から `Space (2)` に変更。

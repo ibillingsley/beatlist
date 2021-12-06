@@ -13,6 +13,7 @@
    - This version has been modified to not change (to keep) the file name.
  - When creating a new playlist in the [My Playlists] screen, the playlist title input dialog will now be displayed.
  - When a playlist file is deleted or renamed by an external program while the playlist editing screen is open, it will return to the [My Playlists] screen.
+ - Fixed a bug in the playlist edit screen that allowed saving even if the title value was blank.
 
 **Others:**
  - The default indent for saving a playlist in the [Settings] screen has been changed from `None` to `Space (2)`.
