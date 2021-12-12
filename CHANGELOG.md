@@ -1,6 +1,18 @@
 # Changelog
 
 
+
+## v1.3.4 (12/12/2021)
+**ATTENTION:**
+ - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
+   While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
+
+**Bug fixes:**
+ - Fixed a bug that sometimes it was not possible to sort by song title or delete a song without pressing the delete button twice. (#2)
+   - This bug may occur when the same song exists under Custom Levels.
+
+<br>
+
 ## v1.3.3 (06/12/2021)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
