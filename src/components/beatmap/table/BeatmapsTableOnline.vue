@@ -179,6 +179,7 @@ export default Vue.extend({
           (beatmap): BeatmapsTableDataUnit => ({
             local: undefined,
             data: beatmap,
+            folderNameHash: undefined,
           })
         ) ?? []
       );

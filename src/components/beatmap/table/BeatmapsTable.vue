@@ -10,7 +10,7 @@
     :fixed-header="fixedHeader"
     :show-select="selected !== undefined"
     loading-text="Loading contents ..."
-    item-key="hash"
+    item-key="tableKey"
     aria-describedby="List of beatmaps for the current context"
     hide-default-footer
     dense
@@ -416,6 +416,9 @@ export default Vue.extend({
         uploaded: entry.data.uploaded,
         key: entry.data.key,
         hash: entry.data.hash,
+        tableKey: `${entry.data.hash}${
+          entry.folderNameHash ? `-${entry.folderNameHash}` : ""
+        }`,
       }));
     },
     beatmapAsTableDataFiltered(): { raw: BeatmapsTableDataUnit }[] {

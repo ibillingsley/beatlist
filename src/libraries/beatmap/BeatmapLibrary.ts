@@ -1,6 +1,8 @@
 /* istanbul ignore file */
 import store from "@/plugins/store";
+import crypto from "crypto";
 import fs from "fs-extra";
+import path from "path";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import {
   BeatsaverBeatmap,
@@ -59,8 +61,8 @@ export default class BeatmapLibrary {
     const promiseResults: Promise<{
       local: BeatmapLocal;
       data: BeatsaverBeatmap | undefined;
+      folderNameHash: string | undefined;
     }>[] = [];
-    // TODO 1000件ずつくらいに分割しないと、Local に 40000件くらいあったら 40000件の promise が作成されてしまう。
     const validCache = BeatsaverCachedLibrary.GetAllValid();
     let cnt = 0;
     for (const beatmap of localValidMaps) {
@@ -75,12 +77,14 @@ export default class BeatmapLibrary {
       let mydata: BeatsaverBeatmap | undefined;
       if (beatmap.hash) {
         const hash = beatmap.hash.toUpperCase();
+        const folderNameHash = this.getFolderNameHash(beatmap.folderPath);
         // mydata = BeatsaverCachedLibrary.GetByHash(hash)?.beatmap;
         mydata = validCache.get(hash)?.beatmap;
         if (mydata != null) {
           result.push({
             local: undefined,
             data: mydata,
+            folderNameHash,
           });
           // eslint-disable-next-line no-continue
           continue;
@@ -90,19 +94,23 @@ export default class BeatmapLibrary {
           result.push({
             local: beatmap,
             data: generatedCache,
+            folderNameHash,
           });
           // eslint-disable-next-line no-continue
           continue;
         }
+        // TODO 事前キャッシュはあるから Local に 40000件あっても大半はここに到達しないが、1000件ずつくらいに分割したほうがいい。
         promiseResults.push(
           new Promise<{
             local: BeatmapLocal;
             data: BeatsaverBeatmap | undefined;
+            folderNameHash: string | undefined;
           }>((resolve) => {
             BeatmapLibrary.GenerateBeatmap(beatmap).then((generatedMap) => {
               resolve({
                 local: beatmap,
                 data: generatedMap,
+                folderNameHash,
               });
             });
           })
@@ -116,6 +124,7 @@ export default class BeatmapLibrary {
     let resolved: {
       local: BeatmapLocal;
       data: BeatsaverBeatmap | undefined;
+      folderNameHash: string | undefined;
     }[] = [];
     if (promiseResults.length > 0) {
       Logger.debug(
@@ -149,6 +158,23 @@ export default class BeatmapLibrary {
       })
       .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
     */
+  }
+
+  static getFolderNameHash(folderPath: string) {
+    if (folderPath == null) {
+      return undefined;
+    }
+    try {
+      const { base } = path.parse(folderPath);
+      return crypto
+        .createHash("sha1")
+        .update(base.toLowerCase())
+        .digest("hex")
+        .substr(0, 5);
+    } catch (error) {
+      console.warn(`Get folder name hash failed: ${folderPath}`, error);
+      return undefined;
+    }
   }
 
   static async GenerateBeatmap(

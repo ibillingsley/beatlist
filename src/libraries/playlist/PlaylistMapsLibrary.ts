@@ -72,6 +72,7 @@ export default class PlaylistMapsLibrary {
     const promiseResults: Promise<{
       local: BeatmapLocal;
       data: BeatsaverBeatmap | undefined;
+      folderNameHash: string | undefined;
     }>[] = [];
     Logger.debug(
       `    start validMaps loop ${validMaps.length}`,
@@ -86,6 +87,7 @@ export default class PlaylistMapsLibrary {
         result.push({
           local: undefined,
           data: mydata,
+          folderNameHash: undefined,
         });
         // eslint-disable-next-line no-continue
         continue;
@@ -97,15 +99,20 @@ export default class PlaylistMapsLibrary {
         // eslint-disable-next-line no-continue
         continue;
       }
+      const folderNameHash = BeatmapLibrary.getFolderNameHash(
+        beatmapLocal.folderPath
+      );
       promiseResults.push(
         new Promise<{
           local: BeatmapLocal;
           data: BeatsaverBeatmap | undefined;
+          folderNameHash: string | undefined;
         }>((resolve) => {
           BeatmapLibrary.GenerateBeatmap(beatmapLocal).then((generatedMap) => {
             resolve({
               local: beatmapLocal as BeatmapLocal,
               data: generatedMap,
+              folderNameHash,
             });
           });
         })
