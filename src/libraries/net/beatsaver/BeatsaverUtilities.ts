@@ -3,7 +3,7 @@ import {
   BeatsaverBeatmap,
   BeatsaverPage,
 } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
-import {
+import BeatsaverAPI, {
   BeatSaverAPIResponse,
   BeatSaverAPIResponseStatus,
 } from "@/libraries/net/beatsaver/BeatsaverAPI";
@@ -18,8 +18,26 @@ export default class BeatsaverUtilities {
     return url.resolve(BEATSAVER_DOMAIN, beatmap.coverURL);
   }
 
-  public static GetDownloadUrl(beatmap: BeatsaverBeatmap): string {
-    return url.resolve(BEATSAVER_DOMAIN, beatmap.downloadURL);
+  public static async GetDownloadUrl(
+    beatmap: BeatsaverBeatmap
+  ): Promise<string> {
+    let { downloadURL } = beatmap;
+    try {
+      // 最新の downloadURL を取得
+      const response = await BeatsaverAPI.Singleton.getBeatmapByHash(
+        beatmap.hash
+      );
+      if (response.status === BeatSaverAPIResponseStatus.ResourceFound) {
+        // 成功
+        downloadURL = response.data.downloadURL;
+      }
+    } catch (error) {
+      console.warn(`[GetDownload] getBeatmapByHash failed.`, error);
+    }
+    if (downloadURL?.toLowerCase().startsWith("https://")) {
+      return downloadURL;
+    }
+    return url.resolve(BEATSAVER_DOMAIN, downloadURL);
   }
 
   public static GetPageUrl(beatmap: BeatsaverBeatmap): string {

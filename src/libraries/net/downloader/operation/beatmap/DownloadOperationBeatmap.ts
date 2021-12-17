@@ -10,6 +10,7 @@ import {
   DownloadOperationTypeBeatmap,
 } from "@/libraries/net/downloader/operation/DownloadOperation";
 import DownloadUnit from "@/libraries/net/downloader/DownloadUnit";
+import Logger from "@/libraries/helper/Logger";
 import Utilities from "@/libraries/helper/Utilities";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatsaverUtilities from "@/libraries/net/beatsaver/BeatsaverUtilities";
@@ -64,7 +65,8 @@ export default class DownloadOperationBeatmap
         path.join(remote.app.getPath("temp"), "beatlist-")
       );
 
-      const url = BeatsaverUtilities.GetDownloadUrl(this.beatmap);
+      const url = await BeatsaverUtilities.GetDownloadUrl(this.beatmap);
+      Logger.debug(`download url: ${url}`, "DownloadOperationBeatmap");
       const zipPath = path.join(this.tempFolder, `${this.beatmap.key}.zip`);
       const stream = fs.createWriteStream(zipPath);
 
