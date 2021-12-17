@@ -1,6 +1,14 @@
 # Changelog
 
+## v1.3.5 (18/12/2021)
+**ATTENTION:**
+ - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
+   While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
 
+**Bug fixes:**
+ - Fixed to re-fetch the latest download URL before downloading the map.
+
+<br>
 
 ## v1.3.4 (12/12/2021)
 **ATTENTION:**
