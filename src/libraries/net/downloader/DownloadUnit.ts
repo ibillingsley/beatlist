@@ -1,5 +1,5 @@
 import * as remote from "@electron/remote";
-import request from "request";
+import fs from "fs-extra";
 import {
   DownloadUnitProgress,
   DownloadUnitProgressFactory,
@@ -8,53 +8,74 @@ import {
 export default class DownloadUnit {
   public static TimeoutMs = 10 * 1e3;
 
-  private _request: request.Request;
+  private onCompletedListener: () => void = () => {};
+
+  private onErrorListener: (error: Error) => void = () => {};
 
   private readonly progress: DownloadUnitProgress;
 
-  public constructor(
-    url: string,
-    writableStream: NodeJS.WritableStream,
-    progress?: DownloadUnitProgress
-  ) {
+  public constructor(progress?: DownloadUnitProgress) {
     this.progress = progress ?? DownloadUnitProgressFactory();
-    this._request = request(url, {
-      timeout: DownloadUnit.TimeoutMs,
-      headers: {
-        "User-Agent": remote.session.defaultSession?.getUserAgent(),
-        "Accept-Language": "en",
-      },
-    });
+  }
 
-    this._request.pipe(writableStream);
-
-    this._request.on("response", (response: request.Response) => {
-      this.SetProgressTotalHeader(response);
-      this.SetProgressStartAt();
-      response.on("data", (chunk: any) => {
-        if (this.progress) {
-          this.progress.bytes.received += chunk.length;
-          this.UpdateProgress();
-        }
+  public async Start(url: string, stream: fs.WriteStream) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": remote.session.defaultSession?.getUserAgent(),
+          "Accept-Language": "en",
+        },
       });
-    });
 
-    this._request.on("complete", this.UpdateProgress);
+      if (!res.ok) {
+        console.warn(
+          `Response is not ok. status: ${res.status}, statusText: ${res.statusText}`
+        );
+        throw new Error(res.statusText || "Download failed.");
+      }
+      this.SetProgressTotalHeader(res);
+      this.SetProgressStartAt();
+
+      const reader = res.body?.getReader();
+      if (reader == null) {
+        throw new Error(`Cannot read stream.`);
+      }
+      let receivedLength = 0;
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        // eslint-disable-next-line no-await-in-loop
+        const result = await reader.read();
+
+        if (result.done) {
+          this.onCompletedListener();
+          this.UpdateProgress();
+          break;
+        }
+
+        receivedLength += result.value.length;
+        this.progress.bytes.received = receivedLength;
+        this.UpdateProgress();
+        stream.write(result.value);
+      }
+    } catch (error) {
+      console.error(error);
+      this.onErrorListener(error);
+    }
   }
 
   public onCompleted(listener: () => void) {
-    this._request.on("complete", () => {
-      this.UpdateProgress();
-      listener();
-    });
+    // 追加ではなく上書き
+    this.onCompletedListener = listener;
   }
 
   public onError(listener: (error: Error) => void) {
-    this._request.on("error", listener);
+    // 追加ではなく上書き
+    this.onErrorListener = listener;
   }
 
-  private SetProgressTotalHeader(response: request.Response) {
-    const total = Number(response.headers["content-length"]) || undefined;
+  private SetProgressTotalHeader(response: Response) {
+    const total = Number(response.headers.get("content-length")) || undefined;
 
     if (total) {
       this.progress.bytes.total = total;

@@ -76,15 +76,18 @@ export default class DownloadOperationBeatmap
           status: DownloadOperationBeatmapResultStatus.Downloading,
         };
 
-        this.download = new DownloadUnit(url, stream, this.progress);
-        this.download.onError((error: Error) => this.onDownloadError(error));
+        this.download = new DownloadUnit(this.progress);
+        this.download.onError(async (error: Error) => {
+          Utilities.silentClose(stream);
+          this.onDownloadError(error);
+        });
         this.download.onCompleted(async () => {
+          Utilities.silentClose(stream); // 明示的に閉じる
           if (this.isCompleted) {
             return; // was terminated before by an error
           }
 
           try {
-            stream.close(); // 明示的に閉じる
             await Utilities.sleep(1000); // 少し待機しないとエラーになる
             const extractResult = await this.handleExtraction(zipPath);
             if (extractResult) {
@@ -95,6 +98,8 @@ export default class DownloadOperationBeatmap
             this.onExtractError(e);
           }
         });
+
+        await this.download.Start(url, stream);
       } catch (e) {
         this.onDownloadError(e);
       }
@@ -105,13 +110,12 @@ export default class DownloadOperationBeatmap
 
   private async CleanUp(): Promise<void> {
     if (this.tempFolder) {
-      // await fs.unlink(this.tempFolder);
-      fs.rmdir(this.tempFolder, (err) => {
-        if (err) {
-          console.log(err); // log only
-        }
-        return Promise.resolve();
-      });
+      try {
+        Logger.debug(`CleanUp: ${this.tempFolder}`, "DownloadOperationBeatmap");
+        await fs.remove(this.tempFolder);
+      } catch (error) {
+        console.log(error); // log only
+      }
     }
   }
 
@@ -142,12 +146,6 @@ export default class DownloadOperationBeatmap
           resolve(true);
         });
     });
-
-    // try {
-    //   fs.removeSync(zipPath); // temp ディレクトリの zip 削除
-    // } catch (e) {
-    //   // ignore
-    // }
   }
 
   OnCompleted(

@@ -1,19 +1,15 @@
 import os from "os";
 import path from "path";
 import fs from "fs-extra";
-import fetch from "node-fetch";
+import crypto from "crypto";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
 import PlaylistLoader from "@/libraries/playlist/loader/PlaylistLoader";
 import Progress from "@/libraries/common/Progress";
-import util from "util";
-import stream from "stream";
-import crypto from "crypto";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import PlaylistFilenameExtension from "@/libraries/playlist/PlaylistFilenameExtension";
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
-
-const streamPipeline = util.promisify(stream.pipeline);
+import Logger from "@/libraries/helper/Logger";
 
 export default class PlaylistFetcher {
   public static async Fetch(
@@ -72,12 +68,38 @@ export default class PlaylistFetcher {
     return filepath;
   }
 
-  private static async download(url: string, writeStream: stream.Writable) {
+  private static async download(url: string, writeStream: fs.WriteStream) {
     const response = await fetch(url);
 
-    if (!response.ok)
+    if (!response.ok) {
       throw new Error(`unexpected response ${response.statusText}`);
+    }
 
-    return streamPipeline(response.body, writeStream);
+    const totalStr = response.headers.get("content-length");
+    let total: number = 0;
+    if (totalStr != null) {
+      total = Number(totalStr);
+    }
+
+    const reader = response.body?.getReader();
+    if (reader == null) {
+      throw new Error(`Cannot read stream.`);
+    }
+    let receivedLength = 0;
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      // eslint-disable-next-line no-await-in-loop
+      const result = await reader.read();
+
+      if (result.done) {
+        break;
+      }
+
+      receivedLength += result.value.length;
+      writeStream.write(result.value);
+      Logger.debug(`received: ${receivedLength} / total: ${total}`);
+    }
+    return Promise.resolve();
   }
 }
