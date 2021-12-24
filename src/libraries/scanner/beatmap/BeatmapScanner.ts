@@ -1,4 +1,3 @@
-// import * as Throttle from "promise-parallel-throttle";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import { computeDifference, Differences } from "@/libraries/common/Differences";
 import Progress from "@/libraries/common/Progress";
@@ -108,24 +107,6 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
         progress.plusOne();
       }
       BeatsaverCachedLibrary.AddAll(notCachedItems);
-      //   // エラーが発生した場合の考慮が足りない？
-      //   this.result.newItems = await Throttle.all(
-      //     diff.added.map((path: string) => () =>
-      //       // BeatmapLoader.Load() はエラーになることがないようにした(つもり)。
-      //       BeatmapLoader.Load(path).then((beatmap: BeatmapLocal) => {
-      //         progress.plusOne();
-      //         BeatmapLibrary.AddBeatmap(beatmap);
-      //         return beatmap;
-      //       })
-      //     ),
-      //     { maxInProgress: 25 }
-      //   );
-
-      // this.result.removedItems = diff.removed.length;
-      // this.result.keptItems = diff.kept.length;
-
-      // const allBeatmaps = this.ReassembleAllBeatmap(diff);
-      // BeatmapLibrary.UpdateAllMaps(allBeatmaps);
 
       return this.result;
     });

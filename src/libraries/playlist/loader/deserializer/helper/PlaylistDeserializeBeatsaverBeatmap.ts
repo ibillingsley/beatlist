@@ -1,4 +1,3 @@
-// import * as Throttle from "promise-parallel-throttle";
 import {
   BeatsaverItem,
   BeatsaverItemInvalid,
@@ -120,23 +119,6 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
       BeatsaverCachedLibrary.AddAll(cacheItems);
     }
     return result;
-    // return Throttle.all(
-    //   identifiers.map((identifier) => async () =>
-    //     this.fromAny(identifier).then((item) => {
-    //       if (!item?.beatmap) {
-    //         const newItem: BeatsaverItemInvalidForPlaylist = {
-    //           originalHash: identifier.hash ? identifier.hash : "",
-    //           ...(item as BeatsaverItemInvalid),
-    //         };
-    //         progress.plusOne();
-    //         return newItem;
-    //       }
-    //       progress.plusOne();
-    //       return item;
-    //     })
-    //   ),
-    //   { maxInProgress: MAX_CONCURRENCY_ITEM }
-    // );
   }
 
   private static async fromAny(identifier: { key?: string; hash?: string }) {
