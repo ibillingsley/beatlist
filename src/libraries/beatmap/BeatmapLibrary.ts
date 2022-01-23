@@ -85,6 +85,9 @@ export default class BeatmapLibrary {
             local: undefined,
             data: mydata,
             folderNameHash,
+            duplicated: false,
+            playlistMapIndex: undefined,
+            diffHighlight: undefined,
           });
           // eslint-disable-next-line no-continue
           continue;
@@ -95,6 +98,9 @@ export default class BeatmapLibrary {
             local: beatmap,
             data: generatedCache,
             folderNameHash,
+            duplicated: false,
+            playlistMapIndex: undefined,
+            diffHighlight: undefined,
           });
           // eslint-disable-next-line no-continue
           continue;
@@ -269,6 +275,7 @@ export default class BeatmapLibrary {
   }
 
   public static GetMapByHash(hash: string): BeatmapLocal | undefined {
+    // TODO GetAllMaps().find(valid && hash) とするとほんの少し速くなるはず
     return this.GetAllValidMap().find(
       (beatmap: BeatmapLocal) => beatmap.hash === hash.toUpperCase()
     );

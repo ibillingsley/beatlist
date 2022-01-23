@@ -29,6 +29,7 @@ export default Vue.extend({
   props: {
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },
+    playlistMapIndex: { type: Number, default: undefined },
     small: { type: Boolean, default: false },
   },
   data: () => ({
@@ -50,7 +51,8 @@ export default Vue.extend({
       this.lockPlaylistModification = true;
       PlaylistOperation.RemoveMapFromPlaylist(
         this.playlist,
-        this.beatmap.hash
+        this.beatmap.hash,
+        this.playlistMapIndex
       ).finally(() => {
         this.loading = false;
         this.lockPlaylistModification = false;

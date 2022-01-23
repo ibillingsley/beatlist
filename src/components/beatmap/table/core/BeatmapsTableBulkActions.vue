@@ -1,7 +1,7 @@
 <template>
   <div style="height: 52px;">
     <v-slide-x-transition>
-      <v-container v-if="selected.length > 0" class="d-flex align-center ml-n4">
+      <v-container v-if="selectedCount > 0" class="d-flex align-center ml-n4">
         <v-btn
           v-if="bulkAdd && playlist"
           outlined
@@ -51,7 +51,7 @@
         </v-btn>
 
         <span class="pl-3">
-          {{ selected.length }} item{{ selected.length > 1 ? "s" : "" }}
+          {{ selectedCount }} item{{ selectedCount > 1 ? "s" : "" }}
           selected
         </span>
       </v-container>
@@ -69,11 +69,18 @@ import BeatmapInstaller from "@/libraries/os/beatSaber/installer/BeatmapInstalle
 import NotificationService from "@/libraries/notification/NotificationService";
 import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import DownloadLibrary from "@/libraries/net/downloader/DownloadLibrary";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import PlaylistMapsLibrary from "@/libraries/playlist/PlaylistMapsLibrary";
+import BeatmapScanner from "@/libraries/scanner/beatmap/BeatmapScanner";
+import { DownloadOperationBeatmapResultStatus } from "@/libraries/net/downloader/operation/beatmap/DownloadOperationBeatmapResult";
 
 export default Vue.extend({
   name: "BeatmapsTableBulkActions",
   props: {
+    // for BeatmapsTable
     selected: { type: Array as PropType<BeatsaverBeatmap[]>, required: true },
+    // for BeatmapsTableInPlaylist
+    selectedIndex: { type: Array as PropType<Number[]>, default: undefined },
     playlist: {
       type: Object as PropType<PlaylistLocal | undefined>,
       default: undefined,
@@ -89,7 +96,29 @@ export default Vue.extend({
     bulkDownloadLoading: false,
   }),
   computed: {
+    selectedCount(): number {
+      return this.selected.length + (this.selectedIndex?.length ?? 0);
+    },
     beatmapNotDownloadedAndSelected(): BeatsaverBeatmap[] {
+      if (this.playlist != null && this.selectedIndex != null) {
+        const result = [] as BeatsaverBeatmap[];
+        const validMaps = BeatsaverCachedLibrary.GetAllValid();
+        const hashes = PlaylistMapsLibrary.GetMapHashesByIndex(
+          this.playlist,
+          this.selectedIndex
+        );
+        for (const hash of hashes) {
+          const beatmap = validMaps.get(hash)?.beatmap;
+          if (
+            beatmap != null &&
+            !BeatmapLibrary.HasBeatmap(beatmap) &&
+            !DownloadLibrary.HasBeatmapScheduled(beatmap)
+          ) {
+            result.push(beatmap);
+          }
+        }
+        return result;
+      }
       return this.selected.filter((beatmap: BeatsaverBeatmap) => {
         return (
           !BeatmapLibrary.HasBeatmap(beatmap) &&
@@ -119,7 +148,8 @@ export default Vue.extend({
 
       PlaylistOperation.BulkRemoveMapFromPlaylist(
         this.playlist,
-        this.selected.map((s) => s.hash)
+        // this.selected.map((s) => s.hash)
+        this.selectedIndex
       ).finally(() => {
         this.bulkRemoveLoading = false;
         this.$emit("onDone");
@@ -128,11 +158,18 @@ export default Vue.extend({
     performBulkDownload() {
       this.bulkDownloadLoading = true;
 
+      const beatmapScanner = new BeatmapScanner();
       this.beatmapNotDownloadedAndSelected.forEach(
         (beatmap: BeatsaverBeatmap) => {
-          BeatmapInstaller.Install(beatmap, (operation) =>
-            NotificationService.NotifyBeatmapDownload(operation.result)
-          );
+          BeatmapInstaller.Install(beatmap, (operation) => {
+            NotificationService.NotifyBeatmapDownload(operation.result);
+            if (
+              operation.result.status ===
+              DownloadOperationBeatmapResultStatus.Success
+            ) {
+              beatmapScanner.scanOne(operation.result.path);
+            }
+          });
         }
       );
 
@@ -143,11 +180,31 @@ export default Vue.extend({
       if (!this.playlist) return;
 
       let text = "";
-      this.selected.forEach((s) => {
-        if (s.key != null && s.key !== "") {
-          text += `\r\n!bsr ${s.key}`;
+
+      if (this.playlist != null && this.selectedIndex != null) {
+        const keySet = new Set<string>();
+        const validMaps = BeatsaverCachedLibrary.GetAllValid();
+        const hashes = PlaylistMapsLibrary.GetMapHashesByIndex(
+          this.playlist,
+          this.selectedIndex
+        );
+        for (const hash of hashes) {
+          const beatmap = validMaps.get(hash)?.beatmap;
+          if (beatmap?.key != null && beatmap?.key !== "") {
+            keySet.add(beatmap.key);
+          }
         }
-      });
+        Array.from(keySet).forEach((key) => {
+          text += `\r\n!bsr ${key}`;
+        });
+      } else {
+        this.selected.forEach((s) => {
+          if (s.key != null && s.key !== "") {
+            text += `\r\n!bsr ${s.key}`;
+          }
+        });
+      }
+
       if (text.length > 0) {
         text = text.substring(2);
       } else {

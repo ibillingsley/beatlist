@@ -7,7 +7,7 @@
       :shown-column.sync="shownColumn"
       :search.sync="search"
     />
-    <BeatmapsTable
+    <!-- <BeatmapsTable
       ref="editorBeatmapsTable"
       :items="beatmaps"
       :shown-column="shownColumn"
@@ -15,22 +15,37 @@
       :selected.sync="selectedBeatmap"
       :search="search"
       :in-playlist="true"
+      :playlist-modified="playlistModifiedTime"
+      :loading="loading"
+      @openInformation="openInformation"
+    > -->
+    <BeatmapsTableInPlaylist
+      ref="editorBeatmapsTable"
+      :items="beatmaps"
+      :shown-column="shownColumn"
+      :items-per-page.sync="itemsPerPage"
+      :selected.sync="selectedBeatmap"
+      :search="search"
+      :in-my-playlist="true"
+      :playlist-modified="playlistModifiedTime"
       :loading="loading"
       @openInformation="openInformation"
     >
-      <template #actions="{ beatsaver }">
+      <template #actions="{ beatsaver, playlistMapIndex }">
         <BeatmapDownloadButton :beatmap="beatsaver" small />
         <PlaylistButtonRemoveFromPlaylist
           :playlist="playlist"
           :beatmap="beatsaver"
+          :playlist-map-index="playlistMapIndex"
           small
         />
         <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
       </template>
-    </BeatmapsTable>
+    </BeatmapsTableInPlaylist>
     <BeatmapsTableBulkActions
       :playlist="playlist"
-      :selected="selectedBeatmap"
+      :selected="[]"
+      :selected-index="selectedBeatmap"
       bulk-remove
       bulk-download
       bulk-copy-bsr
@@ -49,10 +64,9 @@ import Vue, { PropType } from "vue";
 import { sync } from "vuex-pathify";
 import store from "@/plugins/store";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
-import BeatmapsTable from "@/components/beatmap/table/BeatmapsTable.vue";
+import BeatmapsTableInPlaylist from "@/components/beatmap/table/BeatmapsTableInPlaylist.vue";
 import PlaylistButtonRemoveFromPlaylist from "@/components/playlist/button/PlaylistButtonRemoveFromPlaylist.vue";
 import PlaylistMapsLibrary from "@/libraries/playlist/PlaylistMapsLibrary";
-import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
@@ -66,7 +80,7 @@ import Logger from "@/libraries/helper/Logger";
 export default Vue.extend({
   name: "PlaylistEditorBeatmapList",
   components: {
-    BeatmapsTable,
+    BeatmapsTableInPlaylist,
     BeatmapsTableOuterHeader,
     BeatmapsTableBulkActions,
     PlaylistButtonRemoveFromPlaylist,
@@ -78,12 +92,14 @@ export default Vue.extend({
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
   },
   data: () => ({
-    selectedBeatmap: [] as BeatsaverBeatmap[],
+    // selectedBeatmap: [] as BeatsaverBeatmap[],
+    selectedBeatmap: [] as number[],
     search: "",
     beatmaps: [] as BeatmapsTableDataUnit[],
     targetHash: "",
     showDialog: false,
     loading: false,
+    playlistModifiedTime: undefined as number | undefined,
   }),
   computed: {
     shownColumn: sync<string[]>(
@@ -103,6 +119,7 @@ export default Vue.extend({
   watch: {
     async playlist() {
       Logger.debug(`watch playlist called.`, "PlaylistEditorBeatmapList");
+      this.playlistModifiedTime = this.playlist.modified?.getTime();
       this.fetchData();
     },
     cacheLastUpdated(newValue: Date, oldValue: Date) {
@@ -121,10 +138,12 @@ export default Vue.extend({
     },
   },
   activated() {
+    this.playlistModifiedTime = this.playlist.modified?.getTime();
     (this.$refs.editorBeatmapsTable as any).moveFirst();
   },
   mounted(): void {
     Logger.debug(`mounted called.`, "PlaylistEditorBeatmapList");
+    this.playlistModifiedTime = this.playlist.modified?.getTime();
     this.fetchData();
   },
   methods: {

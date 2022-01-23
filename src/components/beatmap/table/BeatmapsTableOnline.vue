@@ -180,6 +180,9 @@ export default Vue.extend({
             local: undefined,
             data: beatmap,
             folderNameHash: undefined,
+            duplicated: false,
+            playlistMapIndex: undefined,
+            diffHighlight: undefined,
           })
         ) ?? []
       );

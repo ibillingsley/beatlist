@@ -6,6 +6,7 @@ import {
 import PlaylistLoader from "@/libraries/playlist/loader/PlaylistLoader";
 import PlaylistScanner from "@/libraries/scanner/playlist/PlaylistScanner";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
+import PlaylistMapsLibrary from "@/libraries/playlist/PlaylistMapsLibrary";
 
 export default class PlaylistOperation {
   public static async CreateNewPlaylist(
@@ -62,13 +63,28 @@ export default class PlaylistOperation {
 
   public static RemoveMapFromPlaylist(
     playlist: PlaylistLocal,
-    beatmapHash: string
+    beatmapHash: string,
+    playlistMapIndex?: number
   ) {
     const copy = { ...playlist };
-
+    console.log(
+      `[RemoveMapFromPlaylist] beatmapHash: ${beatmapHash}, playlistMapIndex: ${playlistMapIndex}`
+    );
+    const targetHash = beatmapHash.toUpperCase();
+    const duplicated = PlaylistMapsLibrary.GetDuplicatedHashSet(playlist.maps);
     copy.maps = playlist.maps.filter(
-      (entry: PlaylistLocalMap) =>
-        entry.hash?.toUpperCase() !== beatmapHash.toUpperCase()
+      (entry: PlaylistLocalMap, index: number) => {
+        const hash = entry.hash?.toUpperCase();
+        if (hash == null) {
+          return true;
+        }
+        if (duplicated.has(hash) && playlistMapIndex != null) {
+          // 重複あり、かつ index 指定ありの場合、hash と index が一致するものだけ削除
+          return index !== playlistMapIndex || hash !== targetHash;
+        }
+        // 重複なし、または index 指定なしの場合、hash だけで削除
+        return hash !== targetHash;
+      }
     );
 
     return this.UpdatePlaylist(copy);
@@ -98,15 +114,19 @@ export default class PlaylistOperation {
 
   public static BulkRemoveMapFromPlaylist(
     playlist: PlaylistLocal,
-    beatmapHashes: string[]
+    // beatmapHashes: string[]
+    mapIndexes: Number[]
   ) {
     const copy = { ...playlist };
 
+    // copy.maps = playlist.maps.filter(
+    //   (entry: PlaylistLocalMap) =>
+    //     !beatmapHashes.find(
+    //       (hash: string) => entry.hash?.toUpperCase() === hash.toUpperCase()
+    //     )
+    // );
     copy.maps = playlist.maps.filter(
-      (entry: PlaylistLocalMap) =>
-        !beatmapHashes.find(
-          (hash: string) => entry.hash?.toUpperCase() === hash.toUpperCase()
-        )
+      (entry: PlaylistLocalMap, index: number) => !mapIndexes.includes(index)
     );
 
     return this.UpdatePlaylist(copy);

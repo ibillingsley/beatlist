@@ -4,7 +4,7 @@
       :shown-column.sync="shownColumn"
       :search.sync="search"
     />
-    <BeatmapsTable
+    <BeatmapsTableInPlaylist
       :items="beatmaps"
       :shown-column="shownColumn"
       :items-per-page.sync="itemsPerPage"
@@ -16,9 +16,11 @@
         <BeatmapDownloadButton :beatmap="beatsaver" small />
         <BeatmapButtonOpenPreview :beatmap="beatsaver" small />
       </template>
-    </BeatmapsTable>
+    </BeatmapsTableInPlaylist>
     <BeatmapsTableBulkActions
-      :selected="selectedBeatmap"
+      :playlist="playlist"
+      :selected="[]"
+      :selected-index="selectedBeatmap"
       bulk-download
       @onDone="selectedBeatmap = []"
     />
@@ -27,8 +29,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
-import BeatmapsTable from "@/components/beatmap/table/BeatmapsTable.vue";
+import BeatmapsTableInPlaylist from "@/components/beatmap/table/BeatmapsTableInPlaylist.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import { sync } from "vuex-pathify";
@@ -42,7 +43,8 @@ import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsT
 export default Vue.extend({
   name: "BeastsaberPlaylistContentTable",
   components: {
-    BeatmapsTable,
+    // BeatmapsTable,
+    BeatmapsTableInPlaylist,
     BeatmapsTableOuterHeader,
     BeatmapsTableBulkActions,
     BeatmapDownloadButton,
@@ -52,7 +54,8 @@ export default Vue.extend({
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
   },
   data: () => ({
-    selectedBeatmap: [] as BeatsaverBeatmap[],
+    // selectedBeatmap: [] as BeatsaverBeatmap[],
+    selectedBeatmap: [] as number[],
     search: "",
     beatmaps: [] as BeatmapsTableDataUnit[],
   }),

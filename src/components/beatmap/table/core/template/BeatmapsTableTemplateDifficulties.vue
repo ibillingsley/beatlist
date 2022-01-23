@@ -1,5 +1,5 @@
 <template>
-  <DifficultiesChips :diff="data" small short />
+  <DifficultiesChips :diff="data" :diff-highlight="options" small short />
 </template>
 
 <script lang="ts">
@@ -13,6 +13,7 @@ export default Vue.extend({
   props: {
     item: { type: Object, required: true },
     header: { type: Object, required: true },
+    options: { type: Object, default: undefined },
   },
   computed: {
     data() {

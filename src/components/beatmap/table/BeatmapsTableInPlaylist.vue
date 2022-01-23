@@ -33,7 +33,15 @@
     >
       <component
         :is="`BeatmapsTableTemplate${header.template}`"
-        v-if="header.value !== 'actions'"
+        v-if="header.value === 'difficulties'"
+        :key="header.value"
+        :item="item.raw"
+        :header="header"
+        :options="item.raw.diffHighlight"
+      />
+      <component
+        :is="`BeatmapsTableTemplate${header.template}`"
+        v-else-if="header.value !== 'actions'"
         :key="header.value"
         :item="item.raw"
         :header="header"
@@ -44,10 +52,15 @@
         :key="header.value"
         class="d-flex justify-center"
       >
-        <slot name="actions" :beatsaver="item.raw.data" />
+        <slot
+          name="actions"
+          :beatsaver="item.raw.data"
+          :playlist-map-index="item.raw.playlistMapIndex"
+        />
         <Tooltip text="See more">
+          <!-- My Playlists -->
           <v-btn
-            v-if="inPlaylist"
+            v-if="inMyPlaylist"
             icon
             small
             exact
@@ -55,6 +68,7 @@
           >
             <v-icon small>chevron_right</v-icon>
           </v-btn>
+          <!-- Beastsaber Playlists -->
           <v-btn
             v-else
             :to="{
@@ -95,8 +109,8 @@
 
     <template v-slot:[`item.data-table-select`]="{ item }">
       <v-simple-checkbox
-        :value="selected.includes(item.raw.data)"
-        @input="((value) => selectThisItem(item.raw.data, value))"
+        :value="selected.includes(item.raw.playlistMapIndex)"
+        @input="((value) => selectThisItem(item.raw.playlistMapIndex, value))"
       />
     </template>
   </v-data-table>
@@ -105,7 +119,6 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
-import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import Tooltip from "@/components/helper/Tooltip.vue";
 import {
   BeatmapsTableFilterType,
@@ -137,10 +150,12 @@ import BeatmapsTableTemplateRating from "@/components/beatmap/table/core/templat
 import BeatmapsTableColumnSelector from "@/components/beatmap/table/core/BeatmapsTableColumnSelector.vue";
 import BeatmapsTableFooter from "@/components/beatmap/table/core/BeatmapsTableFooter.vue";
 import BeatmapsTableFilterRow from "@/components/beatmap/table/core/BeatmapsTableFilterRow.vue";
-import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 
+// Playlist 内の map 表示用 BeatmapsTable
+// * checkbox での選択に BeatsaverBeatmap ではなく playlist 内の maps の要素 index を使用する。
+// * PlaylistLocalUnit の [Browser] 欄は BeatmapsTable で表示。
 export default Vue.extend({
-  name: "BeatmapsTable",
+  name: "BeatmapsTableInPlaylist",
   components: {
     BeatmapsTableColumnSelector,
     BeatmapsTableFooter,
@@ -171,11 +186,12 @@ export default Vue.extend({
     noSort: { type: Boolean, default: false },
     page: { type: Number, default: 1 },
     selected: {
-      type: Array as PropType<BeatsaverBeatmap[]>,
+      type: Array as PropType<Number[]>,
       default: undefined,
     },
     search: { type: String, default: undefined },
-    inPlaylist: { type: Boolean, default: false },
+    inMyPlaylist: { type: Boolean, default: false },
+    playlistModified: { type: Number, default: undefined },
   },
   data: () => ({
     filtersValue: {
@@ -272,8 +288,8 @@ export default Vue.extend({
           template: BeatmapsTableHeadersTemplate.Playlists,
           align: "center",
           sortable: false,
-          filterType: BeatmapsTableFilterType.Playlists,
-          filterable: true,
+          // filterType: BeatmapsTableFilterType.Playlists,
+          filterable: false,
           // localFilter は定義しない
           width: 110,
         },
@@ -404,8 +420,11 @@ export default Vue.extend({
     beatmapAsTableData(): { raw: BeatmapsTableDataUnit }[] {
       return this.items.map((entry: BeatmapsTableDataUnit) => {
         let tableKey = entry.data.hash;
-        if (entry.folderNameHash != null) {
-          tableKey += `-${entry.folderNameHash}`;
+        if (entry.duplicated) {
+          // 重複している場合だけ index と playlist の modified.getTime() を付加
+          // ※ index だけだと playlist.maps の要素 1 と 2 の hash が重複していて要素 0 を削除した時、
+          // 要素 2 の tableKey が変更前の要素 1 の tableKey に一致してしまうので変更日時を追加している。
+          tableKey += `-${entry.playlistMapIndex}-${this.playlistModified}`;
         }
         return {
           raw: entry,
@@ -441,7 +460,7 @@ export default Vue.extend({
     selectedItem() {
       this.$emit(
         "update:selected",
-        this.selectedItem.map((entry: any) => entry.raw.data)
+        this.selectedItem.map((entry: any) => entry.raw.playlistMapIndex)
       );
     },
     page() {
@@ -469,20 +488,26 @@ export default Vue.extend({
       if (select) {
         this.$emit(
           "update:selected",
-          this.beatmapAsTableDataFiltered.map((item) => item.raw.data)
+          this.beatmapAsTableDataFiltered.map(
+            (item) => item.raw.playlistMapIndex
+          )
         );
       } else {
         this.$emit("update:selected", []);
       }
     },
-    selectThisItem(item: BeatsaverBeatmap, enabled: boolean) {
+    selectThisItem(item: number, enabled: boolean) {
       if (enabled) {
-        this.$emit("update:selected", [...this.selected, item]);
+        if (!this.selected.includes(item)) {
+          this.$emit("update:selected", [...this.selected, item]);
+        } else {
+          this.$emit("update:selected", [...this.selected]);
+        }
       } else {
         this.$emit(
           "update:selected",
           this.selected.filter(
-            (selectedItem: BeatsaverBeatmap) => selectedItem.hash !== item.hash
+            (selectedIndex: Number) => selectedIndex !== item
           )
         );
       }
@@ -505,35 +530,12 @@ export default Vue.extend({
       );
     },
     filterWithFilters() {
-      let tableData: { raw: BeatmapsTableDataUnit }[] = this.beatmapAsTableData;
-      if (this.filtersValue.playlists) {
-        const allValidPlaylists = PlaylistLibrary.GetAllValidPlaylists();
-        // 全 playlist から map の hash を抽出して格納
-        const hashSet = new Set<string>();
-        for (const playlist of allValidPlaylists) {
-          if (playlist.maps != null) {
-            for (const map of playlist.maps) {
-              if (map.hash != null) {
-                hashSet.add(map.hash.toUpperCase());
-              }
-            }
-          }
-        }
-        // playlist に含まれない曲を抽出
-        tableData = tableData.filter(
-          (entry: { raw: BeatmapsTableDataUnit }) => {
-            return !hashSet.has(entry.raw.data.hash?.toUpperCase());
-          }
-        );
-      }
+      const tableData: { raw: BeatmapsTableDataUnit }[] = this
+        .beatmapAsTableData;
 
       return tableData.filter((entry: any) =>
         this.headers.every((header: BeatmapsTableHeader) => {
           if (!header.filterable) {
-            return true;
-          }
-          if (header.value === "playlists") {
-            // 上で絞り込み済なのでここでは絞り込みしない
             return true;
           }
 
