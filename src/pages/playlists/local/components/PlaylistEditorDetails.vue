@@ -15,7 +15,7 @@
               class="mr-5"
             >
               <v-img
-                v-if="imageData.length > 0"
+                v-if="imageData != null"
                 ref="cover"
                 :src="imageData"
                 aspect-ratio="1"
