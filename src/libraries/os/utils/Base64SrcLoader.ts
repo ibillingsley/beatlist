@@ -3,6 +3,9 @@ import mime from "mime-types";
 
 export default class Base64SrcLoader {
   public static Format(base64: string, mimeType: string): string {
+    if (base64 == null || base64 === "") {
+      return "";
+    }
     return `data:${mimeType};base64,${base64}`;
   }
 
