@@ -4,6 +4,7 @@ import {
   DownloadUnitProgress,
   DownloadUnitProgressFactory,
 } from "@/libraries/net/downloader/DownloadUnitProgress";
+import DownloadManager from "@/libraries/net/downloader/DownloadManager";
 
 export default class DownloadUnit {
   public static TimeoutMs = 10 * 1e3;
@@ -20,6 +21,8 @@ export default class DownloadUnit {
 
   public async Start(url: string, stream: fs.WriteStream) {
     try {
+      this.SetProgressStartAt();
+
       const res = await fetch(url, {
         headers: {
           "User-Agent": remote.session.defaultSession?.getUserAgent(),
@@ -31,10 +34,13 @@ export default class DownloadUnit {
         console.warn(
           `Response is not ok. status: ${res.status}, statusText: ${res.statusText}`
         );
+        if (res.status === 429) {
+          // Rate limit error
+          DownloadManager.SetPending();
+        }
         throw new Error(res.statusText || "Download failed.");
       }
       this.SetProgressTotalHeader(res);
-      this.SetProgressStartAt();
 
       const reader = res.body?.getReader();
       if (reader == null) {
