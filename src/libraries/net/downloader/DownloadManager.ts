@@ -45,7 +45,7 @@ export default class DownloadManager {
   }
 
   public static OnQueueUpdated(callback: () => void) {
-    DownloadManager.EventEmitter.on(ON_QUEUE_UPDATED, () => callback());
+    DownloadManager.EventEmitter.on(ON_QUEUE_UPDATED, callback);
   }
 
   public static RemoveOnQueueUpdatedListener(callback: () => void) {
