@@ -4,14 +4,14 @@ export interface AppStateStoreState {
   subNav: Object[];
   lockPlaylistModification: boolean;
   beatsaverRateLimit: undefined | Date;
-  downloadIsPending: boolean;
+  // downloadIsPending: boolean;
 }
 
 const state = {
   subNav: [],
   lockPlaylistModification: false,
   beatsaverRateLimit: undefined,
-  downloadIsPending: false,
+  // downloadIsPending: false,
 };
 
 const getters = {

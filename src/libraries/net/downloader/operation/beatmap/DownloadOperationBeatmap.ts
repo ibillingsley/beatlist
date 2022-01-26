@@ -108,6 +108,13 @@ export default class DownloadOperationBeatmap
     }
   }
 
+  private destroyDownload() {
+    if (this.download != null) {
+      this.download.ClearListener();
+    }
+    this.download = undefined; // 解放
+  }
+
   private async CleanUp(): Promise<void> {
     if (this.tempFolder) {
       try {
@@ -161,6 +168,7 @@ export default class DownloadOperationBeatmap
       errorWritten: `Couldn't download beatmap. [${error.name}]: ${error.message}`,
     };
 
+    this.destroyDownload();
     this.isCompleted = true;
     this._eventEmitter.emit(ON_COMPLETED);
   }
@@ -172,6 +180,7 @@ export default class DownloadOperationBeatmap
       errorWritten: `Couldn't extract beatmap. [${error.name}]: ${error.message}`,
     };
 
+    this.destroyDownload();
     this.isCompleted = true;
     this._eventEmitter.emit(ON_COMPLETED);
   }
@@ -183,6 +192,7 @@ export default class DownloadOperationBeatmap
       errorWritten: `Couldn't make the temporary folder to download. [${error.name}]: ${error.message}`,
     };
 
+    this.destroyDownload();
     this.isCompleted = true;
     this._eventEmitter.emit(ON_COMPLETED);
   }
@@ -194,6 +204,7 @@ export default class DownloadOperationBeatmap
       path: BeatSaber.GetFolderPathFor(this.beatmap),
     };
 
+    this.destroyDownload();
     this.isCompleted = true;
     this._eventEmitter.emit(ON_COMPLETED);
   }

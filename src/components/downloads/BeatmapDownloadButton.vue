@@ -30,6 +30,8 @@ import DownloadLibrary from "@/libraries/net/downloader/DownloadLibrary";
 import DownloadProgressCircular from "@/components/downloads/DownloadProgressCircular.vue";
 import { FormatProgressAllInOne } from "@/libraries/net/downloader/DownloadUnitProgress";
 import BeatmapInstaller from "@/libraries/os/beatSaber/installer/BeatmapInstaller";
+import BeatmapScanner from "@/libraries/scanner/beatmap/BeatmapScanner";
+import { DownloadOperationBeatmapResultStatus } from "@/libraries/net/downloader/operation/beatmap/DownloadOperationBeatmapResult";
 
 export default Vue.extend({
   name: "BeatmapDownloadButton",
@@ -77,6 +79,11 @@ export default Vue.extend({
     },
     notifyResult(operation: DownloadOperationBeatmap): void {
       NotificationService.NotifyBeatmapDownload(operation.result);
+      if (
+        operation.result.status === DownloadOperationBeatmapResultStatus.Success
+      ) {
+        new BeatmapScanner().scanOne(operation.result.path); // 非同期
+      }
     },
   },
 });

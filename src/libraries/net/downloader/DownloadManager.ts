@@ -1,5 +1,5 @@
 import events from "events";
-import store from "@/plugins/store";
+// import store from "@/plugins/store";
 import { DownloadOperation } from "@/libraries/net/downloader/operation/DownloadOperation";
 import DownloadLibrary from "@/libraries/net/downloader/DownloadLibrary";
 import Logger from "@/libraries/helper/Logger";
@@ -10,6 +10,8 @@ const PENDING_DURATION = 5 * 1000; // milliseconds
 
 export default class DownloadManager {
   private static EventEmitter = new events.EventEmitter();
+
+  private static pendingFlag: boolean = false;
 
   private static pendingStart: Date | undefined;
 
@@ -23,12 +25,14 @@ export default class DownloadManager {
   }
 
   public static SetPending() {
-    store.commit("appState/SET_DOWNLOAD_IS_PENDING", true);
+    // store.commit("appState/SET_DOWNLOAD_IS_PENDING", true);
+    DownloadManager.pendingFlag = true;
     DownloadManager.pendingStart = new Date();
   }
 
   public static IsPending() {
-    const pending = store.getters["appState/downloadIsPending"] as boolean;
+    // const pending = store.getters["appState/downloadIsPending"] as boolean;
+    const pending = DownloadManager.pendingFlag;
     if (pending) {
       if (DownloadLibrary.queuedOperation.length > 0) {
         const now = new Date();
@@ -42,6 +46,11 @@ export default class DownloadManager {
       }
     }
     return false;
+  }
+
+  public static Clear() {
+    DownloadLibrary.completedOperation = [];
+    DownloadManager.EventEmitter.emit(ON_QUEUE_UPDATED);
   }
 
   public static OnQueueUpdated(callback: () => void) {
@@ -72,7 +81,8 @@ export default class DownloadManager {
       return;
     }
 
-    store.commit("appState/SET_DOWNLOAD_IS_PENDING", false);
+    // store.commit("appState/SET_DOWNLOAD_IS_PENDING", false);
+    DownloadManager.pendingFlag = false;
     DownloadManager.pendingStart = undefined;
 
     while (

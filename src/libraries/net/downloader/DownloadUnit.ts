@@ -70,6 +70,11 @@ export default class DownloadUnit {
     }
   }
 
+  public ClearListener() {
+    this.onCompletedListener = () => {};
+    this.onErrorListener = () => {};
+  }
+
   public onCompleted(listener: () => void) {
     // 追加ではなく上書き
     this.onCompletedListener = listener;

@@ -2,9 +2,9 @@
   <div>
     <v-subheader v-if="subHeader">
       {{ `${subHeader} - ${operations.length}` }}
-      <v-chip v-if="isPending" small class="ml-4" style="background-color: red;"
-        >PENDING</v-chip
-      >
+      <div class="ml-2">
+        <slot />
+      </div>
     </v-subheader>
     <v-list v-if="operations.length !== 0" rounded dense>
       <div
@@ -26,7 +26,6 @@
 import Vue, { PropType } from "vue";
 import { DownloadOperation } from "@/libraries/net/downloader/operation/DownloadOperation";
 import DownloadsListTemplateBeatmap from "@/components/downloads/list/template/DownloadsListTemplateBeatmap.vue";
-import DownloadManager from "@/libraries/net/downloader/DownloadManager";
 
 export default Vue.extend({
   name: "DownloadsListGroup",
@@ -40,11 +39,6 @@ export default Vue.extend({
     type: {
       type: String as PropType<"queued" | "ongoing" | "completed">,
       required: true,
-    },
-  },
-  computed: {
-    isPending(): boolean {
-      return this.type === "queued" && DownloadManager.IsPending();
     },
   },
 });

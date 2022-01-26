@@ -20,7 +20,18 @@
           sub-header="Completed"
           type="completed"
           :operations="completed"
-        />
+        >
+          <Tooltip text="Clear the following download history">
+            <v-btn
+              :disabled="completed == null || completed.length === 0"
+              color="warning"
+              class="ml-2"
+              small
+              @click="clearResult"
+              >CLEAR</v-btn
+            >
+          </Tooltip>
+        </DownloadsListGroup>
       </v-card-text>
     </v-card>
   </v-container>
@@ -33,10 +44,11 @@ import DownloadLibrary from "@/libraries/net/downloader/DownloadLibrary";
 import DownloadManager from "@/libraries/net/downloader/DownloadManager";
 import { DownloadOperation } from "@/libraries/net/downloader/operation/DownloadOperation";
 import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
+import Tooltip from "@/components/helper/Tooltip.vue";
 
 export default Vue.extend({
   name: "Downloads",
-  components: { DownloadsListGroup },
+  components: { Tooltip, DownloadsListGroup },
   data: () => ({
     queued: [] as DownloadOperation[],
     ongoing: [] as DownloadOperation[],
@@ -58,6 +70,9 @@ export default Vue.extend({
       this.queued = DownloadLibrary.queuedOperation;
       this.ongoing = DownloadLibrary.ongoingOperation;
       this.completed = DownloadLibrary.completedOperation;
+    },
+    clearResult() {
+      DownloadManager.Clear();
     },
   },
 });

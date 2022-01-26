@@ -167,7 +167,7 @@ export default Vue.extend({
               operation.result.status ===
               DownloadOperationBeatmapResultStatus.Success
             ) {
-              beatmapScanner.scanOne(operation.result.path);
+              beatmapScanner.scanOne(operation.result.path); // 非同期
             }
           });
         }
