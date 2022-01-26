@@ -1,5 +1,35 @@
 # Changelog
 
+## v1.3.6 (26/01/2022)
+**ATTENTION:**
+ - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
+   While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
+
+**Improvement:**
+ - Enabled bulk download of maps contained in playlist.
+   - In the edit screen of each playlist, check the checkbox in the [Content] and press the [DOWNLOAD] button.
+ - When downloading maps, if beatsaver.com returns a 429 Too Many Request error, beatlist now waits 5 seconds before resuming the download.
+ - When maps in playlist has beem highligted, the circle in the [Difficulties] field of the playlist edit screen is now highlighted.
+   - Only supports display, not editing. Also, due to the display area, there is no distinction between Standard/OneSaber/NoArrows/360Degree/90Degree/Lawless.
+   - [Beatmap Information] screen is not supported.
+ - In the [Downloads] screen, the error message is now displayed in red when a map fails to download.
+ - Added key display for each downloaded map in [Downloads] screen.
+ - Added a button that clear the download history in the [Downloads] screen.
+
+**Bug fixes:**
+ - Fixed a memory leak that caused memory usage to increase by a small amount (like a few MB) every time a screen with a download button was displayed.
+   - This bug has existed since the original version (v1.2.4 or earlier).
+ - Fixed a bug that the playlist editiong screen freezes if the same score exists in the playlist.
+ - Fixed a bug where saving a playlist without a cover image would set an unnecessary string to the image.
+ - Fixed a bug in which downloading a playlist from the [Beastsaber Playlists] screen would sometimes unintentionally redirect to the [My Playlists] screen.
+
+**Others:**
+ - Updated the cache data to be loaded in advance to mid-January 2022 (about 55,000 items).
+ - Changed the download process to use the fetch API for development purposes.
+ - Removed libraries that are no longer needed.
+
+<br>
+
 ## v1.3.5 (18/12/2021)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
