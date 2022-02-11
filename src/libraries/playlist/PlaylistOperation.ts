@@ -10,9 +10,10 @@ import PlaylistMapsLibrary from "@/libraries/playlist/PlaylistMapsLibrary";
 
 export default class PlaylistOperation {
   public static async CreateNewPlaylist(
-    playlistTitle: string
+    playlistTitle: string,
+    saveFolder?: string
   ): Promise<PlaylistLocal> {
-    return PlaylistInstaller.InstallNewEmpty(playlistTitle);
+    return PlaylistInstaller.InstallNewEmpty(playlistTitle, saveFolder);
   }
 
   public static async DeletePlaylist(playlist: PlaylistLocal): Promise<void> {

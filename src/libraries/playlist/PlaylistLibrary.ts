@@ -1,5 +1,9 @@
 import store from "@/plugins/store";
-import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
+import Path from "path";
+import {
+  PlaylistLocal,
+  PlaylistFolder,
+} from "@/libraries/playlist/PlaylistLocal";
 import PlaylistSortColumnType, {
   getSortTypeDisplayNameFor,
 } from "@/libraries/playlist/PlaylistSortColumnType";
@@ -19,6 +23,28 @@ export default class PlaylistLibrary {
     return this.GetAllPlaylists().filter(
       (playlist: PlaylistLocal) => playlist.loadState.valid
     );
+  }
+
+  public static GetPlaylistFolders(): PlaylistFolder {
+    return store.getters["playlist/playlistFolders"];
+  }
+
+  public static SetPlaylistFolders(folders: PlaylistFolder) {
+    store.commit("playlist/SET_PLAYLIST_FOLDERS", folders);
+  }
+
+  public static FilterPlaylistByPath(
+    playlists: PlaylistLocal[],
+    folderPath: string
+  ): PlaylistLocal[] {
+    return playlists.filter((playlist) => {
+      if (playlist.path == null) {
+        // 基本的にはありえないはず
+        return false;
+      }
+      const dirname = Path.dirname(playlist.path);
+      return folderPath.toLowerCase() === dirname.toLowerCase();
+    });
   }
 
   public static GetAllInvalidPlaylists(): PlaylistLocal[] {

@@ -43,6 +43,25 @@
       dense
       filled
     />
+    <v-switch
+      v-model="disablePlaylistFolderManagement"
+      color="accent"
+      label="Disable playlist folder management"
+      dense
+      inset
+    >
+      <template v-slot:label>
+        <div>
+          <div>Disable playlist folder management</div>
+          <div
+            v-if="disablePlaylistFolderManagement"
+            class="warning--text caption"
+          >
+            Be aware that the playlists in the subfolders will not be displayed.
+          </div>
+        </div>
+      </template>
+    </v-switch>
     <p class="title pt-5">Beatsaver</p>
     <v-select
       v-model="beatsaverServerUrl"
@@ -94,6 +113,7 @@ import BeatsaverAPI from "@/libraries/net/beatsaver/BeatsaverAPI";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
 import PlaylistIndentType from "@/libraries/playlist/loader/serializer/PlaylistIndentType";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
+import ScannerService from "@/libraries/scanner/ScannerService";
 
 export default Vue.extend({
   name: "Preferences",
@@ -109,6 +129,9 @@ export default Vue.extend({
       "settings/defaultExportFormat"
     ),
     playlistIndentType: sync<PlaylistIndentType>("settings/playlistIndentType"),
+    disablePlaylistFolderManagement: sync<boolean>(
+      "settings/disablePlaylistFolderManagement"
+    ),
     showLetterInDifficulty: sync<boolean>(
       "settings/accessibility@showLetterInDifficulty"
     ),
@@ -135,6 +158,9 @@ export default Vue.extend({
   watch: {
     enableDiscordRichPresence() {
       DiscordRichPresence.SetVisibility(this.enableDiscordRichPresence);
+    },
+    disablePlaylistFolderManagement() {
+      ScannerService.ScanPlaylists(); // 非同期
     },
   },
   methods: {

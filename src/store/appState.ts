@@ -5,6 +5,10 @@ export interface AppStateStoreState {
   lockPlaylistModification: boolean;
   beatsaverRateLimit: undefined | Date;
   // downloadIsPending: boolean;
+  selectedPlaylistFolderInDialog: {
+    name: string;
+    path: string | undefined;
+  };
 }
 
 const state = {
@@ -12,6 +16,10 @@ const state = {
   lockPlaylistModification: false,
   beatsaverRateLimit: undefined,
   // downloadIsPending: false,
+  selectedPlaylistFolderInDialog: {
+    name: "",
+    path: undefined,
+  },
 };
 
 const getters = {

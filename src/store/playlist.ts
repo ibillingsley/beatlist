@@ -1,14 +1,19 @@
 import { make } from "vuex-pathify";
-import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
+import {
+  PlaylistLocal,
+  PlaylistFolder,
+} from "@/libraries/playlist/PlaylistLocal";
 
 export interface PlaylistStoreState {
   lastScan: Date;
   playlists: PlaylistLocal[];
+  playlistFolders: PlaylistFolder;
 }
 
 const state = {
   lastScan: undefined,
   playlists: [],
+  playlistFolders: undefined,
 };
 
 const getters = {
@@ -25,6 +30,9 @@ const mutations = {
   ...make.mutations(state),
   SET_PLAYLISTS(context: PlaylistStoreState, playlists: PlaylistLocal[]) {
     context.playlists = (playlists ?? []).map((p) => emptyCoverCopy(p));
+  },
+  SET_PLAYLIST_FOLDERS(context: PlaylistStoreState, folders: PlaylistFolder) {
+    context.playlistFolders = { ...folders };
   },
   addPlaylist(
     context: PlaylistStoreState,

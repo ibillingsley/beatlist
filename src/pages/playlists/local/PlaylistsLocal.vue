@@ -5,7 +5,7 @@
     </p>
     <v-container class="d-flex align-center">
       <v-subheader>actions</v-subheader>
-      <PlaylistButtonNewPlaylist />
+      <PlaylistButtonNewPlaylist :selected-folder="selectedFolder" />
       <PlaylistButtonOpenFolder />
       <v-container
         class="d-flex align-center"
@@ -42,33 +42,51 @@
       </v-container>
     </v-container>
 
-    <PlaylistsListViewer :playlists="sortedPlaylists" :action="openPlaylist">
-      <template #actions="{ playlist }">
-        <div class="d-flex">
-          <PlaylistButtonRemovePlaylist :playlist="playlist" />
-          <Tooltip text="See more">
-            <v-btn
-              icon
-              :to="{
-                name: playlistLocalUnitRouteName,
-                params: { hash: playlist.hash },
-              }"
-            >
-              <v-icon>chevron_right</v-icon>
-            </v-btn>
-          </Tooltip>
-        </div>
-      </template>
-    </PlaylistsListViewer>
+    <v-container class="d-flex flex-row pa-0" style="flex-wrap: nowrap;">
+      <PlaylistsFolderViewer
+        class="flex-grow-0 flex-shrink-0"
+        style="min-width: 200px; width: 25%;"
+        prevent-click-on-active-node
+        :default-active="'root'"
+        @update:selection="selectFolder"
+      />
+      <PlaylistsListViewer
+        :playlists="sortedPlaylists"
+        :action="openPlaylist"
+        class="flex-grow-1 flex-shrink-1"
+        style="width: 75%;"
+      >
+        <template #actions="{ playlist }">
+          <div class="d-flex">
+            <PlaylistButtonRemovePlaylist :playlist="playlist" />
+            <Tooltip text="See more">
+              <v-btn
+                icon
+                :to="{
+                  name: playlistLocalUnitRouteName,
+                  params: { hash: playlist.hash },
+                }"
+              >
+                <v-icon>chevron_right</v-icon>
+              </v-btn>
+            </Tooltip>
+          </div>
+        </template>
+      </PlaylistsListViewer>
+    </v-container>
   </v-container>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import store from "@/plugins/store";
+import PlaylistsFolderViewer from "@/components/playlist/folder/PlaylistsFolderViewer.vue";
 import PlaylistsListViewer from "@/components/playlist/list/PlaylistsListViewer.vue";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
-import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
+import {
+  PlaylistFolder,
+  PlaylistLocal,
+} from "@/libraries/playlist/PlaylistLocal";
 import PlaylistButtonNewPlaylist from "@/components/playlist/button/PlaylistButtonNewPlaylist.vue";
 import PlaylistButtonRemovePlaylist from "@/components/playlist/button/PlaylistButtonRemovePlaylist.vue";
 import Tooltip from "@/components/helper/Tooltip.vue";
@@ -80,10 +98,12 @@ import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 import route from "@/plugins/route/route";
 import PlaylistSortColumnType from "@/libraries/playlist/PlaylistSortColumnType";
 import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
+import Logger from "@/libraries/helper/Logger";
 
 export default Vue.extend({
   name: "PlaylistsLocal",
   components: {
+    PlaylistsFolderViewer,
     PlaylistsListViewer,
     PlaylistButtonNewPlaylist,
     PlaylistButtonRemovePlaylist,
@@ -101,6 +121,7 @@ export default Vue.extend({
     sortColumn: PlaylistSortColumnType.Title,
     sortOrder: PlaylistSortOrderType.Asc,
     sortedPlaylists: [] as PlaylistLocal[],
+    selectedFolder: undefined as string | undefined,
   }),
   computed: {
     playlists: () => PlaylistLibrary.GetAllValidPlaylists(),
@@ -160,6 +181,9 @@ export default Vue.extend({
           );
         });
       }
+      if (this.selectedFolder != null) {
+        list = PlaylistLibrary.FilterPlaylistByPath(list, this.selectedFolder);
+      }
       this.sortedPlaylists = list;
     },
     switchSortOrder(): void {
@@ -182,6 +206,11 @@ export default Vue.extend({
           2500
         );
       }
+    },
+    selectFolder(selectedFolder: PlaylistFolder): void {
+      Logger.debug(`folder selected: ${selectedFolder.path}`, "PlaylistsLocal");
+      this.selectedFolder = selectedFolder.path;
+      this.sortPlaylists();
     },
   },
 });

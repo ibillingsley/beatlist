@@ -22,7 +22,12 @@ const vuexLocalCachedData = new VuexPersistence<StoreState>({
       beatsaverKeyToHashIndex: state.beatmap.beatsaverKeyToHashIndex,
       // beatsaverCacheUpdated は除外
     },
-    playlist: state.playlist,
+    // playlist: state.playlist,
+    playlist: {
+      lastScan: state.playlist.lastScan,
+      playlists: state.playlist.playlists,
+      // playlistFolders は除外
+    },
   }),
 });
 

@@ -14,6 +14,7 @@ export interface SettingsStoreState {
   enableDiscordRichPresence: boolean;
   defaultExportFormat: PlaylistFormatType;
   playlistIndentType: PlaylistIndentType;
+  disablePlaylistFolderManagement: boolean;
   beatmapsTable: {
     localBeatmaps: BeatmapTableStoreState;
     beatsaverBeatmaps: BeatmapTableStoreState;
@@ -57,6 +58,7 @@ const state = {
   enableDiscordRichPresence: false,
   defaultExportFormat: PlaylistFormatType.Json,
   playlistIndentType: PlaylistIndentType.Space2,
+  disablePlaylistFolderManagement: false,
   beatmapsTable: {
     localBeatmaps: { ...defaultTableSettings },
     beatsaverBeatmaps: { ...defaultTableSettings },

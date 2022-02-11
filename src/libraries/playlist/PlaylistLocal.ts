@@ -2,6 +2,17 @@ import { PlaylistLoadState } from "@/libraries/playlist/loader/PlaylistLoadState
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import { BeatsaverKey } from "@/libraries/beatmap/repo/BeatsaverKeyType";
 
+export const PLAYLIST_FOLDER_ID_ROOT = "root";
+
+export interface PlaylistFolder {
+  id: string;
+  name: string;
+  path: string;
+  modified: Date | undefined;
+  children: PlaylistFolder[];
+  allChildren?: Map<string, PlaylistFolder>; // id = root のみ保持、root は含まない
+}
+
 export interface PlaylistBase {
   title: string;
   author: string;

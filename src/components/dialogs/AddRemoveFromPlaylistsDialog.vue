@@ -31,6 +31,26 @@
             <v-icon v-else>arrow_downward</v-icon>
           </v-btn>
         </v-container>
+        <v-container v-if="!folderManagementDisabled">
+          <v-menu v-model="menu">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="folderName"
+                label="Folder"
+                messages="All playlists displayed if no folder selected."
+                prepend-icon="mdi-folder"
+                readonly
+                clearable
+                v-on="on"
+                @click:clear="clearFolderSelection"
+              />
+            </template>
+            <PlaylistsFolderViewer
+              fill-background
+              @update:selection="selectFolder"
+            />
+          </v-menu>
+        </v-container>
       </v-card-title>
 
       <v-card-text>
@@ -57,17 +77,27 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import store from "@/plugins/store";
+import { get } from "vuex-pathify";
+import PlaylistsFolderViewer from "@/components/playlist/folder/PlaylistsFolderViewer.vue";
 import PlaylistsListViewer from "@/components/playlist/list/PlaylistsListViewer.vue";
-import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
+import {
+  PlaylistFolder,
+  PlaylistLocal,
+} from "@/libraries/playlist/PlaylistLocal";
 import PlaylistLibrary from "@/libraries/playlist/PlaylistLibrary";
 import PlaylistButtonAddRemoveTogglePlaylist from "@/components/playlist/button/PlaylistButtonAddRemoveTogglePlaylist.vue";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import PlaylistSortColumnType from "@/libraries/playlist/PlaylistSortColumnType";
 import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
+import Logger from "@/libraries/helper/Logger";
 
 export default Vue.extend({
   name: "AddRemoveFromPlaylistsDialog",
-  components: { PlaylistsListViewer, PlaylistButtonAddRemoveTogglePlaylist },
+  components: {
+    PlaylistsFolderViewer,
+    PlaylistsListViewer,
+    PlaylistButtonAddRemoveTogglePlaylist,
+  },
   props: {
     open: { type: Boolean, required: true },
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },
@@ -78,11 +108,20 @@ export default Vue.extend({
     sortColumn: PlaylistSortColumnType.Title,
     sortOrder: PlaylistSortOrderType.Asc,
     sortedPlaylists: [] as PlaylistLocal[],
+    menu: false,
+    folderName: "", // v-model 用に変数を別途用意
   }),
   computed: {
     playlists: () => PlaylistLibrary.GetAllValidPlaylists(),
     sortColumnList: () => PlaylistLibrary.GetSortColumnList(),
     sortOrderList: () => PlaylistLibrary.GetSortOrderList(),
+    folderManagementDisabled: get<boolean>(
+      "settings/disablePlaylistFolderManagement"
+    ),
+    selectedFolderName: get<string>(
+      "appState/selectedPlaylistFolderInDialog@name"
+    ),
+    selectedFolder: get<string>("appState/selectedPlaylistFolderInDialog@path"),
   },
   watch: {
     open() {
@@ -116,6 +155,9 @@ export default Vue.extend({
       }
       this.sortPlaylists();
     },
+    selectedFolderName() {
+      this.folderName = this.selectedFolderName;
+    },
   },
   mounted(): void {
     this.isOpen = this.open;
@@ -129,6 +171,7 @@ export default Vue.extend({
       myPlaylistsSettings.sortColumn ?? PlaylistSortColumnType.Title;
     this.sortOrder = myPlaylistsSettings.sortOrder ?? PlaylistSortOrderType.Asc;
 
+    this.folderName = this.selectedFolderName;
     this.sortPlaylists();
   },
   methods: {
@@ -136,17 +179,44 @@ export default Vue.extend({
       this.$emit("update:open", false);
     },
     sortPlaylists(): void {
-      this.sortedPlaylists = PlaylistLibrary.SortPlaylists(
+      let list = PlaylistLibrary.SortPlaylists(
         this.playlists,
         this.sortColumn,
         this.sortOrder
       );
+      if (!this.folderManagementDisabled && this.selectedFolder != null) {
+        list = PlaylistLibrary.FilterPlaylistByPath(list, this.selectedFolder);
+      }
+      this.sortedPlaylists = list;
     },
     switchSortOrder(): void {
       this.sortOrder =
         this.sortOrder === PlaylistSortOrderType.Asc
           ? PlaylistSortOrderType.Desc
           : PlaylistSortOrderType.Asc;
+    },
+    selectFolder(selectedFolder: PlaylistFolder): void {
+      if (selectedFolder == null) {
+        // 選択なしは clearFolderSelection() で行う。PlaylistsFolderViewer からの undefined 通知は無視。
+        Logger.debug(`Ignore empty selection.`, "AddRemoveFromPlaylistsDialog");
+        return;
+      }
+      Logger.debug(
+        `folder selected: ${selectedFolder?.path}`,
+        "AddRemoveFromPlaylistsDialog"
+      );
+      store.commit("appState/SET_SELECTED_PLAYLIST_FOLDER_IN_DIALOG", {
+        name: selectedFolder.name,
+        path: selectedFolder.path,
+      });
+      this.sortPlaylists();
+    },
+    clearFolderSelection(): void {
+      store.commit("appState/SET_SELECTED_PLAYLIST_FOLDER_IN_DIALOG", {
+        name: "",
+        path: undefined,
+      });
+      this.sortPlaylists();
     },
   },
 });

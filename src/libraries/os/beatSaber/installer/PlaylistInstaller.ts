@@ -54,7 +54,8 @@ export default class PlaylistInstaller {
   }
 
   public static async InstallNewEmpty(
-    playlistTitle?: string
+    playlistTitle?: string,
+    saveFolder?: string
   ): Promise<PlaylistLocal> {
     let name = playlistTitle;
     if (name == null || name === "") {
@@ -65,10 +66,14 @@ export default class PlaylistInstaller {
     const format = store.getters[
       "settings/defaultExportFormat"
     ] as PlaylistFormatType;
+    let targetFolder = saveFolder ?? "";
+    if (targetFolder === "") {
+      targetFolder = await BeatSaber.getPlaylistFolder();
+    }
     const extension = PlaylistFilenameExtension.GetFor(format);
     const filepath = path
       .join(
-        await BeatSaber.getPlaylistFolder(),
+        targetFolder,
         `${PlaylistFilename.computeFilenameFor(name)}.${extension}`
       )
       .toLowerCase();

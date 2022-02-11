@@ -22,6 +22,9 @@ export default Vue.extend({
     NewPlaylistDialog,
     Tooltip,
   },
+  props: {
+    selectedFolder: { type: String, default: undefined },
+  },
   data: () => ({
     loading: false,
     openNewPlaylistDialog: false,
@@ -32,9 +35,14 @@ export default Vue.extend({
     },
     MakeNewPlaylist(playlistTitle: string) {
       this.loading = true;
-      PlaylistOperation.CreateNewPlaylist(playlistTitle).then(() => {
-        this.loading = false;
-      });
+      PlaylistOperation.CreateNewPlaylist(playlistTitle, this.selectedFolder)
+        .then(() => {
+          this.loading = false;
+        })
+        .catch((error: any) => {
+          this.loading = false;
+          console.error(error);
+        });
     },
   },
 });

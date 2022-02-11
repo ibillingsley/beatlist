@@ -23,6 +23,9 @@ export default class PlaylistScanner
     progressGroup: ProgressGroup = new ProgressGroup()
   ): Promise<PlaylistScannerResult> {
     return ScannerLocker.acquire(async () => {
+      const playlistFolders = await BeatSaber.getAllPlaylistFolders();
+      PlaylistLibrary.SetPlaylistFolders(playlistFolders);
+
       const diff = await PlaylistScanner.GetTheDifferenceInPath();
 
       // 追加された playlist の内容を(ほぼ)そのまま取得
