@@ -131,16 +131,28 @@ export default class PlaylistMapsLibrary {
           playlistMapIndex: number | undefined;
           diffHighlight: { [key: string]: DifficultiesSimple } | undefined;
         }>((resolve) => {
-          BeatmapLibrary.GenerateBeatmap(beatmapLocal).then((generatedMap) => {
-            resolve({
-              local: beatmapLocal as BeatmapLocal,
-              data: generatedMap,
-              folderNameHash,
-              duplicated,
-              playlistMapIndex: idx,
-              diffHighlight,
+          BeatmapLibrary.GenerateBeatmap(beatmapLocal)
+            .then((generatedMap) => {
+              resolve({
+                local: beatmapLocal as BeatmapLocal,
+                data: generatedMap,
+                folderNameHash,
+                duplicated,
+                playlistMapIndex: idx,
+                diffHighlight,
+              });
+            })
+            .catch((error: any) => {
+              console.warn(error);
+              resolve({
+                local: beatmapLocal as BeatmapLocal,
+                data: undefined,
+                folderNameHash,
+                duplicated,
+                playlistMapIndex: idx,
+                diffHighlight,
+              });
             });
-          });
         })
       );
     }

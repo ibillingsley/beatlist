@@ -20,7 +20,7 @@ export default class UpgradeCheckerService {
       store.commit("modal/SET_NEW_USER_MODAL", true);
       store.commit("settings/SET_APP_VERSION", currentVersion);
 
-      UpgradeCheckerService.cleanOldVuexCacheIfExist().then(() => {});
+      await UpgradeCheckerService.cleanOldVuexCacheIfExist();
     }
 
     if (isNewVersion) {

@@ -112,13 +112,22 @@ export default class BeatmapLibrary {
             data: BeatsaverBeatmap | undefined;
             folderNameHash: string | undefined;
           }>((resolve) => {
-            BeatmapLibrary.GenerateBeatmap(beatmap).then((generatedMap) => {
-              resolve({
-                local: beatmap,
-                data: generatedMap,
-                folderNameHash,
+            BeatmapLibrary.GenerateBeatmap(beatmap)
+              .then((generatedMap) => {
+                resolve({
+                  local: beatmap,
+                  data: generatedMap,
+                  folderNameHash,
+                });
+              })
+              .catch((error: any) => {
+                console.warn(error);
+                resolve({
+                  local: beatmap,
+                  data: undefined,
+                  folderNameHash,
+                });
               });
-            });
           })
         );
       }
