@@ -75,7 +75,7 @@ export default Vue.extend({
   watch: {
     rootFolder() {
       this.folders = [this.rootFolder];
-      if (this.rootFolder.allChildren != null && this.activeList.length > 0) {
+      if (this.rootFolder.allChildren != null && this.activeList?.length > 0) {
         const currentActive = this.activeList[0];
         if (
           currentActive !== PLAYLIST_FOLDER_ID_ROOT &&
@@ -133,10 +133,13 @@ export default Vue.extend({
         }
       } else {
         // activate 済のノードをクリックすると active が解除されてしまうので元に戻す
-        setTimeout(() => {
-          this.activeList = prevActive;
-        }, 0);
-        return;
+        // eslint-disable-next-line no-lonely-if
+        if (prevActive != null && prevActive.length > 0) {
+          setTimeout(() => {
+            this.activeList = prevActive;
+          }, 0);
+          return;
+        }
       }
 
       this.$emit("update:selection", selected);
