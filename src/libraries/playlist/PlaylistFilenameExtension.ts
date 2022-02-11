@@ -60,7 +60,7 @@ export default class PlaylistFilenameExtension {
   }
 
   public static detectType(filepath: string): PlaylistFormatType {
-    const extName = path.extname(filepath).substr(1);
+    const extName = path.extname(filepath).substring(1);
 
     switch (extName) {
       case PLAYLIST_EXTENSION_NAME_BPLIST:

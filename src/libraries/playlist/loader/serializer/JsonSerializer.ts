@@ -8,6 +8,7 @@ import {
 } from "@/libraries/playlist/PlaylistLocal";
 import Base64SrcLoader from "@/libraries/os/utils/Base64SrcLoader";
 import JsonDeserializer from "@/libraries/playlist/loader/deserializer/JsonDeserializer";
+import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import PlaylistIndentType from "./PlaylistIndentType";
 
 export default class JsonSerializer extends PlaylistSerializer {
@@ -37,14 +38,23 @@ export default class JsonSerializer extends PlaylistSerializer {
   }
 
   private static format(playlist: PlaylistBase): { [key: string]: any } {
+    const validMap = BeatsaverCachedLibrary.GetAllValid();
     return {
       playlistTitle: playlist.title,
       playlistAuthor: playlist.author,
       playlistDescription: playlist.description,
       songs: playlist.maps.map((beatmap: PlaylistMap) => {
         let song = {} as PlaylistRawMap;
+        let songName;
+        const hash = beatmap.hash?.toUpperCase();
+        if (hash != null) {
+          songName = validMap.get(hash)?.beatmap.metadata.songName;
+        }
         if (beatmap.originalData != null) {
           song = { ...beatmap.originalData };
+          if (song.songName == null && songName != null) {
+            song = { songName, ...song };
+          }
           if (beatmap.difficulties != null) {
             song.difficulties = { ...beatmap.difficulties };
           }
@@ -59,6 +69,7 @@ export default class JsonSerializer extends PlaylistSerializer {
           }
         } else {
           song = {
+            songName,
             hash: beatmap.hash,
           } as PlaylistRawMap;
         }

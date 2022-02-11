@@ -18,6 +18,7 @@ export interface PlaylistRawMap {
   hash: string | undefined;
   key: string | undefined;
   levelid?: string;
+  songName?: string;
   difficulties: { [key: string]: any }[] | undefined;
   // ここの customData は beatlist では使い道がないので省略。
 }

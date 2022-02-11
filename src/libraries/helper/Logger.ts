@@ -1,5 +1,9 @@
 const isDevelopment = process.env.NODE_ENV !== "production";
 
+function isDebugEnabled() {
+  return isDevelopment;
+}
+
 function debug(message: string, name?: string) {
   if (!isDevelopment) {
     return;
@@ -10,4 +14,4 @@ function debug(message: string, name?: string) {
   );
 }
 
-export default { debug };
+export default { debug, isDebugEnabled };
