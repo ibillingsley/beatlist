@@ -38,6 +38,7 @@ import { sync } from "vuex-pathify";
 import * as remote from "@electron/remote";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import PathResolver from "@/libraries/ipc/PathResolver.ipc";
+import NotificationService from "@/libraries/notification/NotificationService";
 
 export default Vue.extend({
   name: "InstallationPathForm",
@@ -72,20 +73,41 @@ export default Vue.extend({
     },
     async detectPath() {
       this.resolveBtnLoading = true;
-
-      PathResolver.detectInstallationPath().then((path: string) => {
+      try {
+        const path = await PathResolver.detectInstallationPath();
         if (path === "") {
-          this.snackbarType = "error";
-          this.snackbarText = "Couldn't detect installation path :(";
+          NotificationService.NotifyMessage(
+            "Couldn't detect installation path :(",
+            "error",
+            undefined,
+            5000
+          );
+          // this.snackbarType = "error";
+          // this.snackbarText = "Couldn't detect installation path :(";
         } else {
           this.installationPath = path;
-          this.snackbarType = "success";
-          this.snackbarText = "Installation path found :)";
+          NotificationService.NotifyMessage(
+            "Installation path found :)",
+            "success",
+            undefined,
+            5000
+          );
+          // this.snackbarType = "success";
+          // this.snackbarText = "Installation path found :)";
         }
 
         this.resolveBtnLoading = false;
-        this.snackbar = true;
-      });
+        // this.snackbar = true;
+      } catch (error) {
+        console.error(error);
+        NotificationService.NotifyMessage(
+          "Couldn't detect installation path :(",
+          "error",
+          undefined,
+          5000
+        );
+        this.resolveBtnLoading = false;
+      }
     },
   },
 });
