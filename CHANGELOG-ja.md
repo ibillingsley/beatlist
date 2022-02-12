@@ -10,6 +10,20 @@
 
 ---
 
+## v1.3.7 (2022/02/12)
+**Improvement:**
+- サブフォルダーにある playlist を表示するように修正。Issue #3
+  - BeatSaber 本体の Playlist Manager プラグインで [Disable Folders & Categories] がオフ(既定値)になっている前提です。  
+    Playlist Manager プラグインの設定を変更していなければオフのはずです。  
+    オンにしている場合、Beat Saber にはサブフォルダー内の playlist は表示されません。
+  - v1.3.6 以前のようにサブフォルダーにある playlist を表示したくない場合は [Settings] 画面の [Disable playlist folder management] をオンにしてください。
+- playlist を保存するとき songName も保存するように修正。
+
+**Bug fixes:**
+- その他細かい修正。
+
+<br>
+
 ## v1.3.6 (2022/01/26)
 **Improvement:**
 - playlist に含まれる譜面の一括ダウンロードを有効化。

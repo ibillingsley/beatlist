@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.3.7 (12/02/2022)
+**ATTENTION:**
+ - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
+   While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
+
+**Improvement:**
+ - Fixed to show the playlist in the subfolder. Issue #3
+   - It is assumed that [Disable Folders & Categories] is turned off in the Playlist Manager plug-in of BeatSaber.  
+     If you haven't changed the setting of Playlist Manager plug-in, it should be off.  
+     If turned on, Beat Saber will not display the playlists in the subfolders.
+   - If you don't want to display playlists in subfolders as in v1.3.6 or earlier, turn on [Disable playlist folder management] in the [Settings] screen.
+ - Changed so that songName is also saved when saving the playlist.
+
+**Bug fixes:**
+ - Other minor fixes.
+
+<br>
+
 ## v1.3.6 (26/01/2022)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
