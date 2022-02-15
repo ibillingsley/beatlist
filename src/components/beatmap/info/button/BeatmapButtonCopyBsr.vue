@@ -6,7 +6,7 @@
       :small="small"
       @click="copyBSR"
     >
-      <v-icon :small="small">content_copy</v-icon>
+      <v-icon :small="small">mdi-twitch</v-icon>
     </v-btn>
   </Tooltip>
 </template>
