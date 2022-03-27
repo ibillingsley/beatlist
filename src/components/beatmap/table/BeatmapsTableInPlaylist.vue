@@ -127,6 +127,7 @@ import {
 } from "@/components/beatmap/table/core/BeatmapsTableHeaders";
 import {
   sortDateFromString,
+  sortKeyHex,
   sortNumber,
   sortText,
 } from "@/components/beatmap/table/core/function/BeatmapsTableSortFunctions";
@@ -383,13 +384,13 @@ export default Vue.extend({
           template: BeatmapsTableHeadersTemplate.Text,
           templateItemAccess: "key",
           align: "center",
-          sortable: false,
+          sortable: true,
           filterable: true,
           filterType: BeatmapsTableFilterType.Text,
           localFilter: (value: string) =>
             FilterText(value, this.filtersValue.key),
           globalSearch: (value: string) => FilterText(value, this.search),
-          sort: sortNumber,
+          sort: sortKeyHex,
           width: 50,
         },
         {
