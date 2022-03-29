@@ -13,6 +13,7 @@ import {
 export interface BeatmapStoreState {
   lastScan: Date;
   beatmaps: BeatmapLocal[];
+  beatmapHashSet: Set<string>;
   beatsaverCached: Map<string, BeatsaverItemValid>;
   beatsaverFailCached: Map<string, BeatsaverItemInvalid>;
   beatsaverKeyToHashIndex: Map<string, string>;
@@ -22,6 +23,7 @@ export interface BeatmapStoreState {
 const state = {
   lastScan: undefined,
   beatmaps: [],
+  beatmapHashSet: new Set<string>(),
   beatsaverCached: new Map<string, BeatsaverItemInvalid>(),
   beatsaverFailCached: new Map<string, BeatsaverItemInvalid>(),
   beatsaverKeyToHashIndex: new Map<string, string>(),
@@ -36,6 +38,10 @@ const mutations = {
   ...make.mutations(state),
   addBeatmap(context: BeatmapStoreState, payload: { beatmap: BeatmapLocal }) {
     context.beatmaps.push(payload.beatmap);
+    if (payload.beatmap.hash != null) {
+      // null になるのは invalid な map だけ
+      context.beatmapHashSet.add(payload.beatmap.hash.toUpperCase());
+    }
   },
   addBeatmaps(
     context: BeatmapStoreState,
@@ -43,6 +49,10 @@ const mutations = {
   ) {
     for (const beatmap of payload.beatmaps) {
       context.beatmaps.push(beatmap);
+      if (beatmap.hash != null) {
+        // null になるのは invalid な map だけ
+        context.beatmapHashSet.add(beatmap.hash.toUpperCase());
+      }
     }
   },
   removeBeatmap(
@@ -52,12 +62,20 @@ const mutations = {
     context.beatmaps = context.beatmaps.filter(
       (value: BeatmapLocal) => value.hash !== payload.beatmap.hash // BeatmapLocal どうしのhash比較
     );
+    const hashset = new Set<string>();
+    context.beatmaps.forEach((value) => {
+      if (value.hash != null) {
+        hashset.add(value.hash.toUpperCase());
+      }
+    });
+    context.beatmapHashSet = hashset;
   },
   // removeBeatmapByPath(context: BeatmapStoreState, payload: { path: string }) {
   //   context.beatmaps = context.beatmaps.filter(
   //     (value: BeatmapLocal) => value.folderPath.toLowerCase() !== payload.path
   //   );
   // },
+  // 現状、BeatmapScanner からしか呼ばれない。※削除ボタンは trash() を直接呼び出している。
   removeBeatmapByPaths(
     context: BeatmapStoreState,
     payload: { paths: string[] }
@@ -66,6 +84,22 @@ const mutations = {
     context.beatmaps = context.beatmaps.filter(
       (value: BeatmapLocal) => !pathSet.has(value.folderPath.toLowerCase())
     );
+    const hashset = new Set<string>();
+    context.beatmaps.forEach((value) => {
+      if (value.hash != null) {
+        hashset.add(value.hash.toUpperCase());
+      }
+    });
+    context.beatmapHashSet = hashset;
+  },
+  generateBeatmapHashSet(context: BeatmapStoreState) {
+    const hashset = new Set<string>();
+    context.beatmaps.forEach((value) => {
+      if (value.hash != null) {
+        hashset.add(value.hash.toUpperCase());
+      }
+    });
+    context.beatmapHashSet = hashset;
   },
   setBeatsaverCached(
     context: BeatmapStoreState,

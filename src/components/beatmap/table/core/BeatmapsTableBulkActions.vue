@@ -100,6 +100,15 @@ export default Vue.extend({
       return this.selected.length + (this.selectedIndex?.length ?? 0);
     },
     beatmapNotDownloadedAndSelected(): BeatsaverBeatmap[] {
+      const downloadedHashSet = new Set<string>();
+      BeatmapLibrary.GetAllValidMap().forEach((value) => {
+        // GetAllMaps() を取得して value.loadState.valid を条件に追加したほうが速いが
+        // GetAllValidMap() の実装隠ぺいのためそのままにしておく。
+        if (value.hash != null) {
+          // valid な map は hash が null になることはないが一応チェック
+          downloadedHashSet.add(value.hash.toUpperCase());
+        }
+      });
       if (this.playlist != null && this.selectedIndex != null) {
         const result = [] as BeatsaverBeatmap[];
         const validMaps = BeatsaverCachedLibrary.GetAllValid();
@@ -109,9 +118,17 @@ export default Vue.extend({
         );
         for (const hash of hashes) {
           const beatmap = validMaps.get(hash)?.beatmap;
+          /*
           if (
             beatmap != null &&
             !BeatmapLibrary.HasBeatmap(beatmap) &&
+            !DownloadLibrary.HasBeatmapScheduled(beatmap)
+          ) {
+            result.push(beatmap);
+          } */
+          if (
+            beatmap != null &&
+            !downloadedHashSet.has(beatmap.hash.toUpperCase()) &&
             !DownloadLibrary.HasBeatmapScheduled(beatmap)
           ) {
             result.push(beatmap);
@@ -120,8 +137,13 @@ export default Vue.extend({
         return result;
       }
       return this.selected.filter((beatmap: BeatsaverBeatmap) => {
+        /*
         return (
           !BeatmapLibrary.HasBeatmap(beatmap) &&
+          !DownloadLibrary.HasBeatmapScheduled(beatmap)
+        ); */
+        return (
+          !downloadedHashSet.has(beatmap.hash.toUpperCase()) &&
           !DownloadLibrary.HasBeatmapScheduled(beatmap)
         );
       });

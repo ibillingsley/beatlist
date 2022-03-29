@@ -175,6 +175,10 @@ export default class BeatmapLibrary {
     */
   }
 
+  public static GenerateBeatmapHashSet() {
+    store.commit("beatmap/generateBeatmapHashSet");
+  }
+
   static getFolderNameHash(folderPath: string) {
     if (folderPath == null) {
       return undefined;
@@ -291,7 +295,9 @@ export default class BeatmapLibrary {
   }
 
   public static HasBeatmap(beatmap: BeatsaverBeatmap): boolean {
-    return this.GetMapByHash(beatmap.hash) !== undefined;
+    // return this.GetMapByHash(beatmap.hash) !== undefined;
+    const hashset = store.getters["beatmap/beatmapHashSet"] as Set<string>;
+    return hashset.has(beatmap.hash.toUpperCase());
   }
 
   public static GetLastScanDate(): Date {

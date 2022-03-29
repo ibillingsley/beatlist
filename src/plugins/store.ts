@@ -17,6 +17,7 @@ const vuexLocalCachedData = new VuexPersistence<StoreState>({
     beatmap: {
       lastScan: state.beatmap.lastScan,
       beatmaps: state.beatmap.beatmaps,
+      // beatmapHashSet は除外
       beatsaverCached: state.beatmap.beatsaverCached,
       beatsaverFailCached: state.beatmap.beatsaverFailCached,
       beatsaverKeyToHashIndex: state.beatmap.beatsaverKeyToHashIndex,
