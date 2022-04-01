@@ -1,3 +1,7 @@
+# ATTENTION
+ - **(1/4/2022) Due to beatsaver.com's April Fool's Day, the [Beatmap Online] screen is currently unavailable.**  
+   **Please wait until beatsaver.com is back to normal.**
+
 # Changelog
 
 ## v1.3.7 (12/02/2022)
