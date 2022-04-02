@@ -1,3 +1,11 @@
+# ATTENTION
+ - (2/4/2022) Resolved.  
+   However, if the maps you downloaded or the maps in your playlist do not appear during April Fool's Day,  
+   it may be because strange data has been left in your beatlist.  
+   If this is the case, try [CLEAR CACHE] & [UPDATE LIBRARY] from the [SETTINGS] screen.
+ - ~~(1/4/2022) Due to beatsaver.com's April Fool's Day, the [Beatmap Online] screen is currently unavailable.~~  
+   ~~Please wait until beatsaver.com is back to normal.~~
+
 # Changelog
 
 ## v1.3.7 (12/02/2022)
