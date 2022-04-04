@@ -27,7 +27,7 @@ export default class UpgradeCheckerService {
 
     if (isNewVersion) {
       if (previousVersion !== undefined) {
-        UpgradeCheckerService.UpgradeFor(previousVersion);
+        await UpgradeCheckerService.UpgradeFor(previousVersion);
       }
 
       store.commit("modal/SET_NEW_VERSION_MODAL", true);
@@ -35,20 +35,20 @@ export default class UpgradeCheckerService {
     }
   }
 
-  private static UpgradeFor(previousVersion: string) {
+  private static async UpgradeFor(previousVersion: string) {
     if (semver.gt("1.2.3", previousVersion)) {
       MigrateTo123();
     }
 
     if (semver.gt("1.3.2", previousVersion)) {
       // previousVersion is under 1.3.2
-      MigrateTo132(); // clear playlist cache
-      MigrateTo138(); // set folderNameHash
       ScannerService.requestDialogToBeOpened();
+      MigrateTo132(); // clear playlist cache
+      await MigrateTo138(); // set folderNameHash, updateDownloadDate
     } else if (semver.gt("1.3.8", previousVersion)) {
       // previousVersion is under 1.3.8
-      MigrateTo138(); // set folderNameHash
       ScannerService.requestDialogToBeOpened();
+      await MigrateTo138(); // set folderNameHash, updateDownloadDate
     }
   }
 
