@@ -5,6 +5,17 @@
       <div class="text-center grey--text caption">
         Current version: {{ currentVersion }}
       </div>
+      <div>
+        <v-btn
+          href="https://github.com/ranmd9a/beatlist/releases/latest"
+          target="_blank"
+          text
+          style="background-color: primary;"
+        >
+          <span class="mr-2">Latest Release</span>
+          <v-icon>mdi-open-in-new</v-icon>
+        </v-btn>
+      </div>
       <div class="pt-2">
         <!-- <v-btn icon color="rgb(114, 137, 218)" @click="openDiscordInvitation()">
           <v-icon class="mx-2">
