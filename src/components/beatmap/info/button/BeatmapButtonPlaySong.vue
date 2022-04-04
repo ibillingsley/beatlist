@@ -25,6 +25,7 @@ import Tooltip from "@/components/helper/Tooltip.vue";
 import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import BeatmapLocalUtilities from "@/libraries/beatmap/BeatmapLocalUtilities";
+import NotificationService from "@/libraries/notification/NotificationService";
 
 export default Vue.extend({
   name: "BeatmapButtonPlaySong",
@@ -93,9 +94,17 @@ export default Vue.extend({
     },
     togglePlay(): void {
       if (!this.audio.src) {
-        this.LoadAudioSrc().then(() => {
-          this.togglePlay();
-        });
+        this.LoadAudioSrc()
+          .then(() => {
+            this.togglePlay();
+          })
+          .catch((error) => {
+            console.error(error);
+            NotificationService.NotifyMessage(
+              "Loading audio failed.",
+              "warning"
+            );
+          });
       } else if (this.audio.paused) {
         this.audio.play();
       } else {
