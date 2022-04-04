@@ -4,6 +4,7 @@ export enum BeatmapsTableHeadersTemplate {
   Difficulties = "Difficulties",
   Playlists = "Playlists",
   StrToDate = "StrToDate",
+  StrToDateLocal = "StrToDateLocal",
   TextTooltip = "TextTooltip",
   BeatmapName = "BeatmapName",
   Rating = "Rating",

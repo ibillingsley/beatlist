@@ -2,9 +2,10 @@
   <v-container>
     <BeatmapsTableOuterHeader
       :shown-column.sync="shownColumn"
+      :show-local-column="true"
       :search.sync="search"
       :show-refresh-button="true"
-      @refresh="fetchData"
+      @refresh="refreshBeatmap"
     />
     <v-card>
       <BeatmapsTable
@@ -38,10 +39,12 @@ import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButton
 import route from "@/plugins/route/route";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
+import Logger from "@/libraries/helper/Logger";
+import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import { BeatmapsTableDataUnit } from "./core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
-  name: "BeatmapTableLocal",
+  name: "BeatmapsTableLocal",
   components: {
     BeatmapsTable,
     BeatmapsTableOuterHeader,
@@ -63,11 +66,9 @@ export default Vue.extend({
       "settings/beatmapsTable@localBeatmaps.itemsPerPage"
     ),
     storedMaps(): BeatmapLocal[] {
-      // console.log(`[BeatmapsTableLocal] computed: storedMap called`);
       return BeatmapLibrary.GetAllMaps();
     },
     cacheLastUpdated() {
-      // console.log(`[BeatmapsTableLocal] computed: cacheLastUpdated called`);
       return BeatsaverCachedLibrary.GetCacheLastUpdated();
     },
     // beatmaps: () => BeatmapLibrary.GetAllValidBeatmapAsTableData(),
@@ -78,11 +79,11 @@ export default Vue.extend({
       this.page = 1;
     },
     storedMaps() {
-      // console.log(`[BeatmapsTableLocal] watch: storedMaps called`);
+      Logger.debug(`change detected: storedMaps`, "BeatmapsTableLocal");
       this.fetchData();
     },
     cacheLastUpdated() {
-      // console.log(`[BeatmapsTableLocal] watch: cacheLastUpdated called`);
+      Logger.debug(`change detected: cacheLastUpdated`, "BeatmapsTableLocal");
       this.fetchData();
     },
   },
@@ -95,6 +96,28 @@ export default Vue.extend({
       try {
         // console.log(`[BeatmapsTableLocal] fetchData called`);
         this.beatmaps = await BeatmapLibrary.GetAllValidBeatmapAsTableData();
+      } finally {
+        this.loading = false;
+      }
+    },
+    async refreshBeatmap(): Promise<void> {
+      const kept: string[] = [];
+      this.loading = true;
+      try {
+        BeatmapLibrary.GetAllValidMap().forEach((map) => {
+          kept.push(map.folderPath.toLowerCase());
+        });
+        Logger.debug(`start getDownloadDate`, "BeatmapsTableLocal");
+        const downloadDateMap = await BeatSaber.getDownloadDate(kept);
+        Logger.debug(`end   getDownloadDate`, "BeatmapsTableLocal");
+        if (downloadDateMap.size > 0) {
+          BeatmapLibrary.UpdateDownloadDate(downloadDateMap);
+        }
+        Logger.debug(
+          `end   BeatmapLibrary.UpdateDownloadDate`,
+          "BeatmapsTableLocal"
+        );
+        await this.fetchData();
       } finally {
         this.loading = false;
       }

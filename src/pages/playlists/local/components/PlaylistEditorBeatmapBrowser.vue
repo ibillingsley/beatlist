@@ -5,6 +5,7 @@
     </p>
     <BeatmapsTableOuterHeader
       :shown-column.sync="shownColumn"
+      :show-local-column="true"
       :search.sync="search"
     />
     <BeatmapsTable

@@ -56,6 +56,27 @@ export default class BeatSaber {
     return directoryList.map((directory) => path.join(pathSongList, directory));
   }
 
+  public static async getDownloadDate(
+    songFolders: string[]
+  ): Promise<Map<string, string>> {
+    // TODO 別プロセス化したいところではある。
+    const result = new Map<string, string>();
+    for (const songFolder of songFolders) {
+      const infoDatPath = path.join(songFolder, "info.dat");
+      try {
+        if (fs.existsSync(infoDatPath)) {
+          // eslint-disable-next-line no-await-in-loop
+          const stat = await fs.stat(infoDatPath);
+          result.set(songFolder.toLowerCase(), stat.birthtime.toISOString());
+        }
+      } catch (error) {
+        console.error(error);
+        // 続行
+      }
+    }
+    return result;
+  }
+
   public static async getAllPlaylistsPath(): Promise<string[] | undefined> {
     const pathPlaylists = await this.getPlaylistFolder();
     const disablePlaylistFolderManagement =

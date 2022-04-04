@@ -25,15 +25,18 @@ export default Vue.extend({
   name: "BeatmapsTableColumnSelector",
   props: {
     value: { type: Array as PropType<string[]>, required: true },
+    showLocalColumn: { type: Boolean, default: false },
   },
   data: () => ({
     shownColumn: [] as string[],
+    // isLocal = true は Custom Levels 用
     headers: [
       { value: "cover", text: "Cover" },
       { value: "name", text: "Song name" },
       { value: "artist", text: "Artist" },
       { value: "mapper", text: "Mapper" },
       { value: "difficulties", text: "Difficulties" },
+      { value: "downloaded", text: "Download Date", isLocal: true },
       { value: "playlists", text: "Playlists" },
       { value: "dl", text: "Downloads" },
       { value: "plays", text: "Plays" },
@@ -47,10 +50,17 @@ export default Vue.extend({
   }),
   computed: {
     availableColumn(): { name: string; value: string }[] {
-      return this.headers.map((header) => ({
-        name: header.text,
-        value: header.value,
-      }));
+      return this.headers
+        .filter((header) => {
+          if (header.isLocal) {
+            return this.showLocalColumn;
+          }
+          return true;
+        })
+        .map((header) => ({
+          name: header.text,
+          value: header.value,
+        }));
     },
   },
   watch: {

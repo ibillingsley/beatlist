@@ -28,4 +28,21 @@ export default class BeatmapHashComputer {
       return undefined;
     }
   }
+
+  public static getFolderNameHash(folderPath: string) {
+    if (folderPath == null) {
+      return undefined;
+    }
+    try {
+      const { base } = path.parse(folderPath);
+      return crypto
+        .createHash("sha1")
+        .update(base.toLowerCase())
+        .digest("hex")
+        .substr(0, 5);
+    } catch (error) {
+      console.warn(`Get folder name hash failed: ${folderPath}`, error);
+      return undefined;
+    }
+  }
 }

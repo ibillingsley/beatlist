@@ -89,7 +89,7 @@ export default Vue.extend({
   },
   methods: {
     scanAll(): void {
-      ScannerService.ScanAll();
+      ScannerService.ScanAll(true); // 非同期
       NotificationServiceScanner.notifyOnNextScan();
     },
     onStatusDialogRequestOpen(): void {

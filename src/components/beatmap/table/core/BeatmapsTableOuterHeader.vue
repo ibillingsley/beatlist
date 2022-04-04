@@ -3,6 +3,7 @@
     <v-col :sm="showRefreshButton ? 7 : 8" :cols="showRefreshButton ? 9 : 10">
       <BeatmapsTableColumnSelector
         :value="shownColumn"
+        :show-local-column="showLocalColumn"
         @input="$emit('update:shownColumn', $event)"
       />
     </v-col>
@@ -37,6 +38,7 @@ export default Vue.extend({
   },
   props: {
     shownColumn: { type: Array as PropType<string[]>, required: true },
+    showLocalColumn: { type: Boolean, default: false },
     search: { type: String, required: true },
     loading: { type: Boolean, required: false },
     showRefreshButton: { type: Boolean, required: false, default: false },

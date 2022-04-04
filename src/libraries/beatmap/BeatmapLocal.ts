@@ -5,6 +5,8 @@ export interface BeatmapLocal {
   coverPath: string;
   songPath: string;
   hash: string | undefined;
+  folderNameHash: string | undefined;
+  downloaded: string;
   loadState: BeatmapLoadState;
 }
 

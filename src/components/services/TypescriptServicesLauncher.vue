@@ -36,10 +36,11 @@ export default Vue.extend({
       this.BeatsaverServerUrl();
       await BeatsaverCachedLibrary.LoadAll();
 
+      await UpgradeCheckerService.Initialize(); // Scanner サービスが動く前に処理を行う
+
       AutoScanLibHandler.register();
       AutoContinueAfterRateLimitedScan.register();
       NotificationServiceScanner.Initialize();
-      UpgradeCheckerService.Initialize();
       DownloadManager.Initialize();
     },
     DiscordRichPresence() {

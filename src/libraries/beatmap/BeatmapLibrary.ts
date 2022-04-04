@@ -1,8 +1,6 @@
 /* istanbul ignore file */
 import store from "@/plugins/store";
-import crypto from "crypto";
 import fs from "fs-extra";
-import path from "path";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import {
   BeatsaverBeatmap,
@@ -14,6 +12,13 @@ import Logger from "@/libraries/helper/Logger";
 import Utilities from "@/libraries/helper/Utilities";
 import PlaylistLibrary from "../playlist/PlaylistLibrary";
 import { PlaylistLocal } from "../playlist/PlaylistLocal";
+
+interface TableDataUnit {
+  local: BeatmapLocal;
+  data: BeatsaverBeatmap | undefined;
+  folderNameHash: string | undefined;
+  downloaded: string | undefined;
+}
 
 export default class BeatmapLibrary {
   static generatedBeatmapCache = new Map<string, BeatsaverBeatmap>();
@@ -38,16 +43,6 @@ export default class BeatmapLibrary {
   public static async GetAllValidBeatmapAsTableData(): Promise<
     BeatmapsTableDataUnit[]
   > {
-    /*
-    return this.GetAllMaps()
-      .map((beatmap: BeatmapLocal) => ({
-        local: beatmap,
-        data: beatmap.hash
-          ? BeatsaverCachedLibrary.GetByHash(beatmap.hash)?.beatmap
-          : undefined,
-      }))
-      .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
-    */
     Logger.debug(`start GetAllValidBeatmapAsTableData`, "BeatmapLibrary");
 
     const localValidMaps = BeatmapLibrary.GetAllValidMap();
@@ -58,11 +53,7 @@ export default class BeatmapLibrary {
     );
 
     const result: BeatmapsTableDataUnit[] = [];
-    const promiseResults: Promise<{
-      local: BeatmapLocal;
-      data: BeatsaverBeatmap | undefined;
-      folderNameHash: string | undefined;
-    }>[] = [];
+    const promiseResults: Promise<TableDataUnit>[] = [];
     const validCache = BeatsaverCachedLibrary.GetAllValid();
     let cnt = 0;
     for (const beatmap of localValidMaps) {
@@ -77,7 +68,7 @@ export default class BeatmapLibrary {
       let mydata: BeatsaverBeatmap | undefined;
       if (beatmap.hash) {
         const hash = beatmap.hash.toUpperCase();
-        const folderNameHash = this.getFolderNameHash(beatmap.folderPath);
+        const { folderNameHash, downloaded } = beatmap;
         // mydata = BeatsaverCachedLibrary.GetByHash(hash)?.beatmap;
         mydata = validCache.get(hash)?.beatmap;
         if (mydata != null) {
@@ -85,6 +76,7 @@ export default class BeatmapLibrary {
             local: undefined,
             data: mydata,
             folderNameHash,
+            downloaded,
             duplicated: false,
             playlistMapIndex: undefined,
             diffHighlight: undefined,
@@ -98,6 +90,7 @@ export default class BeatmapLibrary {
             local: beatmap,
             data: generatedCache,
             folderNameHash,
+            downloaded,
             duplicated: false,
             playlistMapIndex: undefined,
             diffHighlight: undefined,
@@ -107,17 +100,14 @@ export default class BeatmapLibrary {
         }
         // TODO 事前キャッシュはあるから Local に 40000件あっても大半はここに到達しないが、1000件ずつくらいに分割したほうがいい。
         promiseResults.push(
-          new Promise<{
-            local: BeatmapLocal;
-            data: BeatsaverBeatmap | undefined;
-            folderNameHash: string | undefined;
-          }>((resolve) => {
+          new Promise<TableDataUnit>((resolve) => {
             BeatmapLibrary.GenerateBeatmap(beatmap)
               .then((generatedMap) => {
                 resolve({
                   local: beatmap,
                   data: generatedMap,
                   folderNameHash,
+                  downloaded,
                 });
               })
               .catch((error: any) => {
@@ -126,6 +116,7 @@ export default class BeatmapLibrary {
                   local: beatmap,
                   data: undefined,
                   folderNameHash,
+                  downloaded,
                 });
               });
           })
@@ -136,11 +127,7 @@ export default class BeatmapLibrary {
       `    end   localValidMaps loop: ${localValidMaps.length}`,
       "BeatmapLibrary"
     );
-    let resolved: {
-      local: BeatmapLocal;
-      data: BeatsaverBeatmap | undefined;
-      folderNameHash: string | undefined;
-    }[] = [];
+    let resolved: TableDataUnit[] = [];
     if (promiseResults.length > 0) {
       Logger.debug(
         `    start promise.all: ${promiseResults.length}`,
@@ -156,44 +143,6 @@ export default class BeatmapLibrary {
     return result.concat(
       resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
     );
-    /*
-    return this.GetAllMaps()
-      .map((beatmap: BeatmapLocal) => {
-        let mydata: BeatsaverBeatmap | undefined;
-        if (beatmap.hash) {
-          mydata = BeatsaverCachedLibrary.GetByHash(beatmap.hash)?.beatmap;
-          if (mydata == null) {
-            mydata = BeatmapLibrary.GenerateBeatmap(beatmap);
-          }
-        }
-        return {
-          local: beatmap,
-          data: mydata,
-        };
-      })
-      .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
-    */
-  }
-
-  public static GenerateBeatmapHashSet() {
-    store.commit("beatmap/generateBeatmapHashSet");
-  }
-
-  static getFolderNameHash(folderPath: string) {
-    if (folderPath == null) {
-      return undefined;
-    }
-    try {
-      const { base } = path.parse(folderPath);
-      return crypto
-        .createHash("sha1")
-        .update(base.toLowerCase())
-        .digest("hex")
-        .substr(0, 5);
-    } catch (error) {
-      console.warn(`Get folder name hash failed: ${folderPath}`, error);
-      return undefined;
-    }
   }
 
   static async GenerateBeatmap(
@@ -304,14 +253,23 @@ export default class BeatmapLibrary {
     return store.getters["beatmap/lastScan"];
   }
 
+  public static GenerateBeatmapHashSet() {
+    store.commit("beatmap/generateBeatmapHashSet");
+  }
+
   public static UpdateAllMaps(beatmaps: BeatmapLocal[]) {
     store.commit("beatmap/SET_LAST_SCAN", new Date());
     store.commit("beatmap/SET_BEATMAPS", beatmaps);
+    // SET_BEATMAPS を呼んだあとは SET_BEATMAP_HASH_SET も必要 (beatlist 再起動すれば不整合はなくなるはずではあるが)
+    store.commit("beatmap/SET_BEATMAP_HASH_SET", new Set());
+    store.commit("beatmap/generateBeatmapHashSet");
   }
 
   public static ClearCache() {
     store.commit("beatmap/SET_LAST_SCAN", undefined);
     store.commit("beatmap/SET_BEATMAPS", []);
+    // SET_BEATMAPS を呼んだあとは SET_BEATMAP_HASH_SET も必要 (beatlist 再起動すれば不整合はなくなるはずではあるが)
+    store.commit("beatmap/SET_BEATMAP_HASH_SET", new Set());
   }
 
   public static AddBeatmap(beatmap: BeatmapLocal) {
@@ -332,6 +290,11 @@ export default class BeatmapLibrary {
 
   public static RemoveBeatmapByPaths(paths: string[]) {
     store.commit("beatmap/removeBeatmapByPaths", { paths });
+  }
+
+  public static UpdateDownloadDate(downloadDateMap: Map<string, string>) {
+    // key は toLowerCase() されている必要がある。
+    store.commit("beatmap/updateDownloadDate", { downloadDateMap });
   }
 
   public static GetPlaylists(beatmap: BeatmapLocal): PlaylistLocal[] {

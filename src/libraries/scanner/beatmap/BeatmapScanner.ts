@@ -1,5 +1,8 @@
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
-import { computeDifference, Differences } from "@/libraries/common/Differences";
+import {
+  computeDifferenceBySet,
+  Differences,
+} from "@/libraries/common/Differences";
 import Progress from "@/libraries/common/Progress";
 import BeatmapScannerResult from "@/libraries/scanner/beatmap/BeatmapScannerResult";
 import { ScannerInterface } from "@/libraries/scanner/ScannerInterface";
@@ -17,16 +20,21 @@ import {
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import BeatmapLoader from "@/libraries/beatmap/BeatmapLoader";
 import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
+import Logger from "@/libraries/helper/Logger";
 
 export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
   public result: BeatmapScannerResult = new BeatmapScannerResult();
 
   public async scanAll(
     progress: Progress = new Progress(),
+    forceUpdate = false,
     retryTargetItems: BeatsaverItemInvalid[] = []
   ): Promise<BeatmapScannerResult> {
+    // TODO beatsaverInvalidCache から 404 以外のエラーを削除してしまえば retryTargetItems は必要ない気がする。
     return ScannerLocker.acquire(async () => {
+      Logger.debug(`start GetTheDifferenceInPath`, "BeatmapScanner");
       const diff = await BeatmapScanner.GetTheDifferenceInPath();
+      Logger.debug(`end   GetTheDifferenceInPath`, "BeatmapScanner");
 
       // 削除されたディレクトリのキャッシュを破棄
       BeatmapLibrary.RemoveBeatmapByPaths(diff.removed);
@@ -34,7 +42,21 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
       this.result.removedItems = diff.removed.length;
       this.result.keptItems = diff.kept.length;
       diff.removed = []; // 件数しか使用しないので早めに破棄
-      diff.kept = []; // 件数しか使用しないので早めに破棄
+
+      // 手動で [UPDATE LIBRARY] を実行したときだけ、既存譜面の DownloadDate を再取得して反映 (作成日時の変更は chokidar の検知対象外)
+      if (forceUpdate && diff.kept.length > 0) {
+        Logger.debug(`start getDownloadDate`, "BeatmapScanner");
+        // ここでは promise を作るだけにして最後で更新、とすると Disk 負荷が集中してかえって遅くなる模様
+        const downloadDateMap = await BeatSaber.getDownloadDate(diff.kept);
+        Logger.debug(`end   getDownloadDate`, "BeatmapScanner");
+        if (downloadDateMap.size > 0) {
+          BeatmapLibrary.UpdateDownloadDate(downloadDateMap);
+        }
+        Logger.debug(
+          `end   BeatmapLibrary.UpdateDownloadDate`,
+          "BeatmapScanner"
+        );
+      }
 
       progress.setTotal(diff.added.length + retryTargetItems.length);
 
@@ -123,15 +145,18 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
   }
 
   private static async GetTheDifferenceInPath(): Promise<Differences<string>> {
-    const currentPaths = (
-      await BeatSaber.getAllSongFolderPath()
-    )?.map((path: string) => path.toLowerCase());
+    const currentPaths = await BeatSaber.getAllSongFolderPath();
+    const currentPathSet = new Set<string>();
+    currentPaths.forEach((value) => {
+      currentPathSet.add(value.toLowerCase());
+    });
 
-    const oldPaths = BeatmapLibrary.GetAllMaps().map((beatmap: BeatmapLocal) =>
-      beatmap.folderPath.toLowerCase()
-    );
+    const oldPathSet = new Set<string>();
+    BeatmapLibrary.GetAllMaps().forEach((beatmap: BeatmapLocal) => {
+      oldPathSet.add(beatmap.folderPath.toLowerCase());
+    });
 
-    return computeDifference(oldPaths, currentPaths);
+    return computeDifferenceBySet(oldPathSet, currentPathSet);
   }
 
   //   private ReassembleAllBeatmap(diff: Differences<string>): BeatmapLocal[] {

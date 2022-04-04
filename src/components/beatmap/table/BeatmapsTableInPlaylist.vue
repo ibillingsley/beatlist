@@ -433,6 +433,8 @@ export default Vue.extend({
           artist: entry.data.metadata.songAuthorName,
           mapper: entry.data.metadata.levelAuthorName,
           difficulties: entry.data.metadata.difficulties,
+          // ここには downloaded は出ない
+          // ※Generateされたものを除き BeatmapsTableDataUnit に含まれていないため。
           dl: entry.data.stats.downloads,
           plays: entry.data.stats.plays,
           upvotes: entry.data.stats.upVotes,

@@ -1,12 +1,10 @@
 import store from "@/plugins/store";
 import PlaylistSortColumnType from "@/libraries/playlist/PlaylistSortColumnType";
 import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
-import ScannerService from "@/libraries/scanner/ScannerService";
 import PlaylistIndentType from "@/libraries/playlist/loader/serializer/PlaylistIndentType";
 
 function ClearPlaylistCache() {
   store.commit("playlist/SET_PLAYLISTS", []);
-  ScannerService.requestDialogToBeOpened();
 }
 
 function SetDefaultSortSettingsOfPlaylists() {

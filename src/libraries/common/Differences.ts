@@ -21,3 +21,27 @@ export function computeDifference<T>(olds: T[], news: T[]) {
 
   return difference;
 }
+
+export function computeDifferenceBySet<T>(olds: Set<T>, news: Set<T>) {
+  const difference = {
+    added: [],
+    kept: [],
+    removed: [],
+  } as Differences<T>;
+
+  for (const key of news) {
+    if (olds.has(key)) {
+      difference.kept.push(key);
+    } else {
+      difference.added.push(key);
+    }
+  }
+
+  for (const key of olds) {
+    if (!news.has(key)) {
+      difference.removed.push(key);
+    }
+  }
+
+  return difference;
+}

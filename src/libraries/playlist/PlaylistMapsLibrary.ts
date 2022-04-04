@@ -70,12 +70,20 @@ export default class PlaylistMapsLibrary {
     // }) as PlaylistValidMap[];
 
     Logger.debug(`    start GetAllValidMap`, "PlaylistMapsLibrary");
-    const localValidMaps = BeatmapLibrary.GetAllValidMap();
+    // const localValidMaps = BeatmapLibrary.GetAllValidMap();
+    const localValidMapHashMap = new Map<string, BeatmapLocal>();
+    BeatmapLibrary.GetAllValidMap().forEach((beatmap) => {
+      if (beatmap.hash != null) {
+        // valid であれば原則として null になることはないが一応チェック
+        localValidMapHashMap.set(beatmap.hash.toUpperCase(), beatmap);
+      }
+    });
     const result: BeatmapsTableDataUnit[] = [];
     const promiseResults: Promise<{
       local: BeatmapLocal;
       data: BeatsaverBeatmap | undefined;
       folderNameHash: string | undefined;
+      downloaded: string | undefined;
       playlistMapIndex: number | undefined;
       diffHighlight: { [key: string]: DifficultiesSimple } | undefined;
     }>[] = [];
@@ -105,6 +113,7 @@ export default class PlaylistMapsLibrary {
           local: undefined,
           data: mydata,
           folderNameHash: undefined,
+          downloaded: undefined,
           duplicated,
           playlistMapIndex: idx,
           diffHighlight,
@@ -112,21 +121,24 @@ export default class PlaylistMapsLibrary {
         // eslint-disable-next-line no-continue
         continue;
       }
-      const beatmapLocal = localValidMaps.find(
-        (item) => item.hash?.toUpperCase() === playlistMapHash
-      );
+      // const beatmapLocal = localValidMaps.find(
+      //   (item) => item.hash?.toUpperCase() === playlistMapHash
+      // );
+      const beatmapLocal = localValidMapHashMap.get(playlistMapHash);
       if (beatmapLocal == null) {
         // eslint-disable-next-line no-continue
         continue;
       }
-      const folderNameHash = BeatmapLibrary.getFolderNameHash(
-        beatmapLocal.folderPath
-      );
+      // const folderNameHash = BeatmapLibrary.getFolderNameHash(
+      //   beatmapLocal.folderPath
+      // );
+      const { folderNameHash, downloaded } = beatmapLocal;
       promiseResults.push(
         new Promise<{
           local: BeatmapLocal;
           data: BeatsaverBeatmap | undefined;
           folderNameHash: string | undefined;
+          downloaded: string | undefined;
           duplicated: boolean | undefined;
           playlistMapIndex: number | undefined;
           diffHighlight: { [key: string]: DifficultiesSimple } | undefined;
@@ -137,6 +149,7 @@ export default class PlaylistMapsLibrary {
                 local: beatmapLocal as BeatmapLocal,
                 data: generatedMap,
                 folderNameHash,
+                downloaded,
                 duplicated,
                 playlistMapIndex: idx,
                 diffHighlight,
@@ -148,6 +161,7 @@ export default class PlaylistMapsLibrary {
                 local: beatmapLocal as BeatmapLocal,
                 data: undefined,
                 folderNameHash,
+                downloaded,
                 duplicated,
                 playlistMapIndex: idx,
                 diffHighlight,

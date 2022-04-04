@@ -4,16 +4,20 @@ import {
   BeatsaverItem,
   BeatsaverItemInvalid,
   BeatsaverItemValid,
+  BeatsaverItemLoadError,
 } from "@/libraries/beatmap/repo/BeatsaverItem";
 import {
   BeatsaverKey,
   toStrKey,
 } from "@/libraries/beatmap/repo/BeatsaverKeyType";
+import BeatmapHashComputer from "@/libraries/beatmap/BeatmapHashComputer";
 
+// メソッド定義がなくても make.mutations() によって作成される処理(beatmap/SET_BEATMAPS とか)もあるので、
+// データの整合性には注意が必要。
 export interface BeatmapStoreState {
   lastScan: Date;
   beatmaps: BeatmapLocal[];
-  beatmapHashSet: Set<string>;
+  beatmapHashSet: Set<string>; // hash のみ保持
   beatsaverCached: Map<string, BeatsaverItemValid>;
   beatsaverFailCached: Map<string, BeatsaverItemInvalid>;
   beatsaverKeyToHashIndex: Map<string, string>;
@@ -101,6 +105,25 @@ const mutations = {
     });
     context.beatmapHashSet = hashset;
   },
+  updateDownloadDate(
+    context: BeatmapStoreState,
+    payload: { downloadDateMap: Map<string, string> }
+  ) {
+    const { downloadDateMap } = payload;
+    console.log(`downloadDateMap: ${downloadDateMap.size}件`);
+    context.beatmaps.forEach((value) => {
+      const key = value.folderPath.toLowerCase();
+      if (downloadDateMap.has(key)) {
+        const newDownloaded = downloadDateMap.get(key);
+        if (newDownloaded != null && value.downloaded !== newDownloaded) {
+          console.log(
+            `downloaded changed: ${value.downloaded} => ${newDownloaded}`
+          );
+          value.downloaded = newDownloaded;
+        }
+      }
+    });
+  },
   setBeatsaverCached(
     context: BeatmapStoreState,
     payload: { hash: string; item: BeatsaverItemValid }
@@ -160,6 +183,33 @@ const mutations = {
     for (const key of keys) {
       context.beatsaverFailCached.delete(toStrKey(key));
     }
+  },
+  removeBeatsaverCachedTemporaryInvalid(context: BeatmapStoreState) {
+    // 50xエラーや429エラーなど一時的なエラーにより Invalid となったキャッシュを削除
+    // beatsaverKeyToHashIndex には invaild なデータは含まれない。
+    const keys: string[] = [];
+    for (const mapEntry of context.beatsaverFailCached) {
+      if (
+        mapEntry[1].loadState.errorType !==
+        BeatsaverItemLoadError.BeatmapNotOnBeatsaver
+      ) {
+        // 404 以外は削除
+        keys.push(mapEntry[0]);
+      }
+    }
+    for (const key of keys) {
+      context.beatsaverFailCached.delete(key);
+    }
+  },
+  setFolderNameHashToAllBeatmaps(context: BeatmapStoreState) {
+    // folderNameHash を計算してセット (1.3.7 以前から 1.3.8 以降へのアップグレード用)
+    context.beatmaps.forEach((value) => {
+      if (value.folderNameHash == null) {
+        value.folderNameHash = BeatmapHashComputer.getFolderNameHash(
+          value.folderPath
+        );
+      }
+    });
   },
   clearBeatsaverCache(context: BeatmapStoreState) {
     context.beatsaverCached = new Map<string, BeatsaverItemValid>();

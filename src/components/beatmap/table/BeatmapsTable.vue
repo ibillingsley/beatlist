@@ -132,6 +132,7 @@ import BeatmapsTableTemplateText from "@/components/beatmap/table/core/template/
 import BeatmapsTableTemplateTextTooltip from "@/components/beatmap/table/core/template/BeatmapsTableTemplateTextTooltip.vue";
 import BeatmapsTableTemplateBeatmapName from "@/components/beatmap/table/core/template/BeatmapsTableTemplateBeatmapName.vue";
 import BeatmapsTableTemplateStrToDate from "@/components/beatmap/table/core/template/BeatmapsTableTemplateStrToDate.vue";
+import BeatmapsTableTemplateStrToDateLocal from "@/components/beatmap/table/core/template/BeatmapsTableTemplateStrToDateLocal.vue";
 import BeatmapsTableTemplateDifficulties from "@/components/beatmap/table/core/template/BeatmapsTableTemplateDifficulties.vue";
 import BeatmapsTableTemplatePlaylists from "@/components/beatmap/table/core/template/BeatmapsTableTemplatePlaylists.vue";
 import BeatmapsTableTemplateRating from "@/components/beatmap/table/core/template/BeatmapsTableTemplateRating.vue";
@@ -153,6 +154,7 @@ export default Vue.extend({
     BeatmapsTableTemplateTextTooltip,
     BeatmapsTableTemplateBeatmapName,
     BeatmapsTableTemplateStrToDate,
+    BeatmapsTableTemplateStrToDateLocal,
     BeatmapsTableTemplateRating,
     Tooltip,
   },
@@ -189,6 +191,7 @@ export default Vue.extend({
       downvotes: {} as Range,
       rating: {} as Range,
       difficulties: ["easy", "normal", "hard", "expert", "expertPlus"],
+      downloaded: {} as DateRange,
       uploaded: {} as DateRange,
       key: "",
       hash: "",
@@ -277,6 +280,20 @@ export default Vue.extend({
           filterable: true,
           // localFilter は定義しない
           width: 110,
+        },
+        {
+          value: "downloaded",
+          text: "Download Date",
+          template: BeatmapsTableHeadersTemplate.StrToDateLocal,
+          templateItemAccess: "downloaded",
+          align: "center",
+          sortable: true,
+          filterable: true,
+          filterType: BeatmapsTableFilterType.Date,
+          localFilter: (value: string) =>
+            FilterDateRange(new Date(value), this.filtersValue.downloaded),
+          sort: sortDateFromString,
+          width: 150,
         },
         {
           value: "dl",
@@ -414,6 +431,7 @@ export default Vue.extend({
           artist: entry.data.metadata.songAuthorName,
           mapper: entry.data.metadata.levelAuthorName,
           difficulties: entry.data.metadata.difficulties,
+          downloaded: entry.downloaded,
           dl: entry.data.stats.downloads,
           plays: entry.data.stats.plays,
           upvotes: entry.data.stats.upVotes,

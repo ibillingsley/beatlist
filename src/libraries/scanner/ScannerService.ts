@@ -70,7 +70,7 @@ export default class ScannerService {
 
   private static retryTargetItems: BeatsaverItemInvalid[] = []; // 再取得する不正なデータ
 
-  public static async ScanAll(updateInvalid = false): Promise<void> {
+  public static async ScanAll(forceUpdate = false): Promise<void> {
     if (this.locked) return undefined;
 
     if (
@@ -88,13 +88,8 @@ export default class ScannerService {
     this.eventEmitter.emit(ON_SCAN_START);
     try {
       this.locked = true;
-      /*
-      if (BeatmapLibrary.GetAllMaps().length === 0) {
-        await BeatsaverCachedLibrary.LoadAll();
-      }
-      */
 
-      if (updateInvalid) {
+      if (forceUpdate) {
         this.retryTargetItems = Array.from(
           BeatsaverCachedLibrary.GetAllInvalid().values()
         ).filter((value) => {
@@ -121,10 +116,12 @@ export default class ScannerService {
       this.operation = undefined;
       return Promise.reject(error);
     }
-    return this.ScanBeatmaps().then(() => this.ScanPlaylists());
+    return this.ScanBeatmaps(forceUpdate).then(() => this.ScanPlaylists());
   }
 
-  public static async ScanBeatmaps(): Promise<void> {
+  public static async ScanBeatmaps(
+    forceUpdate: boolean = false
+  ): Promise<void> {
     if (this.locked) return undefined;
 
     this.scanningBeatmap = true;
@@ -136,6 +133,7 @@ export default class ScannerService {
     try {
       const result = await new BeatmapScanner().scanAll(
         this._beatmapProgress,
+        forceUpdate,
         this.retryTargetItems
       );
       this.locked = false;
@@ -154,15 +152,6 @@ export default class ScannerService {
       this.checkForEndOperation("beatmap");
       return Promise.resolve();
     }
-    // これだと、厳密には then() の中の処理の完了を待たずに次へ行くので修正
-    // return new BeatmapScanner()
-    //   .scanAll(this._beatmapProgress)
-    //   .then((result: BeatmapScannerResult) => {
-    //     this.locked = false;
-    //     this.scanningBeatmap = false;
-    //     this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, result);
-    //     this.checkForEndOperation("beatmap");
-    //   });
   }
 
   public static async ScanPlaylists(): Promise<void> {
@@ -193,15 +182,6 @@ export default class ScannerService {
       this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, errorResult);
       return Promise.resolve();
     }
-    // これだと、厳密には then() の中の処理の完了を待たずに次へ行くので修正
-    // return new PlaylistScanner()
-    //   .scanAll(this._playlistProgress)
-    //   .then((result: PlaylistScannerResult) => {
-    //     this.locked = false;
-    //     this.scanningPlaylist = false;
-    //     this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, result);
-    //     this.checkForEndOperation("playlist");
-    //   });
   }
 
   private static checkForEndOperation(from: "beatmap" | "playlist") {

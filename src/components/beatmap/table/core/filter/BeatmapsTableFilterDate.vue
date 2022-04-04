@@ -85,11 +85,23 @@ export default Vue.extend({
     stringMin() {
       this.dateMin =
         this.stringMin !== undefined ? new Date(this.stringMin) : undefined;
+      if (this.dateMin != null) {
+        // 少なくとも Electron12 では dateMin は UTC になるので現地の時間帯のオフセットを加算
+        this.dateMin = new Date(
+          this.dateMin.getTime() + new Date().getTimezoneOffset() * 60 * 1000
+        );
+      }
       this.update();
     },
     stringMax() {
       this.dateMax =
         this.stringMax !== undefined ? new Date(this.stringMax) : undefined;
+      if (this.dateMax != null) {
+        // 少なくとも Electron12 では dateMax は UTC になるので現地の時間帯のオフセットを加算
+        this.dateMax = new Date(
+          this.dateMax.getTime() + new Date().getTimezoneOffset() * 60 * 1000
+        );
+      }
       this.update();
     },
   },

@@ -4,6 +4,8 @@ import localforage from "localforage";
 import store from "@/plugins/store";
 import MigrateTo123 from "@/libraries/app/migration/MigrationVersion1.2.3";
 import MigrateTo132 from "@/libraries/app/migration/MigrationVersion1.3.2";
+import MigrateTo138 from "@/libraries/app/migration/MigrationVersion1.3.8";
+import ScannerService from "../scanner/ScannerService";
 
 export default class UpgradeCheckerService {
   public static async Initialize() {
@@ -40,7 +42,13 @@ export default class UpgradeCheckerService {
 
     if (semver.gt("1.3.2", previousVersion)) {
       // previousVersion is under 1.3.2
-      MigrateTo132();
+      MigrateTo132(); // clear playlist cache
+      MigrateTo138(); // set folderNameHash
+      ScannerService.requestDialogToBeOpened();
+    } else if (semver.gt("1.3.8", previousVersion)) {
+      // previousVersion is under 1.3.8
+      MigrateTo138(); // set folderNameHash
+      ScannerService.requestDialogToBeOpened();
     }
   }
 

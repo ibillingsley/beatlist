@@ -209,6 +209,11 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/removeBeatsaverCachedInvalid", { key });
   }
 
+  public static RemoveTemporaryInvalid() {
+    // 一時的なエラーにより invalid となった cache (404 以外のエラー) を削除
+    store.commit("beatmap/removeBeatsaverCachedTemporaryInvalid");
+  }
+
   private static GetKeyToHashIndex(): Map<string, string> {
     return store.getters["beatmap/beatsaverKeyToHashIndex"];
   }

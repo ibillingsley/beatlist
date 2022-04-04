@@ -70,10 +70,17 @@ export default class BeatmapLoader {
     let coverImageFilePath: string;
     let soundFilePath: string;
 
+    this.beatmap.folderNameHash = BeatmapHashComputer.getFolderNameHash(
+      this.beatmapFolder
+    );
+
     try {
-      const infoDat = await fs.readFile(
-        path.join(this.beatmapFolder, "info.dat")
-      );
+      const infoDatPath = path.join(this.beatmapFolder, "info.dat");
+      const infoDat = await fs.readFile(infoDatPath);
+
+      const stat = await fs.stat(infoDatPath);
+      this.beatmap.downloaded = stat.birthtime.toISOString();
+
       const beatmapDescription = JSON.parse(infoDat.toString());
 
       coverImageFilePath = path.join(

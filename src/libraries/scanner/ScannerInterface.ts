@@ -4,6 +4,7 @@ import { BeatsaverItemInvalid } from "../beatmap/repo/BeatsaverItem";
 export interface ScannerInterface<T> {
   scanAll(
     progress?: ProgressInterface,
+    forceUpdate?: boolean,
     retryTargetItems?: BeatsaverItemInvalid[]
   ): Promise<ScannerResultInterface>;
 
