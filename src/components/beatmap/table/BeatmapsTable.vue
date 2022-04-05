@@ -293,7 +293,7 @@ export default Vue.extend({
           localFilter: (value: string) =>
             FilterDateRange(new Date(value), this.filtersValue.downloaded),
           sort: sortDateFromString,
-          width: 150,
+          width: 160,
         },
         {
           value: "dl",
