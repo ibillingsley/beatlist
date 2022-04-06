@@ -1,12 +1,38 @@
 # ATTENTION
- - (2/4/2022) Resolved.  
-   However, if the maps you downloaded or the maps in your playlist do not appear during April Fool's Day,  
-   it may be because strange data has been left in your beatlist.  
-   If this is the case, try [CLEAR CACHE] & [UPDATE LIBRARY] from the [SETTINGS] screen.
- - ~~(1/4/2022) Due to beatsaver.com's April Fool's Day, the [Beatmap Online] screen is currently unavailable.~~  
-   ~~Please wait until beatsaver.com is back to normal.~~
+ - (02/04/2022) Due to beatsaver.com's April Fool's Day, some songs may not be displayed.  
+   If this is the case, please update to v1.3.8 or later or try [CLEAR CACHE] & [UPDATE LIBRARY] from the [Settings] screen.
+
+<br>
 
 # Changelog
+
+## v1.3.8 (06/04/2022)
+**ATTENTION:**
+ - When updating from v1.3.7 or earlier, the download date of map will be read at the first startup.  
+   While it reads, a dialog box will appear during the scan. Please wait for a while.
+
+**Improvement:**
+ - The download date are now displayed on the [Saved Beatmaps] screen, etc.
+   - Enable "Download Date" from the header selection field.
+   - Once the download date are loaded, they are not automatically updated.  
+     If you want to update the download date, press the [Refresh] button on the [Saved Beatmaps] screen.
+   - It is not displayed in the [Content] pane of the [Beatmaps Online] screen or the playlist edit screen.
+   - The calculation of the download date is based on the BetterSongList plug-in.
+ - Fixed the date filtering for maps under the Custom Levels folder to use local time.
+ - When filtering by date, if the same date is specified for From and To, data from 0:00 to 23:59 of that day will be extracted.
+   - Excluding the [Beatmap Online] screen.
+ - Sorting by key has been added.
+ - Added a [LATEST RELEASE] button to the [Home] screen to open the github Release page.
+
+**Bug fixes:**
+ - Fixed that when there are many songs in Custom Levels, it takes a long time to select all songs in the Content column of the playlist edit screen.
+ - Other minor bug fixes.
+
+**Others:**
+ - Changed [Copy BSR] icon to twitch icon.
+ - The preloaded cache data has been updated to that of late March 2022 (approximately 59,000 items).
+
+<br>
 
 ## v1.3.7 (12/02/2022)
 **ATTENTION:**
