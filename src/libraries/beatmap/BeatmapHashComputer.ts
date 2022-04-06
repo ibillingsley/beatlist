@@ -39,7 +39,7 @@ export default class BeatmapHashComputer {
         .createHash("sha1")
         .update(base.toLowerCase())
         .digest("hex")
-        .substr(0, 5);
+        .substring(0, 5);
     } catch (error) {
       console.warn(`Get folder name hash failed: ${folderPath}`, error);
       return undefined;

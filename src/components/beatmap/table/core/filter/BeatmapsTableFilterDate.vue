@@ -84,7 +84,7 @@ export default Vue.extend({
   watch: {
     stringMin() {
       this.dateMin =
-        this.stringMin !== undefined ? new Date(this.stringMin) : undefined;
+        this.stringMin != null ? new Date(this.stringMin) : undefined;
       if (this.dateMin != null) {
         // 少なくとも Electron12 では dateMin は UTC になるので現地の時間帯のオフセットを加算
         this.dateMin = new Date(
@@ -95,7 +95,7 @@ export default Vue.extend({
     },
     stringMax() {
       this.dateMax =
-        this.stringMax !== undefined ? new Date(this.stringMax) : undefined;
+        this.stringMax != null ? new Date(this.stringMax) : undefined;
       if (this.dateMax != null) {
         // 少なくとも Electron12 では dateMax は UTC になるので現地の時間帯のオフセットを加算
         this.dateMax = new Date(
@@ -108,8 +108,8 @@ export default Vue.extend({
   mounted(): void {
     this.dateMin = this.value.min;
     this.dateMax = this.value.max;
-    this.stringMin = this.value.min?.toISOString().substr(0, 10);
-    this.stringMax = this.value.max?.toISOString().substr(0, 10);
+    this.stringMin = this.value.min?.toISOString().substring(0, 10);
+    this.stringMax = this.value.max?.toISOString().substring(0, 10);
   },
   methods: {
     update() {
@@ -127,6 +127,7 @@ export default Vue.extend({
         this.dateMin?.getTime() > this.dateMax?.getTime()
       ) {
         this.dateMax = this.dateMin;
+        this.stringMax = this.stringMin;
       }
     },
     convertNullToUndefined() {

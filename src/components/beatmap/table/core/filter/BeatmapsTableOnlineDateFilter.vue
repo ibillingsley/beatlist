@@ -124,8 +124,8 @@ export default Vue.extend({
     reset() {
       this.dateMin = this.value.min;
       this.dateMax = this.value.max;
-      this.stringMin = this.value.min?.toISOString().substr(0, 10);
-      this.stringMax = this.value.max?.toISOString().substr(0, 10);
+      this.stringMin = this.value.min?.toISOString().substring(0, 10);
+      this.stringMax = this.value.max?.toISOString().substring(0, 10);
     },
     updateFilterText() {
       let text = "";
