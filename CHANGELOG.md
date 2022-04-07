@@ -6,7 +6,7 @@
 
 # Changelog
 
-## v1.3.8 (06/04/2022)
+## v1.3.8 (08/04/2022)
 **ATTENTION:**
  - When updating from v1.3.7 or earlier, the download date of map will be read at the first startup.  
    While it reads, a dialog box will appear during the scan. Please wait for a while.
