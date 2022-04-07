@@ -57,18 +57,23 @@ export default class PlaylistDeserializeBeatsaverBeatmap {
         },
         item,
       });
+    } else {
+      // item is null
+      return undefined;
     }
-    if (!item?.beatmap) {
+    if (!item.beatmap) {
+      // item is not null, but item.beatmap is null.
       const newItem: BeatsaverItemInvalidForPlaylist = {
         originalHash: identifier.hash ? identifier.hash : "",
         ...(item as BeatsaverItemInvalid),
       };
       return newItem;
     }
-    if (item != null) {
-      return item;
-    }
-    return undefined;
+    // if (item != null) {
+    //   return item;
+    // }
+    // return undefined;
+    return item;
   }
 
   public static async convert(

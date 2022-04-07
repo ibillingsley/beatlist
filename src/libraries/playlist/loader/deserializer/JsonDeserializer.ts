@@ -159,9 +159,9 @@ export default class JsonDeserializer extends PlaylistDeserializer {
         | BeatsaverItemValid
         | BeatsaverItemInvalidForPlaylist
         | undefined;
-      if (mapHash == null) {
-        if (song.key == null) {
-          Logger.debug(
+      if (mapHash == null || mapHash === "") {
+        if (song.key == null || song.key === "") {
+          Logger.warn(
             `Neither key or hash specified: ${JSON.stringify(song)}`,
             "JsonDeserializer"
           );
@@ -240,7 +240,7 @@ export default class JsonDeserializer extends PlaylistDeserializer {
             ...this.getErrorFor(localMap),
           } as PlaylistLocalMap;
         } else {
-          console.error(`Cannot get data: ${mapHash}`);
+          console.error(`Cannot get data. hash=${mapHash}`);
         }
 
         progress.plusOne();
