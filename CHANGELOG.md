@@ -25,6 +25,7 @@
  - Added a [LATEST RELEASE] button to the [Home] screen to open the github Release page.
 
 **Bug fixes:**
+ - Fixed a bug that caused loading to fail when a playlist had a blank hash value. Issue #4
  - Fixed that when there are many songs in Custom Levels, it takes a long time to select all songs in the Content column of the playlist edit screen.
  - Other minor bug fixes.
 

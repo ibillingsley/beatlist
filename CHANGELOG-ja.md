@@ -28,6 +28,7 @@
 - github の Release ページを開くための [LATEST RELEASE] ボタンを [Home] 画面に追加。
 
 **Bug fixes:**
+- hash値が空白のプレイリストがあるとき読み込みに失敗する不具合を修正。Issue #4
 - Custom Levels に多数の曲がある場合、playlist 編集画面の Content 欄での全件選択に時間がかかるのを修正。
 - その他細かいバグ修正。
 
