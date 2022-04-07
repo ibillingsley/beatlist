@@ -5,6 +5,7 @@ import {
   // PlaylistBase,
   PlaylistLocal,
   PlaylistRaw,
+  PlaylistMapImportError,
 } from "@/libraries/playlist/PlaylistLocal";
 import { computeDifference, Differences } from "@/libraries/common/Differences";
 import PlaylistLoader from "@/libraries/playlist/loader/PlaylistLoader";
@@ -20,7 +21,8 @@ export default class PlaylistScanner
   public result: PlaylistScannerResult = new PlaylistScannerResult();
 
   public async scanAll(
-    progressGroup: ProgressGroup = new ProgressGroup()
+    progressGroup: ProgressGroup = new ProgressGroup(),
+    forceUpdate = false
   ): Promise<PlaylistScannerResult> {
     return ScannerLocker.acquire(async () => {
       const playlistFolders = await BeatSaber.getAllPlaylistFolders();
@@ -57,41 +59,22 @@ export default class PlaylistScanner
         const { hash, progress } = playlistData;
 
         if (playlistRaw.songs != null) {
-          // eslint-disable-next-line no-await-in-loop
-          const playlistLocal = await PlaylistLoader.ConvertRawToPlaylistLocal(
-            playlistRaw,
-            hash,
-            progress
-          );
-          this.result.newItems.push(playlistLocal);
-          /*
-          const playlistLocalMap = await JsonDeserializer.convertToHash(
-            playlistRaw.songs,
-            progress
-          );
-          const playlistBase: PlaylistBase = {
-            title: playlistRaw.title,
-            author: playlistRaw.author,
-            description: playlistRaw.description,
-            cover: playlistRaw.cover,
-            maps: playlistLocalMap,
-          };
-          const hash = PlaylistLoader.computeHash(
-            playlistBase,
-            playlistRaw.path ?? "" // 実際には空文字になることはない
-          );
-          this.result.newItems.push({
-            title: playlistRaw.title,
-            author: playlistRaw.author,
-            description: playlistRaw.description,
-            cover: playlistRaw.cover,
-            maps: playlistLocalMap,
-            loadState: { valid: true, format: playlistRaw.format },
-            path: playlistRaw.path,
-            hash,
-            format: playlistRaw.format,
-          });
-          */
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            const playlistLocal = await PlaylistLoader.ConvertRawToPlaylistLocal(
+              playlistRaw,
+              hash,
+              progress
+            );
+            this.result.newItems.push(playlistLocal);
+          } catch (error) {
+            const invalidPlaylistLocal = PlaylistLoader.handleError(
+              error,
+              playlistRaw.path ?? "" // LoadRaw が成功しているので path は null ではないが一応
+            );
+            PlaylistLibrary.AddPlaylist(invalidPlaylistLocal);
+            this.result.newItems.push(invalidPlaylistLocal);
+          }
         }
       }
       /*
@@ -106,7 +89,7 @@ export default class PlaylistScanner
       this.result.removedItems = diff.removed.length;
       this.result.keptItems = diff.kept.length;
 
-      await this.checkForChange(diff.kept, progressGroup);
+      await this.checkForChange(diff.kept, progressGroup, forceUpdate);
 
       const allPlaylists = this.MergeWithExistingPlaylists(diff);
       PlaylistLibrary.UpdateAllPlaylist(allPlaylists);
@@ -162,7 +145,8 @@ export default class PlaylistScanner
 
   private async checkForChange(
     paths: string[],
-    progress: ProgressGroup
+    progress: ProgressGroup,
+    forceUpdate = false
   ): Promise<void> {
     // 基本1000個も playlist はない想定
     let playlistRaws: {
@@ -223,6 +207,25 @@ export default class PlaylistScanner
                   progress: progress.getNewOne(),
                 });
                 return;
+              }
+              if (forceUpdate) {
+                // forceUpdate = true の場合、invalid map (RequestError or Unknown)を含む playlist を再取得
+                const hasInvalidMap = libPlaylist.maps.some((map) => {
+                  return (
+                    map.error ===
+                      PlaylistMapImportError.BeatsaverRequestError ||
+                    map.error === PlaylistMapImportError.Unknown
+                  );
+                });
+                if (hasInvalidMap) {
+                  console.log(`has invalid map: ${libPlaylist.path}`);
+                  resolve({
+                    playlist: newPlaylist,
+                    hash: fileHash,
+                    progress: progress.getNewOne(),
+                  });
+                  return;
+                }
               }
               // hash 値も更新日付も変化なし
               resolve(null);

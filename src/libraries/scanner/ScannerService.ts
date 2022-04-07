@@ -116,7 +116,9 @@ export default class ScannerService {
       this.operation = undefined;
       return Promise.reject(error);
     }
-    return this.ScanBeatmaps(forceUpdate).then(() => this.ScanPlaylists());
+    return this.ScanBeatmaps(forceUpdate).then(() =>
+      this.ScanPlaylists(forceUpdate)
+    );
   }
 
   public static async ScanBeatmaps(
@@ -154,7 +156,9 @@ export default class ScannerService {
     }
   }
 
-  public static async ScanPlaylists(): Promise<void> {
+  public static async ScanPlaylists(
+    forceUpdate: boolean = false
+  ): Promise<void> {
     if (this.locked) return undefined;
 
     this.scanningPlaylist = true;
@@ -165,7 +169,8 @@ export default class ScannerService {
 
     try {
       const result = await new PlaylistScanner().scanAll(
-        this._playlistProgress
+        this._playlistProgress,
+        forceUpdate
       );
       this.locked = false;
       this.scanningPlaylist = false;

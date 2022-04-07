@@ -188,7 +188,7 @@ export default class PlaylistLoader {
     return deserializer.deserializeAsRaw();
   }
 
-  private static handleError(e: any, filepath: string) {
+  public static handleError(e: any, filepath: string) {
     switch (e) {
       case FILE_NOT_FOUND:
         return this.buildEmptyPlaylist(
