@@ -28,13 +28,15 @@ export default class PlaylistMapsLibrary {
 
   public static GetAllInvalidMapFlatten(): {
     playlist: PlaylistLocal;
+    index: number;
     map: PlaylistLocalMap;
   }[] {
     return this.GetAllInvalidMap().reduce(
       (previous: any[], current) =>
         previous.concat(
-          ...current.invalids.map((invalid) => ({
+          ...current.invalids.map((invalid, idx) => ({
             playlist: current.playlist,
+            index: idx,
             map: invalid,
           }))
         ),
