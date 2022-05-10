@@ -15,6 +15,8 @@
             enabled &&
             (aiFilter ||
               rankFilter ||
+              curatedFilter ||
+              verifiedMapperFilter ||
               fsFilter ||
               chromaFilter ||
               noodleFilter ||
@@ -42,6 +44,22 @@
       />
       <!-- automapper フィルターは仕様変更するかもしれないそうなので現時点では無効にしておく -->
       <!-- <v-switch v-model="aiFilter" color="accent" label="AI" dense inset /> -->
+      <v-switch
+        v-model="curatedFilter"
+        color="accent"
+        label="Curated"
+        hide-details="auto"
+        dense
+        inset
+      />
+      <v-switch
+        v-model="verifiedMapperFilter"
+        color="accent"
+        label="Verified Mapper"
+        hide-details="auto"
+        dense
+        inset
+      />
       <v-switch
         v-model="fsFilter"
         color="accent"
@@ -98,6 +116,8 @@ export default Vue.extend({
     enabled: { type: Boolean, required: true },
     enableAIFilter: { type: Boolean, required: true },
     enableRankFilter: { type: Boolean, required: true },
+    enableCuratedFilter: { type: Boolean, required: true },
+    enableVerifiedMapperFilter: { type: Boolean, required: true },
     enableFSFilter: { type: Boolean, required: true },
     enableChromaFilter: { type: Boolean, required: true },
     enableNoodleFilter: { type: Boolean, required: true },
@@ -108,6 +128,8 @@ export default Vue.extend({
     filterText: "Filter",
     aiFilter: false,
     rankFilter: false,
+    curatedFilter: false,
+    verifiedMapperFilter: false,
     fsFilter: false,
     chromaFilter: false,
     noodleFilter: false,
@@ -123,6 +145,16 @@ export default Vue.extend({
     enableRankFilter() {
       if (this.rankFilter !== this.enableRankFilter) {
         this.rankFilter = this.enableRankFilter;
+      }
+    },
+    enableCuratedFilter() {
+      if (this.curatedFilter !== this.enableCuratedFilter) {
+        this.curatedFilter = this.enableCuratedFilter;
+      }
+    },
+    enableVerifiedMapperFilter() {
+      if (this.verifiedMapperFilter !== this.enableVerifiedMapperFilter) {
+        this.verifiedMapperFilter = this.enableVerifiedMapperFilter;
       }
     },
     enableFSFilter() {
@@ -163,6 +195,8 @@ export default Vue.extend({
     reset() {
       this.aiFilter = this.enableAIFilter;
       this.rankFilter = this.enableRankFilter;
+      this.curatedFilter = this.enableCuratedFilter;
+      this.verifiedMapperFilter = this.enableVerifiedMapperFilter;
       this.fsFilter = this.enableFSFilter;
       this.chromaFilter = this.enableChromaFilter;
       this.noodleFilter = this.enableNoodleFilter;
@@ -176,6 +210,12 @@ export default Vue.extend({
       }
       if (this.rankFilter) {
         filters.push("ranked");
+      }
+      if (this.curatedFilter) {
+        filters.push("curated");
+      }
+      if (this.verifiedMapperFilter) {
+        filters.push("verified");
       }
       if (this.fsFilter) {
         filters.push("fs");
@@ -205,6 +245,8 @@ export default Vue.extend({
         mode: "filter",
         ai: this.aiFilter,
         ranked: this.rankFilter,
+        curated: this.curatedFilter,
+        verified: this.verifiedMapperFilter,
         fs: this.fsFilter,
         chroma: this.chromaFilter,
         noodle: this.noodleFilter,

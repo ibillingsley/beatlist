@@ -25,6 +25,8 @@
           :enabled="isFilterEnabled"
           :enable-a-i-filter="enableAIFilter"
           :enable-rank-filter="enableRankFilter"
+          :enable-curated-filter="enableCuratedFilter"
+          :enable-verified-mapper-filter="enableVerifiedMapperFilter"
           :enable-f-s-filter="enableFSFilter"
           :enable-chroma-filter="enableChromaFilter"
           :enable-noodle-filter="enableNoodleFilter"
@@ -154,6 +156,8 @@ export default Vue.extend({
     ],
     enableAIFilter: false,
     enableRankFilter: false,
+    enableCuratedFilter: false,
+    enableVerifiedMapperFilter: false,
     enableFSFilter: false,
     enableChromaFilter: false,
     enableNoodleFilter: false,
@@ -226,6 +230,14 @@ export default Vue.extend({
         }
         if (this.enableRankFilter !== params.ranked) {
           this.enableRankFilter = params.ranked ?? false;
+          changed = true;
+        }
+        if (this.enableCuratedFilter !== params.curated) {
+          this.enableCuratedFilter = params.curated ?? false;
+          changed = true;
+        }
+        if (this.enableVerifiedMapperFilter !== params.verified) {
+          this.enableVerifiedMapperFilter = params.verified ?? false;
           changed = true;
         }
         if (this.enableFSFilter !== params.fs) {
@@ -318,7 +330,6 @@ export default Vue.extend({
         //   break;
 
         case "rating":
-          // requestPage = BeatsaverAPI.Singleton.getByRating(this.page - 1);
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
             this.search,
             "Rating",
@@ -327,7 +338,6 @@ export default Vue.extend({
           );
           break;
         case "latest":
-          // requestPage = BeatsaverAPI.Singleton.getByLatest(this.page - 1);
           requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
             this.search,
             "Latest",
@@ -441,6 +451,12 @@ export default Vue.extend({
       */
       if (this.enableRankFilter) {
         filter.ranked = true;
+      }
+      if (this.enableCuratedFilter) {
+        filter.curated = true;
+      }
+      if (this.enableVerifiedMapperFilter) {
+        filter.verified = true;
       }
       if (this.enableFSFilter) {
         filter.fs = true;

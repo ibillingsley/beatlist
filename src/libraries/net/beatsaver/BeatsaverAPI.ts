@@ -108,6 +108,12 @@ export default class BeatsaverAPI {
     if (filters?.ranked) {
       query.push(`ranked=true`);
     }
+    if (filters?.curated) {
+      query.push(`curated=true`);
+    }
+    if (filters?.verified) {
+      query.push(`verified=true`);
+    }
     if (filters?.fs) {
       query.push(`fullSpread=true`);
     }
