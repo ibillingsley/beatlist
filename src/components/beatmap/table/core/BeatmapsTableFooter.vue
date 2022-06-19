@@ -21,7 +21,7 @@
       <span class="px-2">
         {{
           `${pagination.pageStart + 1}-${pagination.pageStop}${
-            noItemPerPageChoice ? "" : " of " + pagination.itemsLength
+            indefiniteLastPage ? "" : " of " + pagination.itemsLength
           }`
         }}
       </span>
@@ -53,7 +53,7 @@
         </v-icon>
       </v-btn>
       <v-btn
-        v-if="!noItemPerPageChoice"
+        v-if="!indefiniteLastPage"
         icon
         small
         class="ml-1 mr-5"
@@ -79,7 +79,6 @@
 <script lang="ts">
 import Vue, { PropType } from "vue";
 import ConfirmDialog from "@/components/dialogs/ConfirmDialog.vue";
-import { ITEM_COUNT_PER_PAGE_OF_SEARCH } from "@/libraries/net/beatsaver/BeatsaverAPI";
 
 export default Vue.extend({
   name: "BeatmapsTableFooter",
@@ -99,6 +98,7 @@ export default Vue.extend({
     },
     currentItemCount: { type: Number, default: 0 },
     noItemPerPageChoice: { type: Boolean, default: false },
+    indefiniteLastPage: { type: Boolean, default: false },
   },
   data: () => ({
     heavyListDialogConfirm: false,
@@ -109,8 +109,12 @@ export default Vue.extend({
       return this.page === 1;
     },
     isLastPage() {
-      if (this.noItemPerPageChoice) {
-        return this.currentItemCount < ITEM_COUNT_PER_PAGE_OF_SEARCH;
+      if (this.noItemPerPageChoice || this.indefiniteLastPage) {
+        if (this.page === this.pagination.pageCount) {
+          // 最終ページまで到達している
+          return true;
+        }
+        return this.currentItemCount < this.itemsPerPage;
       }
       return this.page === this.pagination.pageCount;
     },
@@ -122,9 +126,9 @@ export default Vue.extend({
       }
     },
     pageNext() {
-      if (this.noItemPerPageChoice) {
+      if (this.noItemPerPageChoice || this.indefiniteLastPage) {
         // Online beatmap のページ
-        if (this.currentItemCount === ITEM_COUNT_PER_PAGE_OF_SEARCH) {
+        if (this.currentItemCount === this.itemsPerPage) {
           this.$emit("update:page", this.page + 1);
         }
       } else if (this.page < this.pagination.pageCount) {
