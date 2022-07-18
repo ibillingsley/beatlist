@@ -113,6 +113,7 @@ import {
   BeatsaverPage,
 } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
+import Utilities from "@/libraries/helper/Utilities";
 import BeatsaverUtilities from "@/libraries/net/beatsaver/BeatsaverUtilities";
 import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
 import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
@@ -205,16 +206,21 @@ export default Vue.extend({
       this.fetchData();
     },
     selectedMode(): void {
+      this.clearPage();
+      let pageChanged = false;
+      if (this.page !== 1) {
+        this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
+        pageChanged = true;
+      }
       if (
         ["hot", "rating", "latest", "download", "plays", "search"].includes(
           this.selectedMode
         )
       ) {
-        this.fetchData();
+        if (!pageChanged) {
+          this.fetchData();
+        }
       }
-
-      this.page = 1;
-      this.clearPage();
     },
   },
   mounted(): void {
@@ -272,11 +278,11 @@ export default Vue.extend({
         }
       }
       if (params.mode === "date" || params.mode === "all") {
-        if (!this.dateEquals(this.dateRange.min, params.minDate)) {
+        if (!Utilities.isDateEquals(this.dateRange.min, params.minDate)) {
           this.dateRange.min = params.minDate ?? undefined; // undefined or null -> undefined
           changed = true;
         }
-        if (!this.dateEquals(this.dateRange.max, params.maxDate)) {
+        if (!Utilities.isDateEquals(this.dateRange.max, params.maxDate)) {
           this.dateRange.max = params.maxDate ?? undefined; // undefined or null -> undefined
           changed = true;
         }
@@ -285,22 +291,13 @@ export default Vue.extend({
         changed &&
         ["search", "rating", "latest"].indexOf(this.selectedMode) >= 0
       ) {
-        this.page = 1;
         this.clearPage();
-        this.fetchData();
-      }
-    },
-    dateEquals(date1: Date | undefined, date2: Date | undefined): boolean {
-      if (date1 == null) {
-        if (date2 == null) {
-          return true;
+        if (this.page !== 1) {
+          this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
+        } else {
+          this.fetchData();
         }
-        return false;
       }
-      if (date2 == null) {
-        return false;
-      }
-      return date1.getTime() === date2.getTime();
     },
     fetchData(): void {
       if (this.$route.name !== route.BEATMAPS_ONLINE) {
@@ -432,9 +429,12 @@ export default Vue.extend({
         return;
       }
 
-      this.page = 1;
       this.clearPage();
-      this.fetchData();
+      if (this.page !== 1) {
+        this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
+      } else {
+        this.fetchData();
+      }
     },
     clearPage() {
       this.beatsaverPage = undefined;

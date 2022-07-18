@@ -36,6 +36,8 @@ export default Vue.extend({
       { value: "artist", text: "Artist" },
       { value: "mapper", text: "Mapper" },
       { value: "difficulties", text: "Difficulties" },
+      { value: "bpm", text: "BPM" },
+      { value: "duration", text: "Song Length" },
       { value: "downloaded", text: "Download Date", isLocal: true },
       { value: "playlists", text: "Playlists" },
       { value: "dl", text: "Downloads" },

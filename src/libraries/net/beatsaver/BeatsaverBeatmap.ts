@@ -28,10 +28,25 @@ export interface BeatsaverNewBeatmap {
 export interface BeatsaverNewVersion {
   hash: string;
   state: string;
-  diffs: any[];
+  diffs: BeatsaverNewDiffs[];
   downloadURL: string;
   coverURL: string;
   previewURL: string;
+}
+
+export interface BeatsaverNewDiffs {
+  characteristic: string;
+  difficulty: string;
+  length: number;
+  bombs: number;
+  njs: number;
+  notes: number;
+  obstacles: number;
+  offset: number;
+  me: boolean;
+  ne: boolean;
+  chroma: boolean;
+  cinema: boolean;
 }
 
 export interface NewStats {
@@ -61,6 +76,7 @@ export interface Metadata {
   songAuthorName: string;
   levelAuthorName: string;
   bpm: number;
+  duration: number | undefined;
 }
 
 export interface Characteristic {
@@ -76,6 +92,7 @@ export interface DifficultiesDetailed {
   expertPlus: Difficulty | null;
 }
 
+// TODO nps、me、ne、chroma、cinema がない。
 export interface Difficulty {
   duration: number;
   length: number;
@@ -223,6 +240,7 @@ export function convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
   const data: BeatsaverBeatmap = {
     metadata: {
       bpm: doc.metadata.bpm,
+      duration: doc.metadata.duration,
       songName: doc.metadata.songName,
       songSubName: doc.metadata.songSubName,
       songAuthorName: doc.metadata.songAuthorName,

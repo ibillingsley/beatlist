@@ -209,7 +209,9 @@ export default class BeatmapLibrary {
       songSubName: beatmapDescription._songSubName,
       songAuthorName: beatmapDescription._songAuthorName,
       levelAuthorName: beatmapDescription._levelAuthorName,
-      bpm: 0,
+      bpm: beatmapDescription._beatsPerMinute,
+      // info.dat の中に duration がないので取得不可
+      duration: undefined,
     };
     const item: BeatsaverBeatmap = {
       metadata: mymetadata,

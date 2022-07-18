@@ -8,6 +8,8 @@ export enum BeatmapsTableHeadersTemplate {
   TextTooltip = "TextTooltip",
   BeatmapName = "BeatmapName",
   Rating = "Rating",
+  Number = "Number",
+  Time = "Time",
 }
 
 export enum BeatmapsTableFilterType {
@@ -23,6 +25,7 @@ export interface BeatmapsTableHeader {
   text: string;
   align?: "start" | "center" | "end";
   width?: number;
+  digits?: number;
 
   sortable?: boolean;
   filterable?: boolean;

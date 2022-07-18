@@ -1,8 +1,15 @@
 import Logger from "@/libraries/helper/Logger";
 
 function sortNumber(a: number, b: number): number {
-  if (!a || !b) {
-    return 0;
+  // null は先頭に持っていく(a > 0, b > 0 で 0 相当)
+  if (a == null) {
+    if (b == null) {
+      return 0;
+    }
+    return -1;
+  }
+  if (b == null) {
+    return 1;
   }
 
   return a - b;

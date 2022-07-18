@@ -136,6 +136,8 @@ import BeatmapsTableTemplateStrToDateLocal from "@/components/beatmap/table/core
 import BeatmapsTableTemplateDifficulties from "@/components/beatmap/table/core/template/BeatmapsTableTemplateDifficulties.vue";
 import BeatmapsTableTemplatePlaylists from "@/components/beatmap/table/core/template/BeatmapsTableTemplatePlaylists.vue";
 import BeatmapsTableTemplateRating from "@/components/beatmap/table/core/template/BeatmapsTableTemplateRating.vue";
+import BeatmapsTableTemplateNumber from "@/components/beatmap/table/core/template/BeatmapsTableTemplateNumber.vue";
+import BeatmapsTableTemplateTime from "@/components/beatmap/table/core/template/BeatmapsTableTemplateTime.vue";
 import BeatmapsTableColumnSelector from "@/components/beatmap/table/core/BeatmapsTableColumnSelector.vue";
 import BeatmapsTableFooter from "@/components/beatmap/table/core/BeatmapsTableFooter.vue";
 import BeatmapsTableFilterRow from "@/components/beatmap/table/core/BeatmapsTableFilterRow.vue";
@@ -156,6 +158,8 @@ export default Vue.extend({
     BeatmapsTableTemplateStrToDate,
     BeatmapsTableTemplateStrToDateLocal,
     BeatmapsTableTemplateRating,
+    BeatmapsTableTemplateNumber,
+    BeatmapsTableTemplateTime,
     Tooltip,
   },
   props: {
@@ -191,6 +195,7 @@ export default Vue.extend({
       downvotes: {} as Range,
       rating: {} as Range,
       difficulties: ["easy", "normal", "hard", "expert", "expertPlus"],
+      bpm: {} as Range,
       downloaded: {} as DateRange,
       uploaded: {} as DateRange,
       key: "",
@@ -269,6 +274,35 @@ export default Vue.extend({
           localFilter: (value) =>
             FilterDifficulties(value, this.filtersValue.difficulties),
           width: 110,
+        },
+        {
+          value: "bpm",
+          text: "BPM",
+          template: BeatmapsTableHeadersTemplate.Number,
+          templateItemAccess: "metadata.bpm",
+          align: "right",
+          digits: 2,
+          sortable: true,
+          filterable: true,
+          filterType: BeatmapsTableFilterType.RangeInt,
+          localFilter: (value: number) =>
+            FilterRange(value, this.filtersValue.bpm),
+          sort: sortNumber,
+          width: 55,
+        },
+        {
+          value: "duration",
+          text: "Length",
+          template: BeatmapsTableHeadersTemplate.Time,
+          templateItemAccess: "metadata.duration",
+          align: "right",
+          sortable: true,
+          filterable: false,
+          // filterType: BeatmapsTableFilterType.RangeInt,
+          // localFilter: (value: number) =>
+          //   FilterRange(value, this.filtersValue.dl),
+          sort: sortNumber,
+          width: 65,
         },
         {
           value: "playlists",
@@ -432,6 +466,8 @@ export default Vue.extend({
           mapper: entry.data.metadata.levelAuthorName,
           difficulties: entry.data.metadata.difficulties,
           downloaded: entry.downloaded,
+          bpm: entry.data.metadata.bpm,
+          duration: entry.data.metadata.duration,
           dl: entry.data.stats.downloads,
           plays: entry.data.stats.plays,
           upvotes: entry.data.stats.upVotes,
