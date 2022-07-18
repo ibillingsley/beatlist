@@ -26,6 +26,7 @@ import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import BeatmapLocalUtilities from "@/libraries/beatmap/BeatmapLocalUtilities";
 import NotificationService from "@/libraries/notification/NotificationService";
+import Utilities from "@/libraries/helper/Utilities";
 
 export default Vue.extend({
   name: "BeatmapButtonPlaySong",
@@ -45,10 +46,10 @@ export default Vue.extend({
       return BeatmapLibrary.GetMapByHash(this.beatmap.hash);
     },
     currentTime(): string {
-      return this.convertTimeHHMMSS(this.currentSeconds);
+      return Utilities.convertTimeHHMMSS(this.currentSeconds);
     },
     totalTime(): string {
-      return this.convertTimeHHMMSS(this.totalSeconds);
+      return Utilities.convertTimeHHMMSS(this.totalSeconds);
     },
   },
   watch: {
@@ -58,6 +59,12 @@ export default Vue.extend({
         this.audio.currentTime = 0;
       }
     },
+  },
+  beforeDestroy(): void {
+    if (!this.audio.paused) {
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    }
   },
   methods: {
     async LoadAudioSrc(): Promise<void> {
@@ -114,10 +121,6 @@ export default Vue.extend({
     },
     audioTooltip(): string {
       return !this.playing ? "Play the song" : "Stop the song";
-    },
-    convertTimeHHMMSS(val: number): string {
-      const time = new Date(val * 1000).toISOString().substr(11, 8);
-      return time.indexOf("00:") === 0 ? time.substr(3) : time;
     },
   },
 });
