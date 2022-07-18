@@ -74,15 +74,14 @@
       <BeatmapsTable
         :items="beatmaps"
         :shown-column="shownColumn"
-        :items-per-page.sync="itemsPerPage"
-        :items-per-page-list="itemsPerPageList"
+        :items-per-page="20"
         :server-items-length="totalDocs"
         :loading="loading"
         :page.sync="page"
         :see-more-route-name="seeMoreRouteName"
+        no-item-per-page-choice
         no-filter
         no-sort
-        indefinite-last-page
       >
         <template #actions="{ beatsaver }">
           <BeatmapButtonAddToNPlaylists :beatmap="beatsaver" small />
@@ -114,11 +113,7 @@ import {
   BeatsaverPage,
 } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
-import Utilities from "@/libraries/helper/Utilities";
 import BeatsaverUtilities from "@/libraries/net/beatsaver/BeatsaverUtilities";
-import BeatsaverLibrary, {
-  SearchBeatmapsCache,
-} from "@/libraries/net/beatsaver/BeatsaverLibrary";
 import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
 import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
 import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
@@ -177,19 +172,10 @@ export default Vue.extend({
     loading: false,
     error: undefined as string | undefined,
     page: 1,
-    itemsPerPageList: [5, 10, 15, 20],
-    dataCache: {
-      cache: [],
-      lastPage: -1,
-      isLast: false,
-    } as SearchBeatmapsCache,
   }),
   computed: {
     shownColumn: sync<string[]>(
       "settings/beatmapsTable@beatsaverBeatmaps.shownColumn"
-    ),
-    itemsPerPage: sync<number>(
-      "settings/beatmapsTable@beatsaverBeatmaps.itemsPerPage"
     ),
     beatmaps(): BeatmapsTableDataUnit[] {
       return (
@@ -218,29 +204,17 @@ export default Vue.extend({
     page(): void {
       this.fetchData();
     },
-    itemsPerPage(): void {
-      if (this.page !== 1) {
-        this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
-      } else {
-        this.fetchData();
-      }
-    },
     selectedMode(): void {
-      this.clearPage();
-      let pageChanged = false;
-      if (this.page !== 1) {
-        this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
-        pageChanged = true;
-      }
       if (
         ["hot", "rating", "latest", "download", "plays", "search"].includes(
           this.selectedMode
         )
       ) {
-        if (!pageChanged) {
-          this.fetchData();
-        }
+        this.fetchData();
       }
+
+      this.page = 1;
+      this.clearPage();
     },
   },
   mounted(): void {
@@ -298,11 +272,11 @@ export default Vue.extend({
         }
       }
       if (params.mode === "date" || params.mode === "all") {
-        if (!Utilities.isDateEquals(this.dateRange.min, params.minDate)) {
+        if (!this.dateEquals(this.dateRange.min, params.minDate)) {
           this.dateRange.min = params.minDate ?? undefined; // undefined or null -> undefined
           changed = true;
         }
-        if (!Utilities.isDateEquals(this.dateRange.max, params.maxDate)) {
+        if (!this.dateEquals(this.dateRange.max, params.maxDate)) {
           this.dateRange.max = params.maxDate ?? undefined; // undefined or null -> undefined
           changed = true;
         }
@@ -311,13 +285,22 @@ export default Vue.extend({
         changed &&
         ["search", "rating", "latest"].indexOf(this.selectedMode) >= 0
       ) {
+        this.page = 1;
         this.clearPage();
-        if (this.page !== 1) {
-          this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
-        } else {
-          this.fetchData();
-        }
+        this.fetchData();
       }
+    },
+    dateEquals(date1: Date | undefined, date2: Date | undefined): boolean {
+      if (date1 == null) {
+        if (date2 == null) {
+          return true;
+        }
+        return false;
+      }
+      if (date2 == null) {
+        return false;
+      }
+      return date1.getTime() === date2.getTime();
     },
     fetchData(): void {
       if (this.$route.name !== route.BEATMAPS_ONLINE) {
@@ -325,17 +308,21 @@ export default Vue.extend({
       }
 
       this.loading = true;
-      let sortOrder: string | undefined;
-      // let requestPage = undefined as
-      //   | Promise<BeatSaverAPIResponse<BeatsaverPage>>
-      //   | undefined;
+      let requestPage = undefined as
+        | Promise<BeatSaverAPIResponse<BeatsaverPage>>
+        | undefined;
       let requestMap = undefined as
         | Promise<BeatSaverAPIResponse<BeatsaverBeatmap>>
         | undefined;
 
       switch (this.selectedMode) {
         case "search":
-          sortOrder = "Relevance";
+          requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
+            this.search,
+            "Relevance",
+            this.page - 1,
+            this.createFilter()
+          );
           break;
 
         // case "hot":
@@ -343,10 +330,20 @@ export default Vue.extend({
         //   break;
 
         case "rating":
-          sortOrder = "Rating";
+          requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
+            this.search,
+            "Rating",
+            this.page - 1,
+            this.createFilter()
+          );
           break;
         case "latest":
-          sortOrder = "Rating";
+          requestPage = BeatsaverAPI.Singleton.searchBeatmaps(
+            this.search,
+            "Latest",
+            this.page - 1,
+            this.createFilter()
+          );
           break;
 
         // case "download":
@@ -369,47 +366,14 @@ export default Vue.extend({
           break;
       }
 
-      if (sortOrder != null) {
-        const searchResultPromise = BeatsaverLibrary.searchBeatmaps(
-          this.search,
-          sortOrder,
-          this.page - 1,
-          this.itemsPerPage,
-          this.dataCache,
-          this.createFilter()
-        );
-        searchResultPromise
-          .then((searchResult) => {
-            this.error = searchResult.error;
-            if (searchResult.error == null) {
-              this.beatsaverPage = {
-                docs: searchResult.beatmaps ?? ([] as BeatsaverBeatmap[]),
-                lastPage: 1,
-                nextPage: null,
-                prevPage: null,
-                totalDocs: searchResult.totalDocs ?? Number.MAX_SAFE_INTEGER, // API の response にないので INTEGER の最大値
-              };
-            }
-          })
-          .catch((e) => {
-            this.error = e.message;
-            this.beatsaverPage = undefined;
-            console.error(e);
-          })
-          .finally(() => {
-            this.loading = false;
-          });
+      if (requestPage) {
+        this.handleBeatsaverPageResponse(requestPage);
       }
-
-      // if (requestPage) {
-      //   this.handleBeatsaverPageResponse(requestPage);
-      // }
 
       if (requestMap) {
         this.handleBeatsaverBeatmapResponse(requestMap);
       }
     },
-    /*
     handleBeatsaverPageResponse(
       response: Promise<BeatSaverAPIResponse<BeatsaverPage>>
     ): void {
@@ -427,7 +391,6 @@ export default Vue.extend({
           this.loading = false;
         });
     },
-    */
     handleBeatsaverBeatmapResponse(
       response: Promise<BeatSaverAPIResponse<BeatsaverBeatmap>>
     ) {
@@ -469,20 +432,12 @@ export default Vue.extend({
         return;
       }
 
+      this.page = 1;
       this.clearPage();
-      if (this.page !== 1) {
-        this.page = 1; // 先頭に戻す。fetchData() が呼ばれる。
-      } else {
-        this.fetchData();
-      }
+      this.fetchData();
     },
     clearPage() {
       this.beatsaverPage = undefined;
-      this.dataCache = {
-        cache: [],
-        lastPage: -1,
-        isLast: false,
-      };
     },
     createFilter() {
       const filter: BeatsaverFilter = {

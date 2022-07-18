@@ -20,7 +20,6 @@
         :items-per-page="itemsPerPage"
         :items-per-page-list="itemsPerPageList"
         :no-item-per-page-choice="noItemPerPageChoice"
-        :indefinite-last-page="indefiniteLastPage"
         :current-item-count="items.length"
         :page.sync="currentPage"
         :pagination="pagination"
@@ -166,7 +165,6 @@ export default Vue.extend({
     itemsPerPage: { type: Number, default: undefined },
     itemsPerPageList: { type: Array as PropType<number[]>, default: undefined },
     noItemPerPageChoice: { type: Boolean, default: false },
-    indefiniteLastPage: { type: Boolean, default: false },
     serverItemsLength: { type: Number, default: undefined },
     loading: { type: Boolean, default: false },
     fixedHeader: { type: Boolean, default: false },

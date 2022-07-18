@@ -5,7 +5,6 @@ import store from "@/plugins/store";
 import MigrateTo123 from "@/libraries/app/migration/MigrationVersion1.2.3";
 import MigrateTo132 from "@/libraries/app/migration/MigrationVersion1.3.2";
 import MigrateTo138 from "@/libraries/app/migration/MigrationVersion1.3.8";
-import MigrateTo139 from "@/libraries/app/migration/MigrationVersion1.3.9";
 import ScannerService from "../scanner/ScannerService";
 
 export default class UpgradeCheckerService {
@@ -50,10 +49,6 @@ export default class UpgradeCheckerService {
       // previousVersion is under 1.3.8
       ScannerService.requestDialogToBeOpened();
       await MigrateTo138(); // set folderNameHash, updateDownloadDate
-    }
-
-    if (semver.gt("1.3.9", previousVersion)) {
-      MigrateTo139();
     }
   }
 

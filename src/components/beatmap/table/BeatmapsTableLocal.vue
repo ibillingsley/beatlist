@@ -62,7 +62,7 @@ export default Vue.extend({
     shownColumn: sync<string[]>(
       "settings/beatmapsTable@localBeatmaps.shownColumn"
     ),
-    itemsPerPage: sync<number>(
+    itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@localBeatmaps.itemsPerPage"
     ),
     storedMaps(): BeatmapLocal[] {

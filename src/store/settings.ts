@@ -87,26 +87,6 @@ const state = {
 
 const mutations = {
   ...make.mutations(state),
-  setTableSettings(
-    context: SettingsStoreState,
-    payload: {
-      table: keyof SettingsStoreState["beatmapsTable"];
-      key: keyof BeatmapTableStoreState;
-      value: any;
-    }
-  ) {
-    let ignored = true;
-    if (Object.keys(context.beatmapsTable).includes(payload.table)) {
-      const beatmapTableStoreState = context.beatmapsTable[payload.table];
-      if (payload.key === "shownColumn" || payload.key === "itemsPerPage") {
-        beatmapTableStoreState[payload.key] = payload.value;
-        ignored = false;
-      }
-    }
-    if (ignored) {
-      console.warn(`[setTableSettings] ignored: ${JSON.stringify(payload)}`);
-    }
-  },
 };
 
 const getters = {
