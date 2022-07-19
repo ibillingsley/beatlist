@@ -5,7 +5,7 @@
         aria-describedby="infos about the difficulty (1st column)"
         class="align-first-column-left"
       >
-        <tr>
+        <!-- <tr>
           <td class="body-2 pr-2">
             Duration
           </td>
@@ -14,7 +14,7 @@
               {{ difficulty.duration.toFixed(2) }}
             </Tooltip>
           </td>
-        </tr>
+        </tr> -->
         <tr>
           <td class="body-2 pr-2">
             length
@@ -72,19 +72,51 @@
         </tr>
       </table>
     </v-col>
+    <v-col cols="auto">
+      <table
+        aria-describedby="infos about the difficulty (3rd column)"
+        class="align-first-column-left"
+      >
+        <tr v-for="req in reqs" :key="req.key">
+          <td class="body-2 pr-2">
+            {{ req.name }}
+          </td>
+          <td class="body-1 pl-2">
+            <v-icon v-if="req.enabled" small>
+              check_circle
+            </v-icon>
+            <v-icon v-else small>
+              radio_button_unchecked
+            </v-icon>
+          </td>
+        </tr>
+      </table>
+    </v-col>
   </v-row>
 </template>
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import { Difficulty } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
-import Tooltip from "@/components/helper/Tooltip.vue";
+import { convertReqsMetadataToNameList } from "@/libraries/helper/RequirementsHelper";
+import {
+  Difficulty,
+  ReqsMetadata,
+} from "@/libraries/net/beatsaver/BeatsaverBeatmap";
+// import Tooltip from "@/components/helper/Tooltip.vue";
 
 export default Vue.extend({
   name: "BeatmapSummaryDifficulty",
-  components: { Tooltip },
+  // components: { Tooltip },
+  components: {},
   props: {
     difficulty: { type: Object as PropType<Difficulty>, required: true },
+  },
+  computed: {
+    reqs() {
+      // chroma, ne, me, cinema の順に表示
+      const keys: (keyof ReqsMetadata)[] = ["chroma", "ne", "me", "cinema"];
+      return convertReqsMetadataToNameList(keys, this.difficulty);
+    },
   },
 });
 </script>

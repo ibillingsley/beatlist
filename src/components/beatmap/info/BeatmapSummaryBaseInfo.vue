@@ -48,22 +48,18 @@
           </tr>
           <tr>
             <td class="body-2 pr-2">
-              Key
+              Song Length
             </td>
             <td class="body-1 pl-2">
-              {{ beatmap.key }}
+              {{ duration }}
             </td>
           </tr>
           <tr>
             <td class="body-2 pr-2">
-              Difficulties
+              Key
             </td>
-            <td class="pl-2">
-              <DifficultiesChips
-                :diff="beatmap.metadata.difficulties"
-                short
-                small
-              />
+            <td class="body-1 pl-2">
+              {{ beatmap.key }}
             </td>
           </tr>
         </table>
@@ -81,22 +77,22 @@
               {{ beatmap.uploaded | toDate }}
             </td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td class="body-2 pr-2">
               Downloads
             </td>
             <td class="body-1 pl-2">
               {{ beatmap.stats.downloads }}
             </td>
-          </tr>
-          <tr>
+          </tr> -->
+          <!-- <tr>
             <td class="body-2 pr-2">
               Plays
             </td>
             <td class="body-1 pl-2">
               {{ beatmap.stats.plays }}
             </td>
-          </tr>
+          </tr> -->
           <tr>
             <td class="body-2 pr-2">
               Up votes
@@ -121,6 +117,18 @@
               <Tooltip :text="beatmap.stats.rating.toString()" right>
                 {{ beatmap.stats.rating | toPercent }}
               </Tooltip>
+            </td>
+          </tr>
+          <tr>
+            <td class="body-2 pr-2">
+              Difficulties
+            </td>
+            <td class="pl-2">
+              <DifficultiesChips
+                :diff="beatmap.metadata.difficulties"
+                short
+                small
+              />
             </td>
           </tr>
         </table>
@@ -153,6 +161,7 @@ import linkifyHtml from "linkifyjs/html";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import DifficultiesChips from "@/components/beatmap/DifficultiesChips.vue";
 import Tooltip from "@/components/helper/Tooltip.vue";
+import Utilities from "@/libraries/helper/Utilities";
 
 export default Vue.extend({
   name: "BeatmapSummaryBaseInfo",
@@ -174,6 +183,11 @@ export default Vue.extend({
   data: () => ({
     descriptionPanel: 0,
   }),
+  computed: {
+    duration(): string {
+      return Utilities.convertTimeHHMMSS(this.beatmap.metadata?.duration);
+    },
+  },
   methods: {
     Linkify(str: string): string {
       return linkifyHtml(str);
