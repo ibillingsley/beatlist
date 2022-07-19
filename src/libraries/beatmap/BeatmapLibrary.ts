@@ -152,16 +152,16 @@ export default class BeatmapLibrary {
       return undefined;
     }
 
-    Logger.debug(`start GenerateBeatmap`);
+    // Logger.debug(`start GenerateBeatmap`);
 
     const hash = beatmap.hash.toUpperCase();
     const cache = BeatmapLibrary.generatedBeatmapCache.get(hash);
     if (cache != null) {
-      Logger.debug(`end   GenerateBeatmap (cache hit): ${hash}`);
+      // Logger.debug(`end   GenerateBeatmap (cache hit): ${hash}`);
       return cache;
     }
 
-    Logger.debug(`    cache miss: ${hash}`);
+    // Logger.debug(`    cache miss: ${hash}`);
     let beatmapDescription;
     try {
       const infoDat = await fs.readFile(`${beatmap.folderPath}/info.dat`);
@@ -176,29 +176,46 @@ export default class BeatmapLibrary {
       expert: false,
       expertPlus: false,
     };
+    // BeatmapsTable 表示用
+    const requirements = {
+      chroma: false,
+      ne: false,
+      me: false,
+      cinema: false,
+    };
     for (const mapset of beatmapDescription._difficultyBeatmapSets) {
-      if (mapset._beatmapCharacteristicName === "Standard") {
-        for (const map of mapset._difficultyBeatmaps) {
-          switch (map._difficulty) {
-            case "Easy":
-              myDifficulties.easy = true;
-              break;
-            case "Normal":
-              myDifficulties.normal = true;
-              break;
-            case "Hard":
-              myDifficulties.hard = true;
-              break;
-            case "Expert":
-              myDifficulties.expert = true;
-              break;
-            case "ExpertPlus":
-              myDifficulties.expertPlus = true;
-              break;
-            default:
-              break;
-          }
+      for (const map of mapset._difficultyBeatmaps) {
+        switch (map._difficulty) {
+          case "Easy":
+            myDifficulties.easy = true;
+            break;
+          case "Normal":
+            myDifficulties.normal = true;
+            break;
+          case "Hard":
+            myDifficulties.hard = true;
+            break;
+          case "Expert":
+            myDifficulties.expert = true;
+            break;
+          case "ExpertPlus":
+            myDifficulties.expertPlus = true;
+            break;
+          default:
+            break;
         }
+        let reqs: string[] = [];
+        if (map._customData?._suggestions != null) {
+          reqs = reqs.concat(map._customData?._suggestions);
+        }
+        if (map._customData?._requirements != null) {
+          reqs = reqs.concat(map._customData?._requirements);
+        }
+        requirements.chroma = requirements.chroma || reqs.includes("Chroma");
+        requirements.ne = requirements.ne || reqs.includes("Noodle Extensions");
+        requirements.me =
+          requirements.me || reqs.includes("Mapping Extensions");
+        requirements.cinema = requirements.cinema || reqs.includes("Cinema");
       }
     }
 
@@ -212,6 +229,7 @@ export default class BeatmapLibrary {
       bpm: beatmapDescription._beatsPerMinute,
       // info.dat の中に duration がないので取得不可
       duration: undefined,
+      requirements,
     };
     const item: BeatsaverBeatmap = {
       metadata: mymetadata,
@@ -232,21 +250,18 @@ export default class BeatmapLibrary {
       downloadURL: "",
       coverURL: "",
     };
-    // const item = await BeatmapGenerator.generate(hash, beatmap.folderPath);
     BeatmapLibrary.generatedBeatmapCache.set(hash, item);
-    Logger.debug(`end   GenerateBeatmap: ${hash}`);
+    // Logger.debug(`end   GenerateBeatmap: ${hash}`);
     return item;
   }
 
   public static GetMapByHash(hash: string): BeatmapLocal | undefined {
-    // TODO GetAllMaps().find(valid && hash) とするとほんの少し速くなるはず
     return this.GetAllValidMap().find(
       (beatmap: BeatmapLocal) => beatmap.hash === hash.toUpperCase()
     );
   }
 
   public static HasBeatmap(beatmap: BeatsaverBeatmap): boolean {
-    // return this.GetMapByHash(beatmap.hash) !== undefined;
     const hashset = store.getters["beatmap/beatmapHashSet"] as Set<string>;
     return hashset.has(beatmap.hash.toUpperCase());
   }

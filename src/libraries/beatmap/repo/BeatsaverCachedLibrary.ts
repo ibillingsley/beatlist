@@ -214,6 +214,11 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/removeBeatsaverCachedTemporaryInvalid");
   }
 
+  public static RemoveValid() {
+    // 正常に読み込んだキャッシュを削除
+    store.commit("beatmap/removeBeatsaverCachedValid");
+  }
+
   private static GetKeyToHashIndex(): Map<string, string> {
     return store.getters["beatmap/beatsaverKeyToHashIndex"];
   }

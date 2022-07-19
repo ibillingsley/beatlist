@@ -39,6 +39,7 @@ export default Vue.extend({
       { value: "bpm", text: "BPM" },
       { value: "duration", text: "Song Length" },
       { value: "downloaded", text: "Download Date", isLocal: true },
+      { value: "requirements", text: "Requirements" },
       { value: "playlists", text: "Playlists" },
       { value: "dl", text: "Downloads" },
       { value: "plays", text: "Plays" },

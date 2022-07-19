@@ -10,6 +10,7 @@ export enum BeatmapsTableHeadersTemplate {
   Rating = "Rating",
   Number = "Number",
   Time = "Time",
+  Requirements = "Requirements",
 }
 
 export enum BeatmapsTableFilterType {
@@ -18,6 +19,7 @@ export enum BeatmapsTableFilterType {
   Difficulties = "Difficulties",
   Date = "Date",
   Playlists = "Playlists",
+  Requirements = "Requirements",
 }
 
 export interface BeatmapsTableHeader {

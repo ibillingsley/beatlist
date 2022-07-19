@@ -201,6 +201,30 @@ const mutations = {
       context.beatsaverFailCached.delete(key);
     }
   },
+  removeBeatsaverCachedValid(context: BeatmapStoreState) {
+    // キャッシュの構造変更などにより破棄が必要になった場合に呼び出す。
+    const keys: string[] = [];
+    for (const mapEntry of context.beatsaverCached) {
+      if (mapEntry[1].loadState.valid) {
+        // 有効なキャッシュを破棄対象に追加
+        keys.push(mapEntry[0]);
+      }
+    }
+    // 破棄
+    for (const key of keys) {
+      context.beatsaverCached.delete(key);
+    }
+    // beatsaverKeyToHashIndex 再作成
+    context.beatsaverKeyToHashIndex = new Map<string, string>();
+    for (const mapEntry of context.beatsaverCached) {
+      if (mapEntry[1].loadState.valid) {
+        context.beatsaverKeyToHashIndex.set(
+          mapEntry[1].beatmap.key.toUpperCase(),
+          mapEntry[0].toUpperCase()
+        );
+      }
+    }
+  },
   setFolderNameHashToAllBeatmaps(context: BeatmapStoreState) {
     // folderNameHash を計算してセット (1.3.7 以前から 1.3.8 以降へのアップグレード用)
     context.beatmaps.forEach((value) => {

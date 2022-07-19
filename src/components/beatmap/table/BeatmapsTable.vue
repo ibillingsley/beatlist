@@ -123,6 +123,7 @@ import {
   FilterRange,
   FilterText,
   FilterDifficulties,
+  FilterRequirements,
 } from "@/components/beatmap/table/core/filter/BeatmapsTableFilterFunction";
 import { DateRange, Range } from "@/libraries/common/Range";
 
@@ -138,6 +139,7 @@ import BeatmapsTableTemplatePlaylists from "@/components/beatmap/table/core/temp
 import BeatmapsTableTemplateRating from "@/components/beatmap/table/core/template/BeatmapsTableTemplateRating.vue";
 import BeatmapsTableTemplateNumber from "@/components/beatmap/table/core/template/BeatmapsTableTemplateNumber.vue";
 import BeatmapsTableTemplateTime from "@/components/beatmap/table/core/template/BeatmapsTableTemplateTime.vue";
+import BeatmapsTableTemplateRequirements from "@/components/beatmap/table/core/template/BeatmapsTableTemplateRequirements.vue";
 import BeatmapsTableColumnSelector from "@/components/beatmap/table/core/BeatmapsTableColumnSelector.vue";
 import BeatmapsTableFooter from "@/components/beatmap/table/core/BeatmapsTableFooter.vue";
 import BeatmapsTableFilterRow from "@/components/beatmap/table/core/BeatmapsTableFilterRow.vue";
@@ -160,6 +162,7 @@ export default Vue.extend({
     BeatmapsTableTemplateRating,
     BeatmapsTableTemplateNumber,
     BeatmapsTableTemplateTime,
+    BeatmapsTableTemplateRequirements,
     Tooltip,
   },
   props: {
@@ -195,6 +198,7 @@ export default Vue.extend({
       downvotes: {} as Range,
       rating: {} as Range,
       difficulties: ["easy", "normal", "hard", "expert", "expertPlus"],
+      requirements: { chroma: false, ne: false, me: false, cinema: false },
       bpm: {} as Range,
       downloaded: {} as DateRange,
       uploaded: {} as DateRange,
@@ -302,6 +306,19 @@ export default Vue.extend({
           // localFilter: (value: number) =>
           //   FilterRange(value, this.filtersValue.dl),
           sort: sortNumber,
+          width: 65,
+        },
+        {
+          value: "requirements",
+          text: "Requirements",
+          template: BeatmapsTableHeadersTemplate.Requirements,
+          templateItemAccess: "metadata.requirements",
+          align: "left",
+          sortable: false,
+          filterable: true,
+          filterType: BeatmapsTableFilterType.Requirements,
+          localFilter: (value: any) =>
+            FilterRequirements(value, this.filtersValue.requirements),
           width: 65,
         },
         {
@@ -465,6 +482,7 @@ export default Vue.extend({
           artist: entry.data.metadata.songAuthorName,
           mapper: entry.data.metadata.levelAuthorName,
           difficulties: entry.data.metadata.difficulties,
+          requirements: entry.data.metadata.requirements,
           downloaded: entry.downloaded,
           bpm: entry.data.metadata.bpm,
           duration: entry.data.metadata.duration,

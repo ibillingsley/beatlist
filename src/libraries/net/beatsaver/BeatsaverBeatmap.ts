@@ -77,6 +77,8 @@ export interface Metadata {
   levelAuthorName: string;
   bpm: number;
   duration: number | undefined;
+  // BeatmapsTable 表示用。本来は difficulty ごとに設定されるものだが性能向上のためtopにも持つ。
+  requirements: ReqsMetadata;
 }
 
 export interface Characteristic {
@@ -92,7 +94,6 @@ export interface DifficultiesDetailed {
   expertPlus: Difficulty | null;
 }
 
-// TODO nps、me、ne、chroma、cinema がない。
 export interface Difficulty {
   duration: number;
   length: number;
@@ -101,6 +102,10 @@ export interface Difficulty {
   obstacles: number;
   njs: number;
   njsOffset: number;
+  chroma: boolean;
+  ne: boolean;
+  me: boolean;
+  cinema: boolean;
 }
 
 export interface DifficultiesSimple {
@@ -111,6 +116,13 @@ export interface DifficultiesSimple {
   expertPlus: boolean;
 
   [difficulty: string]: boolean;
+}
+
+export interface ReqsMetadata {
+  chroma: boolean;
+  ne: boolean;
+  me: boolean;
+  cinema: boolean;
 }
 
 export interface Stats {
@@ -143,6 +155,7 @@ export function isBeatsaverBeatmap(beatmap: any): beatmap is BeatsaverBeatmap {
   );
 }
 
+/*
 function createDifficultiesMetadata(
   doc: BeatsaverNewBeatmap
 ): DifficultiesSimple {
@@ -177,13 +190,32 @@ function createDifficultiesMetadata(
   }
   return result;
 }
+*/
 
 function createCharacteristicMetadata(
   doc: BeatsaverNewBeatmap
-): Characteristic[] {
+): {
+  characteristics: Characteristic[];
+  difficulties: DifficultiesSimple;
+  requirements: any;
+} {
   const version = doc.versions[0];
   const result: Characteristic[] = [];
   const resultMap = new Map<string, Characteristic>();
+  const diffSimple: DifficultiesSimple = {
+    easy: false,
+    normal: false,
+    hard: false,
+    expert: false,
+    expertPlus: false,
+  };
+  // BeatmapsTable 表示用
+  const requirements = {
+    chroma: false,
+    ne: false,
+    me: false,
+    cinema: false,
+  };
 
   for (const diff of version.diffs) {
     const characteristicKey = diff.characteristic;
@@ -209,22 +241,35 @@ function createCharacteristicMetadata(
       obstacles: diff.obstacles,
       njs: diff.njs,
       njsOffset: diff.offset,
+      me: diff.me,
+      ne: diff.ne,
+      chroma: diff.chroma,
+      cinema: diff.cinema,
     };
+    requirements.me = requirements.me || diff.me;
+    requirements.ne = requirements.ne || diff.ne;
+    requirements.chroma = requirements.chroma || diff.chroma;
+    requirements.cinema = requirements.cinema || diff.cinema;
     switch (diff.difficulty) {
       case "ExpertPlus":
         characteristic.difficulties.expertPlus = diffDetail;
+        diffSimple.expertPlus = true;
         break;
       case "Expert":
         characteristic.difficulties.expert = diffDetail;
+        diffSimple.expert = true;
         break;
       case "Hard":
         characteristic.difficulties.hard = diffDetail;
+        diffSimple.hard = true;
         break;
       case "Normal":
         characteristic.difficulties.normal = diffDetail;
+        diffSimple.normal = true;
         break;
       case "Easy":
         characteristic.difficulties.easy = diffDetail;
+        diffSimple.easy = true;
         break;
       default:
         break;
@@ -233,10 +278,15 @@ function createCharacteristicMetadata(
   for (const value of resultMap.values()) {
     result.push(value);
   }
-  return result;
+  return { characteristics: result, difficulties: diffSimple, requirements };
 }
 
 export function convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
+  const {
+    characteristics,
+    difficulties,
+    requirements,
+  } = createCharacteristicMetadata(doc);
   const data: BeatsaverBeatmap = {
     metadata: {
       bpm: doc.metadata.bpm,
@@ -245,8 +295,9 @@ export function convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
       songSubName: doc.metadata.songSubName,
       songAuthorName: doc.metadata.songAuthorName,
       levelAuthorName: doc.metadata.levelAuthorName,
-      difficulties: createDifficultiesMetadata(doc),
-      characteristics: createCharacteristicMetadata(doc),
+      difficulties,
+      characteristics,
+      requirements,
     },
     coverURL: doc.versions[0].coverURL,
     description: doc.description,
