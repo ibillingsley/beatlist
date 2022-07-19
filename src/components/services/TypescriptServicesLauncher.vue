@@ -3,8 +3,10 @@
 </template>
 
 <script lang="ts">
+import * as remote from "@electron/remote";
 import Vue from "vue";
 import { get } from "vuex-pathify";
+import url from "url";
 import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 import AutoScanLibHandler from "@/libraries/scanner/AutoScanLibHandler";
 import NotificationServiceScanner from "@/libraries/notification/NotificationServiceScanner";
@@ -33,8 +35,9 @@ export default Vue.extend({
 
       BeatmapLibrary.GenerateBeatmapHashSet();
       this.DiscordRichPresence();
-      this.BeatsaverServerUrl();
-      await BeatsaverCachedLibrary.LoadAll();
+      const serverUrl = this.BeatsaverServerUrl();
+      const cdnHost = await this.GetCdnHost(serverUrl);
+      await BeatsaverCachedLibrary.LoadAll(cdnHost);
 
       await UpgradeCheckerService.Initialize(); // Scanner サービスが動く前に処理を行う
 
@@ -51,6 +54,33 @@ export default Vue.extend({
         store.getters["settings/beatsaverServerUrl"] ??
         BeatsaverServerUrl.Beatsaver;
       BeatsaverAPI.Singleton.updateBaseUrl(server);
+      return server;
+    },
+    async GetCdnHost(serverUrl: string) {
+      let cdnHost;
+      try {
+        // 対応する CDN の host が何かを返す API はないので、若干無駄だが
+        // 検索APIの応答から cover 画像用の CDN の host 名を取得
+        const res = await fetch(`${serverUrl}/search/text/1`, {
+          headers: {
+            "User-Agent": remote.session.defaultSession?.getUserAgent(),
+            "Accept-Language": "en",
+          },
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result?.docs?.length > 0) {
+            const doc = result.docs[0];
+            if (doc.versions?.length > 0) {
+              const cdn = url.parse(doc.versions[0].coverURL);
+              cdnHost = cdn.host;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+      return cdnHost;
     },
   },
 });

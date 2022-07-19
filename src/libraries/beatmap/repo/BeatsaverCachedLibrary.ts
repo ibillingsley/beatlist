@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import url from "url";
 import {
   BeatsaverKey,
   BeatsaverKeyType,
@@ -40,17 +41,7 @@ export default class BeatsaverCachedLibrary {
     store.commit("beatmap/addBeatsaverCachedInvalid", { key, item });
   }
 
-  public static async LoadAll() {
-    /*
-    store
-      .dispatch("beatmap/loadBeatmapsAsCache")
-      .then(() => {
-        return Promise.resolve();
-      })
-      .catch((error) => {
-        return Promise.reject(error);
-      });
-    */
+  public static async LoadAll(cdnHost?: string) {
     const cacheDir =
       process.env.NODE_ENV === "development"
         ? // npm run serve のとき process.resourcesPath は "node_modules/electron/dist/resources" を返す
@@ -79,6 +70,14 @@ export default class BeatsaverCachedLibrary {
       ) as BeatsaverNewBeatmap[];
       for (const newBeatmap of beatmaps) {
         const beatmap = convertNewMapToMap(newBeatmap);
+        if (cdnHost != null) {
+          const newUrl = url.parse(beatmap.coverURL);
+          if (newUrl.host !== cdnHost) {
+            // 起動時に確認した host に書き換える
+            newUrl.host = cdnHost;
+            beatmap.coverURL = url.format(newUrl);
+          }
+        }
         const hash = beatmap.hash.toUpperCase();
         const validMap = {
           beatmap,
