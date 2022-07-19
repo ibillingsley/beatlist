@@ -72,5 +72,6 @@ export default Vue.extend({
 <style>
 .v-tab--active {
   color: slategrey !important;
+  text-decoration-line: underline !important;
 }
 </style>
