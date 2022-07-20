@@ -5,7 +5,7 @@
         aria-describedby="infos about the difficulty (1st column)"
         class="align-first-column-left"
       >
-        <!-- <tr>
+        <tr>
           <td class="body-2 pr-2">
             Duration
           </td>
@@ -14,7 +14,7 @@
               {{ difficulty.duration.toFixed(2) }}
             </Tooltip>
           </td>
-        </tr> -->
+        </tr>
         <tr>
           <td class="body-2 pr-2">
             length
@@ -68,6 +68,18 @@
           </td>
           <td class="body-1 pl-2">
             {{ difficulty.njsOffset }}
+          </td>
+        </tr>
+        <tr>
+          <td class="body-2 pr-2">
+            nps
+          </td>
+          <td class="body-1 pl-2">
+            {{
+              difficulty.nps != null
+                ? Math.floor(difficulty.nps * 100) / 100
+                : ""
+            }}
           </td>
         </tr>
       </table>

@@ -131,6 +131,14 @@
               />
             </td>
           </tr>
+          <tr>
+            <td class="body-2 pr-2">
+              Hash
+            </td>
+            <td class="body-1 pl-2">
+              {{ beatmap.hash }}
+            </td>
+          </tr>
         </table>
       </v-col>
       <v-col cols="12">
