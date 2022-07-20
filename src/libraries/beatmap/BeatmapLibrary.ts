@@ -235,9 +235,9 @@ export default class BeatmapLibrary {
       metadata: mymetadata,
       stats: {
         downVotes: 0,
-        downloads: 0,
-        heat: 0,
-        plays: 0,
+        // downloads: 0,
+        // heat: 0,
+        // plays: 0,
         rating: 0,
         upVotes: 0,
       },
@@ -246,7 +246,7 @@ export default class BeatmapLibrary {
       name: beatmapDescription._songName,
       // uploaded: null,
       hash: beatmap.hash,
-      directDownload: "",
+      // directDownload: "",
       downloadURL: "",
       coverURL: "",
     };

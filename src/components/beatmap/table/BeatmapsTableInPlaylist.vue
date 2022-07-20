@@ -343,6 +343,7 @@ export default Vue.extend({
           // localFilter は定義しない
           width: 110,
         },
+        /*
         {
           value: "dl",
           text: "Downloads",
@@ -371,6 +372,7 @@ export default Vue.extend({
           sort: sortNumber,
           width: 50,
         },
+        */
         {
           value: "upvotes",
           text: "Up votes",
@@ -487,8 +489,8 @@ export default Vue.extend({
           // ※Generateされたものを除き BeatmapsTableDataUnit に含まれていないため。
           bpm: entry.data.metadata.bpm,
           duration: entry.data.metadata.duration,
-          dl: entry.data.stats.downloads,
-          plays: entry.data.stats.plays,
+          // dl: entry.data.stats.downloads,
+          // plays: entry.data.stats.plays,
           upvotes: entry.data.stats.upVotes,
           downvotes: entry.data.stats.downVotes,
           rating: entry.data.stats.rating,

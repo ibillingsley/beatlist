@@ -6,7 +6,7 @@ export interface BeatsaverBeatmap {
   name: string;
   uploaded?: Date;
   hash: string;
-  directDownload: string;
+  // directDownload: string;
   downloadURL: string;
   coverURL: string;
 }
@@ -43,6 +43,7 @@ export interface BeatsaverNewDiffs {
   notes: number;
   obstacles: number;
   offset: number;
+  nps: number;
   me: boolean;
   ne: boolean;
   chroma: boolean;
@@ -102,6 +103,7 @@ export interface Difficulty {
   obstacles: number;
   njs: number;
   njsOffset: number;
+  nps: number;
   chroma: boolean;
   ne: boolean;
   me: boolean;
@@ -126,11 +128,11 @@ export interface ReqsMetadata {
 }
 
 export interface Stats {
-  downloads: number;
-  plays: number;
+  // downloads: number;
+  // plays: number;
   downVotes: number;
   upVotes: number;
-  //   heat: number;
+  // heat: number;
   rating: number;
 
   [stat: string]: number;
@@ -241,6 +243,7 @@ function createCharacteristicMetadata(
       obstacles: diff.obstacles,
       njs: diff.njs,
       njsOffset: diff.offset,
+      nps: diff.nps,
       me: diff.me,
       ne: diff.ne,
       chroma: diff.chroma,
@@ -306,14 +309,14 @@ export function convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
     downloadURL: doc.versions[0].downloadURL,
     name: doc.name,
     stats: {
-      downloads: doc.stats.downloads,
+      // downloads: doc.stats.downloads,
       downVotes: doc.stats.downvotes,
       upVotes: doc.stats.upvotes,
-      plays: doc.stats.plays,
+      // plays: doc.stats.plays,
       rating: doc.stats.score,
     },
     uploaded: doc.uploaded,
-    directDownload: "",
+    // directDownload: "",
   };
   return data;
 }

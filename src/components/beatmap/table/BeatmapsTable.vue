@@ -346,6 +346,7 @@ export default Vue.extend({
           sort: sortDateFromString,
           width: 160,
         },
+        /*
         {
           value: "dl",
           text: "Downloads",
@@ -374,6 +375,7 @@ export default Vue.extend({
           sort: sortNumber,
           width: 50,
         },
+        */
         {
           value: "upvotes",
           text: "Up votes",
@@ -486,8 +488,8 @@ export default Vue.extend({
           downloaded: entry.downloaded,
           bpm: entry.data.metadata.bpm,
           duration: entry.data.metadata.duration,
-          dl: entry.data.stats.downloads,
-          plays: entry.data.stats.plays,
+          // dl: entry.data.stats.downloads,
+          // plays: entry.data.stats.plays,
           upvotes: entry.data.stats.upVotes,
           downvotes: entry.data.stats.downVotes,
           rating: entry.data.stats.rating,

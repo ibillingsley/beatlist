@@ -20,6 +20,7 @@ export interface SettingsStoreState {
     beatsaverBeatmaps: BeatmapTableStoreState;
     playlistContent: BeatmapTableStoreState;
     playlistBrowser: BeatmapTableStoreState;
+    beastsaberPlaylistContent: BeatmapTableStoreState;
   };
   oneClick: {
     enabled: boolean;
@@ -87,6 +88,26 @@ const state = {
 
 const mutations = {
   ...make.mutations(state),
+  removeShownColumn(
+    context: SettingsStoreState,
+    payload: { columns: string[] }
+  ) {
+    const removeColumns = payload.columns;
+    const beatmapTableStoreStates = [
+      context.beatmapsTable.localBeatmaps,
+      context.beatmapsTable.beatsaverBeatmaps,
+      context.beatmapsTable.playlistContent,
+      context.beatmapsTable.playlistBrowser,
+      context.beatmapsTable.beastsaberPlaylistContent,
+    ];
+    for (const beatmapTableStoreState of beatmapTableStoreStates) {
+      console.log(beatmapTableStoreState.shownColumn);
+      beatmapTableStoreState.shownColumn = beatmapTableStoreState.shownColumn.filter(
+        (column) => !removeColumns.includes(column)
+      );
+      console.log(beatmapTableStoreState.shownColumn);
+    }
+  },
 };
 
 const getters = {
