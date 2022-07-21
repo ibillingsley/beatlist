@@ -22,14 +22,20 @@ export default class BeatmapLoader {
     return new BeatmapLoader().Load(beatmapFolder, skipApiCall);
   }
 
-  public static async LoadCover(
-    beatmap: BeatmapLocal
+  public static async LoadCoverByPath(
+    coverPath: string
   ): Promise<string | undefined> {
-    if (!(await fs.pathExists(beatmap.coverPath))) {
+    if (!(await fs.pathExists(coverPath))) {
       return undefined;
     }
 
-    return Base64SrcLoader.FromFile(beatmap.coverPath);
+    return Base64SrcLoader.FromFile(coverPath);
+  }
+
+  public static async LoadCover(
+    beatmap: BeatmapLocal
+  ): Promise<string | undefined> {
+    return this.LoadCoverByPath(beatmap.coverPath);
   }
 
   private constructor() {

@@ -51,6 +51,7 @@ export default Vue.extend({
     minHeight: { type: String, default: undefined },
     maxWidth: { type: String, default: undefined },
     maxHeight: { type: String, default: undefined },
+    coverPath: { type: String, default: undefined },
   },
   data: () => ({
     imageSrc: undefined as string | undefined,
@@ -69,6 +70,12 @@ export default Vue.extend({
 
       if (isBeatmapLocal(this.beatmap)) {
         this.imageSrc = await BeatmapLoader.LoadCover(this.beatmap);
+        return;
+      }
+
+      if (this.coverPath != null) {
+        this.imageSrc = await BeatmapLoader.LoadCoverByPath(this.coverPath);
+        return;
       }
 
       if (isBeatsaverBeatmap(this.beatmap)) {

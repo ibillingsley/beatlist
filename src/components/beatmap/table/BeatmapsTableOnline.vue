@@ -184,6 +184,7 @@ export default Vue.extend({
           (beatmap): BeatmapsTableDataUnit => ({
             local: undefined,
             data: beatmap,
+            coverPath: undefined,
             folderNameHash: undefined,
             downloaded: undefined,
             duplicated: false,

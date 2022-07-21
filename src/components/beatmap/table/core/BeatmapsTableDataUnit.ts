@@ -7,6 +7,7 @@ import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 export interface BeatmapsTableDataUnit {
   local: BeatmapLocal | undefined;
   data: BeatsaverBeatmap;
+  coverPath: string | undefined;
   // foldeNameHash, downloaded will only be used to display local maps.
   folderNameHash: string | undefined;
   downloaded: string | undefined; // ISO Format

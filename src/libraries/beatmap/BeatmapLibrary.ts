@@ -16,6 +16,7 @@ import { PlaylistLocal } from "../playlist/PlaylistLocal";
 interface TableDataUnit {
   local: BeatmapLocal;
   data: BeatsaverBeatmap | undefined;
+  coverPath: string | undefined;
   folderNameHash: string | undefined;
   downloaded: string | undefined;
 }
@@ -75,6 +76,7 @@ export default class BeatmapLibrary {
           result.push({
             local: undefined,
             data: mydata,
+            coverPath: beatmap.coverPath,
             folderNameHash,
             downloaded,
             duplicated: false,
@@ -89,6 +91,7 @@ export default class BeatmapLibrary {
           result.push({
             local: beatmap,
             data: generatedCache,
+            coverPath: beatmap.coverPath,
             folderNameHash,
             downloaded,
             duplicated: false,
@@ -106,6 +109,7 @@ export default class BeatmapLibrary {
                 resolve({
                   local: beatmap,
                   data: generatedMap,
+                  coverPath: beatmap.coverPath,
                   folderNameHash,
                   downloaded,
                 });
@@ -115,6 +119,7 @@ export default class BeatmapLibrary {
                 resolve({
                   local: beatmap,
                   data: undefined,
+                  coverPath: beatmap.coverPath,
                   folderNameHash,
                   downloaded,
                 });

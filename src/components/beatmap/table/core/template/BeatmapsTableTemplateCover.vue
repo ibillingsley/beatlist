@@ -1,6 +1,7 @@
 <template>
   <BeatmapCoverAvatar
     :beatmap="item.local || item.data"
+    :cover-path="item.coverPath"
     :avatar-size="24"
     :icon-expand-size="16"
   />

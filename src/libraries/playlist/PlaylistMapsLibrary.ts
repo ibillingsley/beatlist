@@ -59,13 +59,6 @@ export default class PlaylistMapsLibrary {
   public static async GetAllValidMapAsTableDataFor(
     playlist: PlaylistLocal
   ): Promise<BeatmapsTableDataUnit[]> {
-    /*
-    return this.GetAllValidMapFor(playlist)
-      .map((playlistMap: PlaylistValidMap) => ({
-        data: BeatsaverCachedLibrary.GetByHash(playlistMap.hash)?.beatmap,
-      }))
-      .filter((unit) => unit.data !== undefined) as BeatmapsTableDataUnit[];
-    */
     Logger.debug(`start GetAllValidMapAsTableDataFor`, "PlaylistMapsLibrary");
     // const validMaps = playlist.maps.filter((map) => {
     //   return map.hash !== undefined;
@@ -108,12 +101,14 @@ export default class PlaylistMapsLibrary {
       const duplicated = duplicatedHashSet.has(playlistMapHash);
       const diffHighlight = this.GetDiffHighlight(playlistMap);
 
-      // const mydata = BeatsaverCachedLibrary.GetByHash(playlistMapHash)?.beatmap;
       const mydata = validCache.get(playlistMapHash)?.beatmap;
       if (mydata != null) {
+        // ここで localValidMapHashMap.get(playlistMapHash) すれば
+        // coverPath を取得できるが、ひとまず保留
         result.push({
           local: undefined,
           data: mydata,
+          coverPath: undefined,
           folderNameHash: undefined,
           downloaded: undefined,
           duplicated,
@@ -123,22 +118,17 @@ export default class PlaylistMapsLibrary {
         // eslint-disable-next-line no-continue
         continue;
       }
-      // const beatmapLocal = localValidMaps.find(
-      //   (item) => item.hash?.toUpperCase() === playlistMapHash
-      // );
       const beatmapLocal = localValidMapHashMap.get(playlistMapHash);
       if (beatmapLocal == null) {
         // eslint-disable-next-line no-continue
         continue;
       }
-      // const folderNameHash = BeatmapLibrary.getFolderNameHash(
-      //   beatmapLocal.folderPath
-      // );
       const { folderNameHash, downloaded } = beatmapLocal;
       promiseResults.push(
         new Promise<{
           local: BeatmapLocal;
           data: BeatsaverBeatmap | undefined;
+          coverPath: string | undefined;
           folderNameHash: string | undefined;
           downloaded: string | undefined;
           duplicated: boolean | undefined;
@@ -150,6 +140,7 @@ export default class PlaylistMapsLibrary {
               resolve({
                 local: beatmapLocal as BeatmapLocal,
                 data: generatedMap,
+                coverPath: beatmapLocal.coverPath,
                 folderNameHash,
                 downloaded,
                 duplicated,
@@ -162,6 +153,7 @@ export default class PlaylistMapsLibrary {
               resolve({
                 local: beatmapLocal as BeatmapLocal,
                 data: undefined,
+                coverPath: beatmapLocal.coverPath,
                 folderNameHash,
                 downloaded,
                 duplicated,

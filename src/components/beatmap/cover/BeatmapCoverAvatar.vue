@@ -2,7 +2,11 @@
   <div>
     <v-hover #default="{ hover }">
       <v-avatar :size="avatarSize" :tile="tile" class="my-1">
-        <BeatmapCover :beatmap="beatmap" :progress-size="avatarSize">
+        <BeatmapCover
+          :beatmap="beatmap"
+          :progress-size="avatarSize"
+          :cover-path="coverPath"
+        >
           <transition name="slide-y-transition">
             <div
               v-if="hover"
@@ -25,7 +29,12 @@
       opacity="0.7"
       @click="imageOverlay = false"
     >
-      <BeatmapCover :beatmap="beatmap" max-height="512" contain />
+      <BeatmapCover
+        :beatmap="beatmap"
+        :cover-path="coverPath"
+        max-height="512"
+        contain
+      />
       <v-btn icon large class="mt-2" @click="imageOverlay = false">
         <v-icon large>
           mdi-close
@@ -49,6 +58,7 @@ export default Vue.extend({
       type: Object as PropType<BeatsaverBeatmap | BeatmapLocal>,
       default: {},
     },
+    coverPath: { type: String, default: undefined },
     avatarSize: { type: Number, default: undefined },
     iconExpandSize: { type: Number, default: undefined },
     tile: { type: Boolean, default: undefined },
