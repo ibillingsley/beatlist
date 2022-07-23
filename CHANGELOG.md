@@ -6,6 +6,36 @@
 
 # Changelog
 
+## v1.4.0 (23/07/2022)
+**ATTENTION:**
+ - To revert back to v1.3.x after installing v1.4.0, uninstall v1.4.0, delete the data as described in [Troubleshooting_en] - [Method 2] on the Wiki, and then install v1.3.x.
+
+**Improvement:**
+ - Added columns for `BPM`, `Song Length` and `Requirements` on the [Saved Beatmaps] screen, etc.
+   - `Requirements` are considered to be specified if at least one requirement is specified for any of the difficulty levels (Easy/Normal/Hard/Expert/ExpertPlus).  
+     The meanings of the letters shown are as follows:
+     - `CR`: Chroma
+     - `NE`: Noodle
+     - `ME`: Mapping Extensions
+     - `CI`: Cinema
+   - `Song Length` cannot be displayed for map that have been downloaded but removed from beatsaver.com.
+ - Removed columns for `Downloads` and `Plays` from the [Saved Beatmaps] screen, etc.
+   - `Downloads` and `Plays` were removed because they are always 0.
+ - Added `Curated` and `Verified Mapper` filters to the [Beatmap Online] screen.
+ - The cover image in the [Saved Beatmaps] screen and the [Browser] field of each playlist edit screen has been modified to use a downloaded image.
+ - For maps in the pre-load cache, modified to retrieve the cover image from the CDN corresponding to the location.
+ - `Song length`, `Hash`, `nps` and `Requirements` has been added to the [Beatmap Information] screen.
+ - In the [Beatmap Information] screen, the selected tabs are now underlined.
+
+**Bug fixes:**
+ - Fixed a problem where numerical items could not be sorted correctly on the [Saved Beatmaps] screen, etc.
+ - Other minor bug fixes.
+
+**Others:**
+ - The preloaded cache data has been updated to that of late July 2022 (approximately 64,000 items).
+
+<br>
+
 ## v1.3.8 (08/04/2022)
 **ATTENTION:**
  - When updating from v1.3.7 or earlier, the download date of map will be read at the first startup.  

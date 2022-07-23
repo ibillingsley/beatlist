@@ -2,11 +2,40 @@
 - (2022/04/02 11:20) beatsaver.com のエイプリルフールの影響により曲が一部表示されなくなっている場合があります。  
   その場合は v1.3.8 以降にアップデートするか [Settings] 画面から [CLEAR CACHE] & [UPDATE LIBRARY] を実行してみてください。
 - beatlist に自動アップデート機能はありませんので、最新版は上記 github アイコンか [LATEST RELEASE] ボタン(v1.3.8以降)をクリックして Release ページからダウンロードしてください。
-- v1.2.6-beta～beta3 からアップデートされる場合は、最新バージョンをインストールしたあとに [Settings]画面で [CLEAR CACHE] & [UPDATE LIBRARY] の実行をお願いします。
 
 <br>
 
 # Changelog
+
+## v1.4.0 (2022/07/23)
+**ATTENTION:**
+- v1.4.0 をインストールしたあと v1.3.x に戻す場合は v1.4.0 をアンインストールしたあと Wiki の [Troubleshooting] - [方法2] の手順でデータを削除してから v1.3.x をインストールしてください。
+
+**Improvement:**
+- [Saved Beatmaps]画面などに `BPM`、`Song Length`、`Requirements` の列を追加。
+  - `Requirements` はいずれかの難易度(Easy/Normal/Hard/Expert/ExpertPlus)でひとつでも指定されていたら指定ありとみなしています。  
+    表示されている文字の意味は以下のとおりです。
+    - `CR`: Chroma
+    - `NE`: Noodle
+    - `ME`: Mapping Extensions
+    - `CI`: Cinema
+  - ダウンロード済みで beatsaver.com から削除された譜面については `Song Length` は表示できません。
+- [Saved Beatmaps]画面などで `Downloads` (ダウンロード数)、`Plays` (プレイ回数) の列を削除。
+  - `Downloads` と `Plays` は常に 0 なので削除しました。
+- [Beatmap Online]画面に Curated, Verified Mapper の filter を追加。
+- [Saved Beatmaps]画面と各 playlist 編集画面の [Browser] 欄のカバー画像にはダウンロード済みの画像を使用するように修正。
+- 事前に読み込むキャッシュ内の譜面について、所在地に対応する CDN からカバー画像を取得するように修正。
+- [Beatmap Information]画面に `Song length`、`Hash`、`nps` および `Requirements` の表示を追加。
+- [Beatmap Information]画面で、選択しているタブに下線を付けるように修正。
+
+**Bug fixes:**
+- [Saved Beatmaps]画面などで数値項目のソートが正しく行われないことがあるのを修正。
+- その他、細かいバグ修正。
+
+**Others:**
+- 事前に読み込んでおくキャッシュデータを2022/07下旬のもの(約64,000件)に更新。
+
+<br>
 
 ## v1.3.8 (2022/04/08)
 **ATTENTION:**
