@@ -1,7 +1,8 @@
 # ATTENTION
 - (2022/07/23 23:00) 画像が格納されている beatsaver.com のサーバー(eu.cdn.beatsaver.com) の  
   証明書有効期限が切れていて[Beatmap Online]画面などで  譜面のカバー画像を表示できないようです。  
-  beatsaver.com 側で対処されるまでお待ちください。
+  beatsaver.com 側で対処されるまでお待ちください。  
+  ※v1.3.8 以前のバージョンだと [Saved Beatmaps] 画面でもカバー画像表示できないかも。
 - (2022/04/02 11:20) beatsaver.com のエイプリルフールの影響により曲が一部表示されなくなっている場合があります。  
   その場合は v1.3.8 以降にアップデートするか [Settings] 画面から [CLEAR CACHE] & [UPDATE LIBRARY] を実行してみてください。
 - beatlist に自動アップデート機能はありませんので、最新版は上記 github アイコンか [LATEST RELEASE] ボタン(v1.3.8以降)をクリックして Release ページからダウンロードしてください。
