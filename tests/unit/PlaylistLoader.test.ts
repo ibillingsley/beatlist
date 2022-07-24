@@ -33,14 +33,24 @@ jest.mock("@/libraries/beatmap/repo/BeatsaverCachedLibrary", () => ({
     }
 
     return {
-      beatmap: { hash: "01fb2aa5064d8e30105de66181be1b3fbc9fa28a" },
+      beatmap: {
+        hash: "01fb2aa5064d8e30105de66181be1b3fbc9fa28a",
+        metadata: {
+          songName: "Arche",
+        },
+      },
       loadState: { valid: true },
     };
   },
   GetAllValid: () => {
     const map = new Map<string, any>();
     map.set("01fb2aa5064d8e30105de66181be1b3fbc9fa28a".toUpperCase(), {
-      beatmap: { hash: "01fb2aa5064d8e30105de66181be1b3fbc9fa28a" },
+      beatmap: {
+        hash: "01fb2aa5064d8e30105de66181be1b3fbc9fa28a",
+        metadata: {
+          songName: "Arche",
+        },
+      },
       loadState: { valid: true },
     });
     return map;
@@ -366,6 +376,7 @@ describe("playlist loader, using the JSON as format", () => {
       songs: [
         {
           hash: "01fb2aa5064d8e30105de66181be1b3fbc9fa28a",
+          songName: "Arche",
         },
       ],
     };
@@ -398,6 +409,7 @@ describe("playlist loader, using the JSON as format", () => {
     // eslint-disable-next-line jest/prefer-strict-equal
     expect(playlist.maps[0].originalData).toEqual({
       hash: "01fb2aa5064d8e30105de66181be1b3fbc9fa28a",
+      songName: "Arche",
     });
 
     await fs.unlink(playlistPath);
