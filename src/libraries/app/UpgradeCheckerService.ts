@@ -6,6 +6,7 @@ import MigrateTo123 from "@/libraries/app/migration/MigrationVersion1.2.3";
 import MigrateTo132 from "@/libraries/app/migration/MigrationVersion1.3.2";
 import MigrateTo138 from "@/libraries/app/migration/MigrationVersion1.3.8";
 import MigrateTo140 from "@/libraries/app/migration/MigrationVersion1.4.0";
+import MigrateTo141 from "@/libraries/app/migration/MigrationVersion1.4.1";
 import ScannerService from "../scanner/ScannerService";
 
 export default class UpgradeCheckerService {
@@ -46,15 +47,23 @@ export default class UpgradeCheckerService {
       ScannerService.requestDialogToBeOpened();
       MigrateTo132(); // clear playlist cache
       await MigrateTo138(); // set folderNameHash, updateDownloadDate
+      await MigrateTo140(); // remove beatsaver cache
+      await MigrateTo141(false); // reload beatsaver cache (skip clearing playlist cache)
     } else if (semver.gt("1.3.8", previousVersion)) {
       // previousVersion is under 1.3.8
       ScannerService.requestDialogToBeOpened();
       await MigrateTo138(); // set folderNameHash, updateDownloadDate
-    }
-
-    if (semver.gt("1.4.0", previousVersion)) {
-      // previousVersion is under 1.4.0
       await MigrateTo140(); // remove beatsaver cache
+      await MigrateTo141(true); // reload beatsaver cache, clear playlist cache
+    } else if (semver.gt("1.4.0", previousVersion)) {
+      // previousVersion is under 1.4.0
+      ScannerService.requestDialogToBeOpened(true);
+      await MigrateTo140(); // remove beatsaver cache
+      await MigrateTo141(true); // reload beatsaver cache, clear playlist cache
+    } else if (semver.gt("1.4.1", previousVersion)) {
+      // previousVersion is under 1.4.1
+      ScannerService.requestDialogToBeOpened(true);
+      await MigrateTo141(true); // reload beatsaver cache, clear playlist cache
     }
   }
 

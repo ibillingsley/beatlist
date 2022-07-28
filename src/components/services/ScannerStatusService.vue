@@ -40,6 +40,13 @@
         />
       </v-card-text>
 
+      <v-card-text v-else>
+        <p>
+          Please wait...
+        </p>
+        <v-progress-linear indeterminate :value="0" color="success" rounded />
+      </v-card-text>
+
       <v-card-actions>
         <v-spacer />
         <v-btn v-if="!isScanning" text color="success" @click="scanAll()">
@@ -67,10 +74,11 @@ export default Vue.extend({
     progress: { beatmap: new Progress(), playlist: new ProgressGroup() },
     scanningBeatmap: false,
     scanningPlaylist: false,
+    preparing: false,
   }),
   computed: {
     isScanning(): boolean {
-      return this.scanningBeatmap || this.scanningPlaylist;
+      return this.scanningBeatmap || this.scanningPlaylist || this.preparing;
     },
   },
   mounted(): void {
@@ -92,16 +100,23 @@ export default Vue.extend({
       ScannerService.ScanAll(true); // 非同期
       NotificationServiceScanner.notifyOnNextScan();
     },
-    onStatusDialogRequestOpen(): void {
+    onStatusDialogRequestOpen(withPreparation: boolean = false): void {
       this.dialog = true;
+      if (withPreparation) {
+        this.preparing = true;
+      }
       this.updateProgressListener();
     },
     onScanningStateUpdate(): void {
       this.scanningBeatmap = ScannerService.scanning.beatmap;
       this.scanningPlaylist = ScannerService.scanning.playlist;
+      if (this.scanningBeatmap || this.scanningPlaylist) {
+        this.preparing = false;
+      }
     },
     onScanCompleted(): void {
       this.dialog = false;
+      this.preparing = false;
       ScannerService.beatmapProgress.offPlusOne(this.updateProgress);
       ScannerService.playlistProgress.offPlusOne(this.updateProgress);
     },

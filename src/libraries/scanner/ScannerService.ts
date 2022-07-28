@@ -210,8 +210,8 @@ export default class ScannerService {
     }
   }
 
-  public static requestDialogToBeOpened() {
-    this.eventEmitter.emit(ON_REQUEST_DIALOG_OPEN);
+  public static requestDialogToBeOpened(withPreparation: boolean = false) {
+    this.eventEmitter.emit(ON_REQUEST_DIALOG_OPEN, withPreparation);
   }
 
   public static onBeatmapScanCompleted(
@@ -254,7 +254,9 @@ export default class ScannerService {
     this.eventEmitter.off(ON_SCAN_COMPLETED, callback);
   }
 
-  public static onStatusDialogRequestOpen(callback: () => void) {
+  public static onStatusDialogRequestOpen(
+    callback: (withPreparation: boolean) => void
+  ) {
     this.eventEmitter.on(ON_REQUEST_DIALOG_OPEN, callback);
   }
 
