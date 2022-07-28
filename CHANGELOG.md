@@ -1,10 +1,25 @@
 # ATTENTION
+ - (29/07/2022) When updating from an older version to v1.4.0, some songs may not be displayed.  
+   If you have updated to v1.4.0, please update to v1.4.1.  
+  - This does not occur with new installations of v1.4.0.
+
+<br>
+
  - (02/04/2022) Due to beatsaver.com's April Fool's Day, some songs may not be displayed.  
    If this is the case, please update to v1.3.8 or later or try [CLEAR CACHE] & [UPDATE LIBRARY] from the [Settings] screen.
 
 <br>
 
 # Changelog
+
+## v1.4.1 (29/07/2022)
+**Bug fixes:**
+ - Added a process to correct a bug when upgrading to v1.4.0.
+   - When updating, the Playlist will be rescanned. Please wait until it finishes.
+   - The display of the maps/playlists in BeatSaber is not affected.
+   - This does not occur with new installations of v1.4.0.
+
+<br>
 
 ## v1.4.0 (23/07/2022)
 **ATTENTION:**
