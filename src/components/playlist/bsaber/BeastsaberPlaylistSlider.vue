@@ -8,7 +8,7 @@
     <v-slide-item
       v-for="pl in playlists"
       :key="pl.playlistURL"
-      v-slot:default="{ active, toggle }"
+      v-slot="{ active, toggle }"
       :disabled="loading"
     >
       <v-skeleton-loader

@@ -7,9 +7,7 @@
       :small="small"
       @click="downloadIt()"
     >
-      <v-icon color="success" :small="small">
-        mdi-download
-      </v-icon>
+      <v-icon color="success" :small="small"> mdi-download </v-icon>
       <template #loader>
         <DownloadProgressCircular :operation="operation" />
       </template>

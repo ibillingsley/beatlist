@@ -7,9 +7,7 @@
         </v-btn>
       </v-col>
       <v-col cols="auto">
-        <p class="display-2 my-0">
-          Beatmap information
-        </p>
+        <p class="text-h3 my-0">Beatmap information</p>
       </v-col>
     </v-row>
 
@@ -18,9 +16,7 @@
       {{ error }}
     </v-alert>
     <LoadingPage v-else>
-      <p class="grey--text mt-5">
-        Loading beatmap info ...
-      </p>
+      <p class="grey--text mt-5">Loading beatmap info ...</p>
     </LoadingPage>
   </v-container>
 </template>

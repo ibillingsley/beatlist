@@ -8,9 +8,9 @@ import events from "events";
 export default class ProgressGroup implements ProgressInterface {
   private _progresses: Progress[] = [];
 
-  private _done: number = 0;
+  private _done = 0;
 
-  private _total: number = 0;
+  private _total = 0;
 
   private _eventEmitter: events.EventEmitter = new events.EventEmitter();
 

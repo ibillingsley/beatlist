@@ -7,7 +7,7 @@
       dense
       align-content="center"
     >
-      <v-col align-self="center" style="padding-top: 6px;">
+      <v-col align-self="center" style="padding-top: 6px">
         <v-btn
           icon
           small
@@ -18,11 +18,11 @@
           <v-icon>filter_list</v-icon>
         </v-btn>
       </v-col>
-      <v-col align-self="center" style="padding-top: 6px; white-space: nowrap;">
+      <v-col align-self="center" style="padding-top: 6px; white-space: nowrap">
         {{ filterText }}
       </v-col>
     </v-row>
-    <template v-slot:input>
+    <template #input>
       <v-menu
         ref="menuMin"
         v-model="menuMin"
@@ -31,7 +31,7 @@
         offset-y
         min-width="290px"
       >
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-text-field
             v-model="stringMin"
             label="From"
@@ -58,7 +58,7 @@
         offset-y
         min-width="290px"
       >
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-text-field
             v-model="stringMax"
             label="To"

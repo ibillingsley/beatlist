@@ -7,7 +7,7 @@
       dense
       align-content="center"
     >
-      <v-col align-self="center" style="padding-top: 6px;">
+      <v-col align-self="center" style="padding-top: 6px">
         <v-btn
           icon
           small
@@ -20,11 +20,11 @@
           <v-icon>filter_list</v-icon>
         </v-btn>
       </v-col>
-      <v-col align-self="center" style="padding-top: 6px; white-space: nowrap;">
+      <v-col align-self="center" style="padding-top: 6px; white-space: nowrap">
         {{ filterText }}
       </v-col>
     </v-row>
-    <template v-slot:input>
+    <template #input>
       <span>NPS</span>
       <v-text-field
         ref="minNpsElm"

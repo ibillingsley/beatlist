@@ -20,17 +20,19 @@ export default class BeastsaberAPI {
   public async GetPlaylists(): Promise<BeastsaberAPIResponse> {
     return this.http
       .get(PLAYLIST_API_ENDPOINT)
-      .then((res) => {
-        return {
-          status: BeastsaberAPIResponseStatus.Success,
-          data: res.data,
-        } as BeastsaberAPIResponse;
-      })
-      .catch((e: Error) => {
-        return {
-          status: BeastsaberAPIResponseStatus.Failed,
-          error: e.message,
-        } as BeastsaberAPIResponse;
-      });
+      .then(
+        (res) =>
+          ({
+            status: BeastsaberAPIResponseStatus.Success,
+            data: res.data,
+          } as BeastsaberAPIResponse)
+      )
+      .catch(
+        (e: Error) =>
+          ({
+            status: BeastsaberAPIResponseStatus.Failed,
+            error: e.message,
+          } as BeastsaberAPIResponse)
+      );
   }
 }

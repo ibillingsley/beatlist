@@ -10,13 +10,6 @@ export enum DownloadOperationBeatmapResultStatus {
   IOError = 6,
 }
 
-export type DownloadOperationBeatmapResult = DownloadOperationBeatmapResultBase &
-  (
-    | DownloadOperationBeatmapResultInProgress
-    | DownloadOperationBeatmapResultDone
-    | DownloadOperationBeatmapResultError
-  );
-
 export interface DownloadOperationBeatmapResultBase {
   beatmap: BeatsaverBeatmap;
   status: DownloadOperationBeatmapResultStatus;
@@ -41,3 +34,11 @@ export interface DownloadOperationBeatmapResultError {
     | DownloadOperationBeatmapResultStatus.IOError;
   errorWritten: string;
 }
+
+export type DownloadOperationBeatmapResult =
+  DownloadOperationBeatmapResultBase &
+    (
+      | DownloadOperationBeatmapResultInProgress
+      | DownloadOperationBeatmapResultDone
+      | DownloadOperationBeatmapResultError
+    );

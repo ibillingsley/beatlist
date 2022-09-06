@@ -1,14 +1,12 @@
-import electron, { app, protocol, BrowserWindow } from "electron";
-import {
-  createProtocol,
-  // installVueDevtools,
-} from "vue-cli-plugin-electron-builder/lib";
+import { app, protocol, BrowserWindow, shell } from "electron";
+import * as remoteMain from "@electron/remote/main";
+import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import path from "path";
 import registerIpc from "@/libraries/ipc";
 import BeatsaverLinkOpener from "@/libraries/ipc/BeatsaverLinkOpener";
 
-require("@electron/remote/main").initialize();
+remoteMain.initialize();
 
 class Background {
   private win: BrowserWindow | null = null;
@@ -27,7 +25,7 @@ class Background {
       { scheme: "app", privileges: { secure: true, standard: true } },
     ]);
 
-    app.allowRendererProcessReuse = false;
+    // app.allowRendererProcessReuse = false;
   }
 
   private async InitiateWindow(): Promise<void> {
@@ -38,7 +36,6 @@ class Background {
       minHeight: 750,
       frame: false,
       webPreferences: {
-        enableRemoteModule: true,
         nodeIntegration: true,
         // nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION === "true",
         contextIsolation: false,
@@ -47,10 +44,12 @@ class Background {
       backgroundColor: "#303030",
     });
 
-    this.win.webContents.on("new-window", (e, url) => {
-      e.preventDefault();
-      electron.shell.openExternal(url);
+    this.win.webContents.setWindowOpenHandler((details) => {
+      shell.openExternal(details.url);
+      return { action: "deny" };
     });
+
+    remoteMain.enable(this.win.webContents);
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
       await this.win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string);

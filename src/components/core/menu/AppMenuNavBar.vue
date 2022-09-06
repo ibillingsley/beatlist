@@ -2,10 +2,10 @@
   <v-navigation-drawer
     :mini-variant="true"
     mini-variant-width="44"
-    mobile-break-point="0"
+    mobile-breakpoint="0"
     width="120"
     color="app"
-    style="overflow: visible;"
+    style="overflow: visible"
     :floating="main"
     :permanent="main"
     :clipped="main"
@@ -21,7 +21,7 @@
         <component :is="menu.component" v-if="menu.type === 'component'" />
       </div>
     </div>
-    <svg id="curve" viewBox="0 0 20 20" style="right: -20px;">
+    <svg id="curve" viewBox="0 0 20 20" style="right: -20px">
       <defs>
         <mask id="curve-mask">
           <rect width="100%" height="100%" fill="white" />
@@ -33,7 +33,7 @@
         y="0"
         width="10"
         height="10"
-        :fill="this.$vuetify.theme.currentTheme.app"
+        :fill="$vuetify.theme.currentTheme.app"
         mask="url(#curve-mask)"
       />
     </svg>

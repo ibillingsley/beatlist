@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <p class="display-1">
-      Library
-    </p>
+    <p class="text-h4">Library</p>
     <v-container>
       <p v-if="isRateLimited" class="warning--text">
         Currently rate-limited, reset in

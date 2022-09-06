@@ -7,7 +7,7 @@
 
     <BeastsaberPlaylistSlider
       v-else
-      #default="{ playlist }"
+      v-slot="{ playlist }"
       :playlists="playlists"
       :loading="loading"
       @playlistClick="onPlaylistSelected"
@@ -120,12 +120,11 @@ export default Vue.extend({
     },
     isPlaylistDownloaded(playlist: BeastsaberPlaylist) {
       return (
-        PlaylistLibrary.GetAllValidPlaylists().find((p: PlaylistLocal) => {
-          return (
+        PlaylistLibrary.GetAllValidPlaylists().find(
+          (p: PlaylistLocal) =>
             playlist.playlistTitle === p.title &&
             playlist.playlistAuthor === p.author
-          );
-        }) !== undefined
+        ) !== undefined
       );
     },
     // installPlaylist(playlist: PlaylistLocal) {

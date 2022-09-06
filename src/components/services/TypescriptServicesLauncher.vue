@@ -80,7 +80,7 @@ export default Vue.extend({
       } catch (e) {
         console.warn(e);
       }
-      return cdnHost;
+      return cdnHost ?? undefined;
     },
   },
 });

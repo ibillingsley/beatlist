@@ -2,24 +2,20 @@
   <div>
     <v-progress-circular v-if="loading" indeterminate />
     <div v-if="failed" class="d-flex flex-row align-center">
-      <v-icon color="error" class="pr-4">
-        report_problem
-      </v-icon>
+      <v-icon color="error" class="pr-4"> report_problem </v-icon>
       <div>
         Failed to detect your beatsaber installation<br />
-        <span class="text--disabled caption">
+        <span class="text--disabled text-caption">
           Are you sure you installed the game ? <br />
           This is for pc user only, quest is not supported.
         </span>
       </div>
     </div>
     <div v-else class="d-flex flex-row align-center">
-      <v-icon color="success" class="pr-4">
-        check
-      </v-icon>
+      <v-icon color="success" class="pr-4"> check </v-icon>
       <div>
         Found the installation path at<br />
-        <span class="text--disabled caption">{{ installationPath }}</span>
+        <span class="text--disabled text-caption">{{ installationPath }}</span>
       </div>
     </div>
   </div>

@@ -17,8 +17,6 @@ export interface BeatsaverItemLoadState {
   attemptedSource: BeatsaverKey;
 }
 
-export type BeatsaverItem = BeatsaverItemValid | BeatsaverItemInvalid;
-
 export interface BeatsaverItemValid {
   beatmap: BeatsaverBeatmap;
   loadState: BeatsaverItemLoadState;
@@ -29,6 +27,8 @@ export interface BeatsaverItemInvalid {
   loadState: BeatsaverItemLoadState;
   date: Date;
 }
+
+export type BeatsaverItem = BeatsaverItemValid | BeatsaverItemInvalid;
 
 export interface BeatsaverItemInvalidForPlaylist extends BeatsaverItemInvalid {
   originalHash?: string;

@@ -5,6 +5,7 @@ import {
   DownloadUnitProgressFactory,
 } from "@/libraries/net/downloader/DownloadUnitProgress";
 import DownloadManager from "@/libraries/net/downloader/DownloadManager";
+import Utilities from "@/libraries/helper/Utilities";
 
 export default class DownloadUnit {
   public static TimeoutMs = 10 * 1e3;
@@ -66,7 +67,8 @@ export default class DownloadUnit {
       }
     } catch (error) {
       console.error(error);
-      this.onErrorListener(error);
+      // this.onErrorListener(error);
+      this.onErrorListener(Utilities.unknownToError(error));
     }
   }
 

@@ -2,7 +2,7 @@
   <v-dialog v-model="open" persistent width="400" overlay-opacity="0.97" dark>
     <v-card>
       <v-card-title>
-        <div class="display-2 text-center font-weight-light ma-auto">
+        <div class="text-h3 text-center font-weight-light ma-auto">
           Welcome to<br />
           <img
             src="@/assets/title_dark.png"
@@ -27,9 +27,7 @@
         >
           Start using beatlist
         </v-btn>
-        <v-btn v-else text @click="done">
-          Skip
-        </v-btn>
+        <v-btn v-else text @click="done"> Skip </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

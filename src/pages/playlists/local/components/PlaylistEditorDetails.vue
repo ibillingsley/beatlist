@@ -1,8 +1,6 @@
 <template>
   <div class="col-sm-12 col-lg-8 offset-lg-2">
-    <span class="headline">
-      Details
-    </span>
+    <span class="text-h5"> Details </span>
     <v-container>
       <v-row align="center">
         <v-col cols="auto">
@@ -28,9 +26,7 @@
                     <v-container>
                       <v-row align="center" justify="center">
                         <v-btn icon large @click="openFileExplorer()">
-                          <v-icon large>
-                            photo
-                          </v-icon>
+                          <v-icon large> photo </v-icon>
                         </v-btn>
                       </v-row>
                     </v-container>

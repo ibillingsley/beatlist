@@ -7,7 +7,7 @@
     >
       <v-icon>filter_list</v-icon>
     </v-btn>
-    <template v-slot:input>
+    <template #input>
       <v-text-field
         v-model="min"
         placeholder="from"
@@ -59,11 +59,11 @@ export default Vue.extend({
       this.$emit("input", { min: this.min, max: this.max } as Range);
     },
     setEmptyAsUndefined() {
-      if (((this.min as unknown) as string) === "") {
+      if ((this.min as unknown as string) === "") {
         this.min = undefined;
       }
 
-      if (((this.max as unknown) as string) === "") {
+      if ((this.max as unknown as string) === "") {
         this.max = undefined;
       }
     },

@@ -6,6 +6,11 @@ import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
 import { ColorblindMode } from "@/libraries/app/Colorblind";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
 
+export interface BeatmapTableStoreState {
+  shownColumn: string[];
+  itemsPerPage: number;
+}
+
 export interface SettingsStoreState {
   appVersion: string | undefined;
   installationPath: string;
@@ -39,11 +44,6 @@ export interface SettingsStoreState {
     sortColumn: PlaylistSortColumnType;
     sortOrder: PlaylistSortOrderType;
   };
-}
-
-export interface BeatmapTableStoreState {
-  shownColumn: string[];
-  itemsPerPage: number;
 }
 
 const defaultTableSettings = {
@@ -102,9 +102,10 @@ const mutations = {
     ];
     for (const beatmapTableStoreState of beatmapTableStoreStates) {
       console.log(beatmapTableStoreState.shownColumn);
-      beatmapTableStoreState.shownColumn = beatmapTableStoreState.shownColumn.filter(
-        (column) => !removeColumns.includes(column)
-      );
+      beatmapTableStoreState.shownColumn =
+        beatmapTableStoreState.shownColumn.filter(
+          (column) => !removeColumns.includes(column)
+        );
       console.log(beatmapTableStoreState.shownColumn);
     }
   },

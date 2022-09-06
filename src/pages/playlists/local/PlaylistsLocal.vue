@@ -1,15 +1,13 @@
 <template>
   <v-container>
-    <p class="display-2">
-      My Playlists
-    </p>
+    <p class="text-h3">My Playlists</p>
     <v-container class="d-flex align-center">
       <v-subheader>actions</v-subheader>
       <PlaylistButtonNewPlaylist :selected-folder="selectedFolder" />
       <PlaylistButtonOpenFolder />
       <v-container
         class="d-flex align-center"
-        style="flex-direction: row; justify-content: flex-end;"
+        style="flex-direction: row; justify-content: flex-end"
       >
         <v-select
           v-model="sortColumn"
@@ -22,7 +20,7 @@
           dense
           inset
           hide-details="auto"
-          style="width: 10em;"
+          style="width: 10em"
         />
         <v-btn icon @click="switchSortOrder">
           <v-icon v-if="sortOrder === 'asc'">arrow_upward</v-icon>
@@ -42,10 +40,10 @@
       </v-container>
     </v-container>
 
-    <v-container class="d-flex flex-row pa-0" style="flex-wrap: nowrap;">
+    <v-container class="d-flex flex-row pa-0" style="flex-wrap: nowrap">
       <PlaylistsFolderViewer
         class="flex-grow-0 flex-shrink-0"
-        style="min-width: 200px; width: 25%;"
+        style="min-width: 200px; width: 25%"
         prevent-click-on-active-node
         :default-active="'root'"
         @update:selection="selectFolder"
@@ -54,7 +52,7 @@
         :playlists="sortedPlaylists"
         :action="openPlaylist"
         class="flex-grow-1 flex-shrink-1"
-        style="width: 75%;"
+        style="width: 75%"
       >
         <template #actions="{ playlist }">
           <div class="d-flex">
@@ -208,7 +206,16 @@ export default Vue.extend({
       }
     },
     selectFolder(selectedFolder: PlaylistFolder): void {
-      Logger.debug(`folder selected: ${selectedFolder.path}`, "PlaylistsLocal");
+      Logger.debug(
+        `folder selected: ${selectedFolder?.path}`,
+        "PlaylistsLocal"
+      );
+      if (selectedFolder == null) {
+        // タイミングによっては selectedFolder に null が指定されてくる場合がある。
+        // ※playlist 追加分の読み込み中に開いたとか?
+        Logger.debug(`Ignore empty selection.`, "PlaylistsLocal");
+        return;
+      }
       this.selectedFolder = selectedFolder.path;
       this.sortPlaylists();
     },

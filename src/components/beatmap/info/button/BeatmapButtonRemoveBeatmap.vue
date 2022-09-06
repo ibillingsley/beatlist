@@ -9,9 +9,7 @@
         :small="small"
         @click="dialog = true"
       >
-        <v-icon :small="small">
-          delete_forever
-        </v-icon>
+        <v-icon :small="small"> delete_forever </v-icon>
       </v-btn>
     </Tooltip>
     <ConfirmDialog
@@ -30,7 +28,7 @@
         </strong>
         ({{ beatmap.key }})
       </span>
-      <span class="caption grey--text">{{ localBeatmap.folderPath }}</span>
+      <span class="text-caption grey--text">{{ localBeatmap.folderPath }}</span>
     </ConfirmDialog>
   </div>
 </template>

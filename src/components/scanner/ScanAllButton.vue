@@ -8,9 +8,7 @@
     class="my-2"
     @click="scan()"
   >
-    <slot>
-      Update library
-    </slot>
+    <slot> Update library </slot>
   </v-btn>
 </template>
 

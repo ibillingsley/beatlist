@@ -11,7 +11,7 @@ import BeatmapHashComputer from "./BeatmapHashComputer";
 export default class BeatmapLoader {
   private readonly beatmap: BeatmapLocal;
 
-  private beatmapFolder: string = "";
+  private beatmapFolder = "";
 
   private hash: string | undefined;
 
@@ -25,9 +25,9 @@ export default class BeatmapLoader {
   public static async LoadCoverByPath(
     coverPath: string
   ): Promise<string | undefined> {
-    if (!(await fs.pathExists(coverPath))) {
-      return undefined;
-    }
+    // if (!(await fs.pathExists(coverPath))) {
+    //   return undefined;
+    // }
 
     return Base64SrcLoader.FromFile(coverPath);
   }

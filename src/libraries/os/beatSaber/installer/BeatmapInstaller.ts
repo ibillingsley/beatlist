@@ -1,8 +1,8 @@
-import trash from "trash";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import DownloadOperationBeatmap from "@/libraries/net/downloader/operation/beatmap/DownloadOperationBeatmap";
 import DownloadManager from "@/libraries/net/downloader/DownloadManager";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
+import FileRemover from "@/libraries/ipc/FileRemover";
 
 export default class BeatmapInstaller {
   public static Install(
@@ -21,6 +21,6 @@ export default class BeatmapInstaller {
   }
 
   public static async Uninstall(beatmap: BeatmapLocal): Promise<void> {
-    await trash(beatmap.folderPath);
+    await FileRemover.remove(beatmap.folderPath);
   }
 }

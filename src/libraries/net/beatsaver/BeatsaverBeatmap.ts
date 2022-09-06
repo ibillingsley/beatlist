@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 export interface BeatsaverBeatmap {
   metadata: Metadata;
   stats: Stats;
@@ -194,9 +195,7 @@ function createDifficultiesMetadata(
 }
 */
 
-function createCharacteristicMetadata(
-  doc: BeatsaverNewBeatmap
-): {
+function createCharacteristicMetadata(doc: BeatsaverNewBeatmap): {
   characteristics: Characteristic[];
   difficulties: DifficultiesSimple;
   requirements: any;
@@ -285,11 +284,8 @@ function createCharacteristicMetadata(
 }
 
 export function convertNewMapToMap(doc: BeatsaverNewBeatmap): BeatsaverBeatmap {
-  const {
-    characteristics,
-    difficulties,
-    requirements,
-  } = createCharacteristicMetadata(doc);
+  const { characteristics, difficulties, requirements } =
+    createCharacteristicMetadata(doc);
   const data: BeatsaverBeatmap = {
     metadata: {
       bpm: doc.metadata.bpm,

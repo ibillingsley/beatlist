@@ -6,10 +6,9 @@ import regKey from "./Registry";
 const access = promisify(fs.access);
 const readFile = promisify(fs.readFile);
 
-const STEAM_APP_ID: string = "620980";
-const STEAM_REG_KEY: string =
-  "\\Software\\WOW6432Node\\Valve\\PathResolverForSteam";
-const STEAM_REG_VAL: string = "InstallPath";
+const STEAM_APP_ID = "620980";
+const STEAM_REG_KEY = "\\Software\\WOW6432Node\\Valve\\PathResolverForSteam";
+const STEAM_REG_VAL = "InstallPath";
 
 export default class PathResolverForSteam {
   public static async findPath(): Promise<string | undefined> {
@@ -35,7 +34,7 @@ export default class PathResolverForSteam {
       await access(pathToCheck, fs.constants.F_OK);
       return true;
     } catch (err) {
-      if (err.code === "ENOENT") {
+      if ((err as any).code === "ENOENT") {
         return false;
       }
       throw err;

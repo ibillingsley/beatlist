@@ -24,17 +24,19 @@ import {
   DownloadUnitProgressFactory,
 } from "@/libraries/net/downloader/DownloadUnitProgress";
 
-const ON_COMPLETED: string = "completed";
+const ON_COMPLETED = "completed";
 
 export default class DownloadOperationBeatmap
-  implements DownloadOperationBase, DownloadOperationTypeBeatmap {
+  implements DownloadOperationBase, DownloadOperationTypeBeatmap
+{
   public type: DownloadOperationType.Beatmap = DownloadOperationType.Beatmap;
 
   public download: DownloadUnit | undefined;
 
-  public result: DownloadOperationBeatmapResult = {} as DownloadOperationBeatmapResult;
+  public result: DownloadOperationBeatmapResult =
+    {} as DownloadOperationBeatmapResult;
 
-  public isCompleted: boolean = false;
+  public isCompleted = false;
 
   public readonly beatmap: BeatsaverBeatmap;
 
@@ -95,16 +97,19 @@ export default class DownloadOperationBeatmap
             }
           } catch (e) {
             console.log(e);
-            this.onExtractError(e);
+            // this.onExtractError(e);
+            this.onExtractError(Utilities.unknownToError(e));
           }
         });
 
         await this.download.Start(url, stream);
       } catch (e) {
-        this.onDownloadError(e);
+        // this.onDownloadError(e);
+        this.onDownloadError(Utilities.unknownToError(e));
       }
     } catch (e) {
-      this.onIOError(e);
+      // this.onIOError(e);
+      this.onIOError(Utilities.unknownToError(e));
     }
   }
 
@@ -141,7 +146,8 @@ export default class DownloadOperationBeatmap
         zip.extractAllTo(extractPath, true);
       } catch (e) {
         console.log(e);
-        this.onExtractError(e);
+        // this.onExtractError(e);
+        this.onExtractError(Utilities.unknownToError(e));
         resolve(false);
       }
       fs.remove(zipPath) // temp ディレクトリの zip 削除

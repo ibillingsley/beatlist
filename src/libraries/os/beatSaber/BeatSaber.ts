@@ -64,9 +64,15 @@ export default class BeatSaber {
     for (const songFolder of songFolders) {
       const infoDatPath = path.join(songFolder, "info.dat");
       try {
-        if (fs.existsSync(infoDatPath)) {
+        let stat;
+        try {
           // eslint-disable-next-line no-await-in-loop
-          const stat = await fs.stat(infoDatPath);
+          stat = await fs.stat(infoDatPath);
+        } catch (e) {
+          // No file, etc
+          console.warn(e);
+        }
+        if (stat != null) {
           result.set(songFolder.toLowerCase(), stat.birthtime.toISOString());
         }
       } catch (error) {

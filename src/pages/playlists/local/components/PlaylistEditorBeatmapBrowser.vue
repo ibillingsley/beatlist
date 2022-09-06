@@ -1,8 +1,6 @@
 <template>
   <div>
-    <p class="headline">
-      Browser
-    </p>
+    <p class="text-h5">Browser</p>
     <BeatmapsTableOuterHeader
       :shown-column.sync="shownColumn"
       :show-local-column="true"

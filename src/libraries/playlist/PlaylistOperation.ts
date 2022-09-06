@@ -116,7 +116,7 @@ export default class PlaylistOperation {
   public static BulkRemoveMapFromPlaylist(
     playlist: PlaylistLocal,
     // beatmapHashes: string[]
-    mapIndexes: Number[]
+    mapIndexes: number[]
   ) {
     const copy = { ...playlist };
 

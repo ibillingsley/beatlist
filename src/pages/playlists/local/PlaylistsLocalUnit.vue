@@ -6,7 +6,7 @@
         :avatar-size="48"
         class="mr-5"
       />
-      <span class="display-1">
+      <span class="text-h4">
         {{ playlist.title }}
         <span v-if="playlist.author" class="grey--text">
           - {{ playlist.author }}

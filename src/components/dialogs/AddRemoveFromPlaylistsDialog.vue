@@ -8,11 +8,9 @@
       <v-card-title>
         <v-container
           class="d-flex align-center pt-0 pb-0"
-          style="flex-direction: row; justify-content: flex-end;"
+          style="flex-direction: row; justify-content: flex-end"
         >
-          <div class="align-center flex-grow-1">
-            Add to ...
-          </div>
+          <div class="align-center flex-grow-1">Add to ...</div>
           <v-select
             v-model="sortColumn"
             :items="sortColumnList"
@@ -24,7 +22,7 @@
             dense
             inset
             hide-details="auto"
-            style="width: 10em;"
+            style="width: 10em"
           />
           <v-btn icon @click="switchSortOrder">
             <v-icon v-if="sortOrder === 'asc'">arrow_upward</v-icon>
@@ -33,7 +31,7 @@
         </v-container>
         <v-container v-if="!folderManagementDisabled">
           <v-menu v-model="menu">
-            <template v-slot:activator="{ on }">
+            <template #activator="{ on }">
               <v-text-field
                 v-model="folderName"
                 label="Folder"
@@ -66,9 +64,7 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="closeDialog">
-          Close
-        </v-btn>
+        <v-btn text @click="closeDialog"> Close </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

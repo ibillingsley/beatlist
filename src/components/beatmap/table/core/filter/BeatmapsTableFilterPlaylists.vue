@@ -3,7 +3,7 @@
     <v-btn icon small :color="notInPlaylists ? 'success' : ''">
       <v-icon>filter_list</v-icon>
     </v-btn>
-    <template v-slot:input>
+    <template #input>
       <v-switch
         v-model="notInPlaylists"
         color="accent"

@@ -1,7 +1,5 @@
 <template>
-  <v-icon v-if="imageSrc === 'error'">
-    not_interested
-  </v-icon>
+  <v-icon v-if="imageSrc === 'error'"> not_interested </v-icon>
   <v-img
     v-else
     :src="imageSrc"
@@ -17,7 +15,7 @@
     @error="imageSrc = 'error'"
   >
     <slot />
-    <template v-slot:placeholder>
+    <template #placeholder>
       <v-row class="fill-height ma-0" align="center" justify="center">
         <v-progress-circular indeterminate :size="progressSize" color="grey" />
       </v-row>
@@ -40,7 +38,7 @@ export default Vue.extend({
   props: {
     beatmap: {
       type: Object as PropType<BeatsaverBeatmap | BeatmapLocal>,
-      default: {},
+      default: {} as BeatsaverBeatmap,
     },
     progressSize: { type: Number, default: undefined },
     gradient: { type: String, default: undefined },

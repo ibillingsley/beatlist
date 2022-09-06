@@ -2,7 +2,7 @@
   <v-container class="py-0">
     <div class="d-flex align-center flex-column">
       <v-img :src="titleImage" width="200" />
-      <div class="text-center grey--text caption">
+      <div class="text-center grey--text text-caption">
         Current version: {{ currentVersion }}
       </div>
       <div>
@@ -10,7 +10,7 @@
           href="https://github.com/ranmd9a/beatlist/releases/latest"
           target="_blank"
           text
-          style="background-color: primary;"
+          style="background-color: primary"
         >
           <span class="mr-2">Latest Release</span>
           <v-icon>mdi-open-in-new</v-icon>
@@ -23,9 +23,7 @@
           </v-icon>
         </v-btn> -->
         <v-btn icon @click="openGithubRepo()">
-          <v-icon>
-            mdi-github-circle
-          </v-icon>
+          <v-icon> mdi-github </v-icon>
         </v-btn>
       </div>
     </div>
@@ -38,7 +36,7 @@ import Vue from "vue";
 import { shell } from "electron";
 import { get } from "vuex-pathify";
 import ChangelogDisplayer from "@/components/github/changelog/ChangelogDisplayer.vue";
-// import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
+import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 import * as remote from "@electron/remote";
 
 const titleWhite = require("@/assets/title_white.png");
@@ -47,6 +45,10 @@ const titleDark = require("@/assets/title_dark.png");
 export default Vue.extend({
   name: "Home",
   components: { ChangelogDisplayer },
+  beforeRouteEnter(to, from, next) {
+    DiscordRichPresence.UpdateStatus("Home");
+    next();
+  },
   computed: {
     darkTheme: get<boolean>("settings/darkTheme"),
     titleImage() {
@@ -55,10 +57,6 @@ export default Vue.extend({
     currentVersion() {
       return remote.app.getVersion();
     },
-  },
-  beforeRouteEnter(to, from, next) {
-    // DiscordRichPresence.UpdateStatus("Home");
-    next();
   },
   methods: {
     openGithubRepo() {

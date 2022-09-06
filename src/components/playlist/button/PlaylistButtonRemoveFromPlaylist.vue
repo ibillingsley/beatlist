@@ -8,9 +8,7 @@
       icon
       @click="Remove"
     >
-      <v-icon :small="small">
-        remove
-      </v-icon>
+      <v-icon :small="small"> remove </v-icon>
     </v-btn>
   </Tooltip>
 </template>

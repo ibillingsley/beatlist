@@ -7,7 +7,7 @@
     color="transparent"
     :style="app ? 'margin-top: 80px' : ''"
   >
-    <p class="title font-weight-light mb-2" style="padding-left: 7px;">
+    <p class="text-h6 font-weight-light mb-2" style="padding-left: 7px">
       {{ headerName }}
     </p>
     <ul class="toc">

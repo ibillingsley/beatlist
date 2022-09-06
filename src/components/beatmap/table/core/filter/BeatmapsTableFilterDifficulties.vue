@@ -3,7 +3,7 @@
     <v-btn icon small :color="!isModified() ? '' : 'success'">
       <v-icon>filter_list</v-icon>
     </v-btn>
-    <template v-slot:input>
+    <template #input>
       <v-chip-group v-model="selectedValues" multiple>
         <v-chip
           v-for="diff in difficulties"

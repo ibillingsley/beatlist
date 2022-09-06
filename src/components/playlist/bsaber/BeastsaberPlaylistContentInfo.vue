@@ -5,10 +5,10 @@
       :playlist="playlistLocal"
       :avatar-size="96"
       :icon-expand-size="24"
-      style="margin-top: auto; margin-bottom: auto;"
+      style="margin-top: auto; margin-bottom: auto"
     />
     <table
-      style="max-width: 500px;"
+      style="max-width: 500px"
       class="pl-5"
       aria-describedby="infos about the playlist (1st column)"
     >
@@ -30,7 +30,7 @@
       </tr>
     </table>
     <table
-      style="max-width: 700px;"
+      style="max-width: 700px"
       aria-describedby="infos about the playlist (2nd column)"
     >
       <tr>

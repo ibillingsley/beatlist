@@ -4,11 +4,11 @@ import { ScannerResultInterface } from "@/libraries/scanner/ScannerInterface";
 export default class BeatmapScannerResult implements ScannerResultInterface {
   public newItems: BeatmapLocal[] = [];
 
-  public removedItems: number = 0;
+  public removedItems = 0;
 
-  public keptItems: number = 0;
+  public keptItems = 0;
 
-  public errorMessage: string = "";
+  public errorMessage = "";
 
   public toString(): string {
     const newItemStr: string =

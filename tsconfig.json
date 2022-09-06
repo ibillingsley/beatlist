@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2019",
+    "target": "es2021",
     "module": "esnext",
     "strict": true,
     "importHelpers": true,
@@ -26,6 +26,9 @@
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "typeRoots": [
+      "node_modules/@types"
     ]
   },
   "include": [

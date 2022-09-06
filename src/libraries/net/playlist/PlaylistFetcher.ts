@@ -76,7 +76,7 @@ export default class PlaylistFetcher {
     }
 
     const totalStr = response.headers.get("content-length");
-    let total: number = 0;
+    let total = 0;
     if (totalStr != null) {
       total = Number(totalStr);
     }

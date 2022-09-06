@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-hover #default="{ hover }">
+    <v-hover v-slot="{ hover }">
       <v-avatar :size="avatarSize" :tile="tile" class="my-1">
         <BeatmapCover
           :beatmap="beatmap"
@@ -11,7 +11,7 @@
             <div
               v-if="hover"
               class="d-flex fill-height align-center justify-center"
-              style="width: 100%; background-color: #000000a0;"
+              style="width: 100%; background-color: #000000a0"
             >
               <v-btn icon>
                 <v-icon :size="iconExpandSize" @click="imageOverlay = true">
@@ -36,9 +36,7 @@
         contain
       />
       <v-btn icon large class="mt-2" @click="imageOverlay = false">
-        <v-icon large>
-          mdi-close
-        </v-icon>
+        <v-icon large> mdi-close </v-icon>
       </v-btn>
     </v-overlay>
   </div>
@@ -56,7 +54,7 @@ export default Vue.extend({
   props: {
     beatmap: {
       type: Object as PropType<BeatsaverBeatmap | BeatmapLocal>,
-      default: {},
+      default: {} as BeatsaverBeatmap,
     },
     coverPath: { type: String, default: undefined },
     avatarSize: { type: Number, default: undefined },

@@ -11,7 +11,7 @@ export interface DateRange {
 export function IsIn(
   value: number,
   range: Range,
-  excludeMaxValue: boolean = false // 最大値を含めない場合は true
+  excludeMaxValue = false // 最大値を含めない場合は true
 ): boolean {
   if (range.min === undefined && range.max === undefined) {
     return true;

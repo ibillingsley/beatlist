@@ -28,7 +28,7 @@
 
     <template
       v-for="header in getHeaders()"
-      v-slot:[headerToSlotName(header)]="{ item }"
+      #[headerToSlotName(header)]="{ item }"
     >
       <component
         :is="`BeatmapsTableTemplate${header.template}`"
@@ -84,7 +84,7 @@
       </span>
     </template>
 
-    <template v-if="!noFilter" v-slot:[`body.append`]>
+    <template v-if="!noFilter" #[`body.append`]>
       <BeatmapsTableFilterRow
         :headers="getHeaders()"
         :filters-value="filtersValue"
@@ -96,7 +96,7 @@
       <v-progress-linear color="success" indeterminate />
     </template>
 
-    <template v-slot:[`header.data-table-select`]>
+    <template #[`header.data-table-select`]>
       <v-simple-checkbox
         :value="selected.length > 0"
         :indeterminate="
@@ -106,10 +106,10 @@
       />
     </template>
 
-    <template v-slot:[`item.data-table-select`]="{ item }">
+    <template #[`item.data-table-select`]="{ item }">
       <v-simple-checkbox
         :value="selected.includes(item.raw.playlistMapIndex)"
-        @input="((value) => selectThisItem(item.raw.playlistMapIndex, value))"
+        @input="(value) => selectThisItem(item.raw.playlistMapIndex, value)"
       />
     </template>
   </v-data-table>
@@ -192,7 +192,7 @@ export default Vue.extend({
     noSort: { type: Boolean, default: false },
     page: { type: Number, default: 1 },
     selected: {
-      type: Array as PropType<Number[]>,
+      type: Array as PropType<number[]>,
       default: undefined,
     },
     search: { type: String, default: undefined },
@@ -564,7 +564,7 @@ export default Vue.extend({
         this.$emit(
           "update:selected",
           this.selected.filter(
-            (selectedIndex: Number) => selectedIndex !== item
+            (selectedIndex: number) => selectedIndex !== item
           )
         );
       }
@@ -587,8 +587,8 @@ export default Vue.extend({
       );
     },
     filterWithFilters() {
-      const tableData: { raw: BeatmapsTableDataUnit }[] = this
-        .beatmapAsTableData;
+      const tableData: { raw: BeatmapsTableDataUnit }[] =
+        this.beatmapAsTableData;
 
       return tableData.filter((entry: any) =>
         this.headers.every((header: BeatmapsTableHeader) => {

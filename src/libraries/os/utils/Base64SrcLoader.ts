@@ -9,8 +9,15 @@ export default class Base64SrcLoader {
     return `data:${mimeType};base64,${base64}`;
   }
 
-  public static async FromFile(filepath: string): Promise<string> {
-    const data = await fs.readFile(filepath);
+  public static async FromFile(filepath: string): Promise<string | undefined> {
+    // const data = await fs.readFile(filepath);
+    let data;
+    try {
+      data = await fs.readFile(filepath);
+    } catch (error) {
+      console.warn(error);
+      return undefined;
+    }
     const mimeType = mime.lookup(filepath);
 
     if (mimeType) {
