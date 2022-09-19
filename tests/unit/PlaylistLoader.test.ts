@@ -194,7 +194,7 @@ describe("playlist loader, using the JSON as format", () => {
       PlaylistFormatType.Json
     );
 
-    expect(await fs.pathExists(playlistPath)).toBe(true);
+    await expect(fs.pathExists(playlistPath)).resolves.toBe(true);
 
     const playlist = await PlaylistLoader.Load(playlistPath);
 
@@ -219,7 +219,7 @@ describe("playlist loader, using the JSON as format", () => {
       __dirname,
       "../data/playlist/testPlaylistLoaderSaveFunctionOverwrite.json"
     );
-    const playlistData = ({
+    const playlistData = {
       title: "test",
       author: "test",
       description: null,
@@ -241,7 +241,7 @@ describe("playlist loader, using the JSON as format", () => {
           },
         },
       ],
-    } as unknown) as PlaylistLocal;
+    } as unknown as PlaylistLocal;
     const prePlaylistData = {
       playlistTitle: "pre-test",
       playlistAuthor: "pre-author",
@@ -291,7 +291,7 @@ describe("playlist loader, using the JSON as format", () => {
       PlaylistFormatType.Json
     );
 
-    expect(await fs.pathExists(playlistPath)).toBe(true);
+    await expect(fs.pathExists(playlistPath)).resolves.toBe(true);
 
     const actualJson = await fs.readJSON(playlistPath);
     // eslint-disable-next-line jest/prefer-strict-equal
@@ -389,7 +389,7 @@ describe("playlist loader, using the JSON as format", () => {
       PlaylistFormatType.Json
     );
 
-    expect(await fs.pathExists(playlistPath)).toBe(true);
+    await expect(fs.pathExists(playlistPath)).resolves.toBe(true);
 
     const actualJson = await fs.readJSON(playlistPath);
     // eslint-disable-next-line jest/prefer-strict-equal
