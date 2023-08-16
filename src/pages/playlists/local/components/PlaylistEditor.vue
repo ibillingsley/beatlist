@@ -1,7 +1,7 @@
 <template>
   <div>
     <PlaylistEditorSidebar :items="menu" />
-    <v-container>
+    <v-container fluid>
       <PlaylistEditorDetails
         id="playlist-details"
         :playlist="playlist"

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <p class="text-h3">
       <!--Couldn't get it small enough lol-->
       Beatmap Online <small><small>via Beatsaver</small></small>

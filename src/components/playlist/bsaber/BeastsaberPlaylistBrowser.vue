@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-alert v-if="errorPlaylists" type="warning" class="mt-5">
       Couldn't load playlists
       <v-icon>sentiment_dissatisfied</v-icon>

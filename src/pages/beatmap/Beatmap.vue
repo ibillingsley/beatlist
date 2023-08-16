@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <transition name="slide-x-transition" mode="out-in">
       <keep-alive exclude="BeatmapOnlineUnit,BeatmapLocalUnit,Settings,*Dialog">
         <router-view :key="$route.path" />

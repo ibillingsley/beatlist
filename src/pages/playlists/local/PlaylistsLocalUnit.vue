@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="playlist">
+  <v-container v-if="playlist" fluid>
     <div class="d-flex align-center">
       <PlaylistCoverAvatar
         :playlist="playlist"

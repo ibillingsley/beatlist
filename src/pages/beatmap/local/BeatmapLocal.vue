@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <p class="text-h3">Saved Beatmaps</p>
     <BeatmapsTableLocal />
   </v-container>

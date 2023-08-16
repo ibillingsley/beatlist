@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row>
       <v-col cols="auto" align-self="center">
         <v-btn-toggle v-model="selectedMode" mandatory>

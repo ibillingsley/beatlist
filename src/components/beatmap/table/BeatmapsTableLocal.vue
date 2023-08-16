@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <BeatmapsTableOuterHeader
       :shown-column.sync="shownColumn"
       :show-local-column="true"
