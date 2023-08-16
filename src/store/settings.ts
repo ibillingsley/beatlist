@@ -36,6 +36,7 @@ export interface SettingsStoreState {
     colorBlindMode: ColorblindMode;
   };
   beatsaverServerUrl: BeatsaverServerUrl;
+  arcviewerPath: string;
   addRemoveFromPlaylistsDialog: {
     sortColumn: PlaylistSortColumnType;
     sortOrder: PlaylistSortOrderType;
@@ -76,6 +77,7 @@ const state = {
     colorBlindMode: ColorblindMode.None,
   },
   beatsaverServerUrl: BeatsaverServerUrl.Beatsaver,
+  arcviewerPath: "",
   addRemoveFromPlaylistsDialog: {
     sortColumn: PlaylistSortColumnType.Title,
     sortOrder: PlaylistSortOrderType.Asc,

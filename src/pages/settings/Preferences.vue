@@ -72,6 +72,14 @@
       Be aware that BeatSaberPlus is an unofficial mirror of Beatsaver.
     </p>
     <OneClickSettings />
+    <p class="text-h6 pt-5">ArcViewer</p>
+    <v-text-field
+      v-model="arcviewerPath"
+      label="ArcViewer.exe path"
+      append-icon="folder"
+      hint="The path to 'ArcViewer.exe' to preview maps with ArcViewer Desktop."
+      @click:append="openArcViewerPathExplorer"
+    />
     <p class="text-h6 pt-5">Accessibility</p>
     <v-switch
       v-model="showLetterInDifficulty"
@@ -97,6 +105,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { sync } from "vuex-pathify";
+import * as remote from "@electron/remote";
 import DiscordRichPresence from "@/libraries/ipc/DiscordRichPresence";
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import OneClickSettings from "@/pages/settings/components/OneClickSettings.vue";
@@ -117,6 +126,7 @@ export default Vue.extend({
     darkTheme: sync<boolean>("settings/darkTheme"),
     installationPathValid: sync<boolean>("settings/installationPathValid"),
     beatsaverServerUrl: sync<BeatsaverServerUrl>("settings/beatsaverServerUrl"),
+    arcviewerPath: sync<string>("settings/arcviewerPath"),
     defaultExportFormat: sync<PlaylistFormatType>(
       "settings/defaultExportFormat"
     ),
@@ -161,6 +171,18 @@ export default Vue.extend({
     },
     updateServerUrl() {
       BeatsaverAPI.Singleton.updateBaseUrl(this.beatsaverServerUrl);
+    },
+    async openArcViewerPathExplorer() {
+      const folder = await remote.dialog.showOpenDialog({
+        properties: ["openFile"],
+        filters: [{ name: "ArcViewer.exe", extensions: ["exe"] }],
+      });
+
+      if (folder.filePaths.length === 0) {
+        return;
+      }
+
+      [this.arcviewerPath] = folder.filePaths;
     },
   },
 });
