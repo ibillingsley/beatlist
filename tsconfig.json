@@ -31,6 +31,9 @@
       "node_modules/@types"
     ]
   },
+  "vueCompilerOptions": {
+    "target": 2
+  },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
