@@ -1,6 +1,11 @@
 <template>
   <Tooltip text="Preview beatmap">
-    <v-btn icon :small="small" @click="openPreview">
+    <v-btn
+      icon
+      :disabled="(beatmap.key == null || beatmap.key === '') && !arcviewerPath"
+      :small="small"
+      @click="openPreview"
+    >
       <v-icon :small="small">remove_red_eye</v-icon>
     </v-btn>
   </Tooltip>

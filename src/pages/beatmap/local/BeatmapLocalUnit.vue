@@ -18,6 +18,8 @@
 <script lang="ts">
 import Vue from "vue";
 import BeatmapSummary from "@/components/beatmap/info/BeatmapSummary.vue";
+import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
+import BeatmapLoader from "@/libraries/beatmap/BeatmapLoader";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import { BeatsaverBeatmap } from "@/libraries/net/beatsaver/BeatsaverBeatmap";
 import route from "@/plugins/route/route";
@@ -57,7 +59,7 @@ export default Vue.extend({
     this.fetchData();
   },
   methods: {
-    fetchData(): void {
+    async fetchData(): Promise<void> {
       // Saved Beatmaps 画面では /beatmaps/local/:hash
       // My Playlists 画面では /beatmaps/online/:hash で呼ばれる。
       // -> v1.2.6 で My Playlists 画面からは呼ばれないようにしたが念のため条件は残しておく。
@@ -69,9 +71,16 @@ export default Vue.extend({
       ) {
         return;
       }
-      this.beatmap = BeatsaverCachedLibrary.GetByHash(
-        this.$route.params.hash
-      )?.beatmap;
+      const { hash } = this.$route.params;
+      this.beatmap = BeatsaverCachedLibrary.GetByHash(hash)?.beatmap;
+      if (this.beatmap) return;
+      // Generate local beatmap info
+      const local = BeatmapLibrary.GetMapByHash(hash);
+      const beatmap = await BeatmapLibrary.GenerateBeatmap(local);
+      if (beatmap && local) {
+        beatmap.coverURL = (await BeatmapLoader.LoadCover(local)) || "";
+      }
+      this.beatmap = beatmap;
     },
     backHistory(): void {
       this.$router.go(-1);

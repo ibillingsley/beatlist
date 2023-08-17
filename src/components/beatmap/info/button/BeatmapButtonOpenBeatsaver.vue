@@ -1,6 +1,10 @@
 <template>
   <Tooltip text="Open on beatsaver">
-    <v-btn icon @click="openBeatsaver">
+    <v-btn
+      icon
+      :disabled="beatmap.key == null || beatmap.key === ''"
+      @click="openBeatsaver"
+    >
       <v-icon>open_in_new</v-icon>
     </v-btn>
   </Tooltip>
