@@ -83,12 +83,14 @@
         no-filter
         no-sort
       >
+        <template #actionsHeader>
+          <BeatmapsTableActionsHeader :shown-actions.sync="shownActions" />
+        </template>
         <template #actions="{ beatsaver }">
-          <BeatmapButtonAddToNPlaylists :beatmap="beatsaver" small />
-          <BeatmapDownloadButton :beatmap="beatsaver" auto-hide small />
-          <BeatmapButtonRemoveBeatmap :beatmap="beatsaver" auto-hide small />
-          <BeatmapButtonOpenPreview :beatmap="beatsaver" small />
-          <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
+          <BeatmapsTableActionsRow
+            :beatmap="beatsaver"
+            :actions="shownActionsSet"
+          />
         </template>
       </BeatmapsTable>
     </v-card>
@@ -103,6 +105,8 @@ import Vue from "vue";
 import { sync } from "vuex-pathify";
 import BeatmapsTable from "@/components/beatmap/table/BeatmapsTable.vue";
 import BeatmapsTableColumnSelector from "@/components/beatmap/table/core/BeatmapsTableColumnSelector.vue";
+import BeatmapsTableActionsHeader from "@/components/beatmap/table/core/BeatmapsTableActionsHeader.vue";
+import BeatmapsTableActionsRow from "@/components/beatmap/table/core/BeatmapsTableActionsRow.vue";
 import Tooltip from "@/components/helper/Tooltip.vue";
 import BeatsaverAPI, {
   BeatSaverAPIResponse,
@@ -115,29 +119,22 @@ import {
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import Utilities from "@/libraries/helper/Utilities";
 import BeatsaverUtilities from "@/libraries/net/beatsaver/BeatsaverUtilities";
-import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
-import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
-import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
-import BeatmapButtonOpenPreview from "@/components/beatmap/info/button/BeatmapButtonOpenPreview.vue";
-import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
 import BeatmapsTableOnlineFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineFilter.vue";
 import BeatmapsTableOnlineDateFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineDateFilter.vue";
 import BeatmapsTableOnlineNpsFilter from "@/components/beatmap/table/core/filter/BeatmapsTableOnlineNpsFilter.vue";
 import route from "@/plugins/route/route";
 import { BeatsaverFilter } from "@/libraries/net/beatsaver/BeatsaverFilter";
 import { DateRange } from "@/libraries/common/Range";
+import { BeatmapTableActions } from "@/store/settings";
 
 export default Vue.extend({
   name: "BeatmapsTableOnline",
   components: {
     BeatmapsTableColumnSelector,
     BeatmapsTable,
+    BeatmapsTableActionsHeader,
+    BeatmapsTableActionsRow,
     Tooltip,
-    BeatmapDownloadButton,
-    BeatmapButtonOpenPreview,
-    BeatmapButtonRemoveBeatmap,
-    BeatmapButtonAddToNPlaylists,
-    BeatmapButtonCopyBsr,
     BeatmapsTableOnlineFilter,
     BeatmapsTableOnlineNpsFilter,
     BeatmapsTableOnlineDateFilter,
@@ -178,6 +175,12 @@ export default Vue.extend({
     shownColumn: sync<string[]>(
       "settings/beatmapsTable@beatsaverBeatmaps.shownColumn"
     ),
+    shownActions: sync<BeatmapTableActions[]>(
+      "settings/beatmapsTable@beatsaverBeatmaps.shownActions"
+    ),
+    shownActionsSet(): Set<BeatmapTableActions> {
+      return new Set(this.shownActions);
+    },
     beatmaps(): BeatmapsTableDataUnit[] {
       return (
         this.beatsaverPage?.docs.map(

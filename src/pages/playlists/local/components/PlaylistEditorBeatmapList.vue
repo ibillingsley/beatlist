@@ -29,15 +29,16 @@
       :loading="loading"
       @openInformation="openInformation"
     >
+      <template #actionsHeader>
+        <BeatmapsTableActionsHeader :shown-actions.sync="shownActions" />
+      </template>
       <template #actions="{ beatsaver, playlistMapIndex }">
-        <BeatmapDownloadButton :beatmap="beatsaver" small />
-        <PlaylistButtonRemoveFromPlaylist
-          :playlist="playlist"
+        <BeatmapsTableActionsRow
           :beatmap="beatsaver"
+          :playlist="playlist"
           :playlist-map-index="playlistMapIndex"
-          small
+          :actions="shownActionsSet"
         />
-        <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
       </template>
     </BeatmapsTableInPlaylist>
     <BeatmapsTableBulkActions
@@ -63,28 +64,27 @@ import { sync } from "vuex-pathify";
 import store from "@/plugins/store";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
 import BeatmapsTableInPlaylist from "@/components/beatmap/table/BeatmapsTableInPlaylist.vue";
-import PlaylistButtonRemoveFromPlaylist from "@/components/playlist/button/PlaylistButtonRemoveFromPlaylist.vue";
 import PlaylistMapsLibrary from "@/libraries/playlist/PlaylistMapsLibrary";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
-import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
-import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
+import BeatmapsTableActionsHeader from "@/components/beatmap/table/core/BeatmapsTableActionsHeader.vue";
+import BeatmapsTableActionsRow from "@/components/beatmap/table/core/BeatmapsTableActionsRow.vue";
 // import route from "@/plugins/route/route";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
 import BeatmapOnlineUnitDialog from "@/components/dialogs/BeatmapOnlineUnitDialog.vue";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import Logger from "@/libraries/helper/Logger";
+import { BeatmapTableActions } from "@/store/settings";
 
 export default Vue.extend({
   name: "PlaylistEditorBeatmapList",
   components: {
     BeatmapsTableInPlaylist,
     BeatmapsTableOuterHeader,
+    BeatmapsTableActionsHeader,
+    BeatmapsTableActionsRow,
     BeatmapsTableBulkActions,
-    PlaylistButtonRemoveFromPlaylist,
-    BeatmapDownloadButton,
     BeatmapOnlineUnitDialog,
-    BeatmapButtonCopyBsr,
   },
   props: {
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
@@ -106,6 +106,12 @@ export default Vue.extend({
     itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@playlistContent.itemsPerPage"
     ),
+    shownActions: sync<BeatmapTableActions[]>(
+      "settings/beatmapsTable@playlistContent.shownActions"
+    ),
+    shownActionsSet(): Set<BeatmapTableActions> {
+      return new Set(this.shownActions);
+    },
     // beatmaps() {
     //   return PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(this.playlist);
     // },

@@ -1,9 +1,15 @@
 <template>
   <div class="d-flex align-center">
     <Tooltip :text="audioTooltip()">
-      <v-btn icon :loading="loading" @click="togglePlay()">
-        <v-icon v-if="playing"> pause_circle_outline </v-icon>
-        <v-icon v-else> play_circle_outline </v-icon>
+      <v-btn
+        icon
+        :loading="loading"
+        :small="small"
+        :disabled="!beatmapLocal"
+        @click="togglePlay()"
+      >
+        <v-icon v-if="playing" :small="small"> pause_circle_outline </v-icon>
+        <v-icon v-else :small="small"> play_circle_outline </v-icon>
       </v-btn>
     </Tooltip>
     <v-expand-x-transition mode="out-in">
@@ -29,6 +35,7 @@ export default Vue.extend({
   components: { Tooltip },
   props: {
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },
+    small: { type: Boolean, default: false },
   },
   data: () => ({
     audio: new Audio(),

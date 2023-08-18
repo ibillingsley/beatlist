@@ -5,7 +5,7 @@
     <BeatmapDownloadButton v-if="!isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonRemoveBeatmap v-if="isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonPlaySong v-if="isDownloaded" :beatmap="beatmap" />
-    <BeatmapButtonAddToNPlaylists :beatmap="beatmap" small />
+    <BeatmapButtonAddToNPlaylists :beatmap="beatmap" />
     <BeatmapButtonRefreshData v-if="isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonOpenFolder v-if="isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonOpenPreview :beatmap="beatmap" />

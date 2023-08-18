@@ -38,7 +38,7 @@ import BeatmapCoverAvatar from "@/components/beatmap/cover/BeatmapCoverAvatar.vu
 import DifficultiesChips from "@/components/beatmap/DifficultiesChips.vue";
 
 export default Vue.extend({
-  name: "BeatmapSummary",
+  name: "BeatmapSummaryHeader",
   components: { BeatmapCover, BeatmapCoverAvatar, DifficultiesChips },
   props: {
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },

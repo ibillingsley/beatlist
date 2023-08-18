@@ -17,10 +17,14 @@
         :see-more-route-name="seeMoreRouteName"
         :loading="loading"
       >
+        <template #actionsHeader>
+          <BeatmapsTableActionsHeader :shown-actions.sync="shownActions" />
+        </template>
         <template #actions="{ beatsaver }">
-          <BeatmapButtonRemoveBeatmap :beatmap="beatsaver" small />
-          <BeatmapButtonAddToNPlaylists :beatmap="beatsaver" small />
-          <BeatmapButtonCopyBsr :beatmap="beatsaver" small />
+          <BeatmapsTableActionsRow
+            :beatmap="beatsaver"
+            :actions="shownActionsSet"
+          />
         </template>
       </BeatmapsTable>
     </v-card>
@@ -33,14 +37,14 @@ import { sync } from "vuex-pathify";
 import BeatmapsTable from "@/components/beatmap/table/BeatmapsTable.vue";
 import BeatmapLibrary from "@/libraries/beatmap/BeatmapLibrary";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
-import BeatmapButtonAddToNPlaylists from "@/components/beatmap/button/BeatmapButtonAddToNPlaylists.vue";
-import BeatmapButtonRemoveBeatmap from "@/components/beatmap/info/button/BeatmapButtonRemoveBeatmap.vue";
-import BeatmapButtonCopyBsr from "@/components/beatmap/info/button/BeatmapButtonCopyBsr.vue";
+import BeatmapsTableActionsHeader from "@/components/beatmap/table/core/BeatmapsTableActionsHeader.vue";
+import BeatmapsTableActionsRow from "@/components/beatmap/table/core/BeatmapsTableActionsRow.vue";
 import route from "@/plugins/route/route";
 import { BeatmapLocal } from "@/libraries/beatmap/BeatmapLocal";
 import BeatsaverCachedLibrary from "@/libraries/beatmap/repo/BeatsaverCachedLibrary";
 import Logger from "@/libraries/helper/Logger";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
+import { BeatmapTableActions } from "@/store/settings";
 import { BeatmapsTableDataUnit } from "./core/BeatmapsTableDataUnit";
 
 export default Vue.extend({
@@ -48,9 +52,8 @@ export default Vue.extend({
   components: {
     BeatmapsTable,
     BeatmapsTableOuterHeader,
-    BeatmapButtonAddToNPlaylists,
-    BeatmapButtonRemoveBeatmap,
-    BeatmapButtonCopyBsr,
+    BeatmapsTableActionsHeader,
+    BeatmapsTableActionsRow,
   },
   data: () => ({
     search: "",
@@ -65,6 +68,12 @@ export default Vue.extend({
     itemsPerPage: sync<number>(
       "settings/beatmapsTable@localBeatmaps.itemsPerPage"
     ),
+    shownActions: sync<BeatmapTableActions[]>(
+      "settings/beatmapsTable@localBeatmaps.shownActions"
+    ),
+    shownActionsSet(): Set<BeatmapTableActions> {
+      return new Set(this.shownActions);
+    },
     storedMaps(): BeatmapLocal[] {
       return BeatmapLibrary.GetAllMaps();
     },

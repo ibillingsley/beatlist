@@ -6,9 +6,20 @@ import PlaylistSortOrderType from "@/libraries/playlist/PlaylistSortOrderType";
 import { ColorblindMode } from "@/libraries/app/Colorblind";
 import BeatsaverServerUrl from "@/libraries/net/beatsaver/BeatsaverServerUrl";
 
+export type BeatmapTableActions =
+  | "download"
+  | "remove"
+  | "add"
+  | "play"
+  | "preview"
+  | "folder"
+  | "beatsaver"
+  | "bsr";
+
 export interface BeatmapTableStoreState {
   shownColumn: string[];
   itemsPerPage: number;
+  shownActions: BeatmapTableActions[];
 }
 
 export interface SettingsStoreState {
@@ -62,11 +73,26 @@ const state = {
   playlistIndentType: PlaylistIndentType.Space2,
   disablePlaylistFolderManagement: false,
   beatmapsTable: {
-    localBeatmaps: { ...defaultTableSettings },
-    beatsaverBeatmaps: { ...defaultTableSettings },
-    playlistContent: { ...defaultTableSettings },
-    playlistBrowser: { ...defaultTableSettings },
-    beastsaberPlaylistContent: { ...defaultTableSettings },
+    localBeatmaps: {
+      ...defaultTableSettings,
+      shownActions: ["download", "remove", "add", "bsr"],
+    },
+    beatsaverBeatmaps: {
+      ...defaultTableSettings,
+      shownActions: ["download", "remove", "add", "preview", "bsr"],
+    },
+    playlistContent: {
+      ...defaultTableSettings,
+      shownActions: ["download", "add", "bsr"],
+    },
+    playlistBrowser: {
+      ...defaultTableSettings,
+      shownActions: ["add"],
+    },
+    beastsaberPlaylistContent: {
+      ...defaultTableSettings,
+      shownActions: ["download", "preview", "bsr"],
+    },
   },
   oneClick: {
     enabled: false,

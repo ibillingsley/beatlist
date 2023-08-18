@@ -84,6 +84,10 @@
       </span>
     </template>
 
+    <template v-if="!noActions" #[`header.actions`]="{ header }">
+      <slot name="actionsHeader">{{ header.text }}</slot>
+    </template>
+
     <template v-if="!noFilter" #[`body.append`]>
       <BeatmapsTableFilterRow
         :headers="getHeaders()"

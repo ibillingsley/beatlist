@@ -12,9 +12,14 @@
       :search="search"
       :see-more-route-name="seeMoreRouteName"
     >
+      <template #actionsHeader>
+        <BeatmapsTableActionsHeader :shown-actions.sync="shownActions" />
+      </template>
       <template #actions="{ beatsaver }">
-        <BeatmapDownloadButton :beatmap="beatsaver" small />
-        <BeatmapButtonOpenPreview :beatmap="beatsaver" small />
+        <BeatmapsTableActionsRow
+          :beatmap="beatsaver"
+          :actions="shownActionsSet"
+        />
       </template>
     </BeatmapsTableInPlaylist>
     <BeatmapsTableBulkActions
@@ -31,14 +36,15 @@
 import Vue, { PropType } from "vue";
 import BeatmapsTableInPlaylist from "@/components/beatmap/table/BeatmapsTableInPlaylist.vue";
 import BeatmapsTableOuterHeader from "@/components/beatmap/table/core/BeatmapsTableOuterHeader.vue";
+import BeatmapsTableActionsHeader from "@/components/beatmap/table/core/BeatmapsTableActionsHeader.vue";
+import BeatmapsTableActionsRow from "@/components/beatmap/table/core/BeatmapsTableActionsRow.vue";
 import BeatmapsTableBulkActions from "@/components/beatmap/table/core/BeatmapsTableBulkActions.vue";
 import { sync } from "vuex-pathify";
 import PlaylistMapsLibrary from "@/libraries/playlist/PlaylistMapsLibrary";
 import { PlaylistLocal } from "@/libraries/playlist/PlaylistLocal";
-import BeatmapDownloadButton from "@/components/downloads/BeatmapDownloadButton.vue";
-import BeatmapButtonOpenPreview from "@/components/beatmap/info/button/BeatmapButtonOpenPreview.vue";
 import route from "@/plugins/route/route";
 import { BeatmapsTableDataUnit } from "@/components/beatmap/table/core/BeatmapsTableDataUnit";
+import { BeatmapTableActions } from "@/store/settings";
 
 export default Vue.extend({
   name: "BeastsaberPlaylistContentTable",
@@ -47,8 +53,8 @@ export default Vue.extend({
     BeatmapsTableInPlaylist,
     BeatmapsTableOuterHeader,
     BeatmapsTableBulkActions,
-    BeatmapDownloadButton,
-    BeatmapButtonOpenPreview,
+    BeatmapsTableActionsHeader,
+    BeatmapsTableActionsRow,
   },
   props: {
     playlist: { type: Object as PropType<PlaylistLocal>, required: true },
@@ -66,6 +72,12 @@ export default Vue.extend({
     itemsPerPage: sync<string[]>(
       "settings/beatmapsTable@beastsaberPlaylistContent.itemsPerPage"
     ),
+    shownActions: sync<BeatmapTableActions[]>(
+      "settings/beatmapsTable@beastsaberPlaylistContent.shownActions"
+    ),
+    shownActionsSet(): Set<BeatmapTableActions> {
+      return new Set(this.shownActions);
+    },
     // beatmaps() {
     //   return PlaylistMapsLibrary.GetAllValidMapAsTableDataFor(this.playlist);
     // },

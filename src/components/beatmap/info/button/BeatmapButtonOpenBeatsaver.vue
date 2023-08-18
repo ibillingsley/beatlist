@@ -3,9 +3,10 @@
     <v-btn
       icon
       :disabled="beatmap.key == null || beatmap.key === ''"
+      :small="small"
       @click="openBeatsaver"
     >
-      <v-icon>open_in_new</v-icon>
+      <v-icon :small="small">open_in_new</v-icon>
     </v-btn>
   </Tooltip>
 </template>
@@ -22,6 +23,7 @@ export default Vue.extend({
   components: { Tooltip },
   props: {
     beatmap: { type: Object as PropType<BeatsaverBeatmap>, required: true },
+    small: { type: Boolean, default: false },
   },
   methods: {
     openBeatsaver(): void {
