@@ -261,37 +261,38 @@ export default class BeatmapLibrary {
   }
 
   public static GetMapByHash(hash: string): BeatmapLocal | undefined {
-    return this.GetAllValidMap().find(
-      (beatmap: BeatmapLocal) => beatmap.hash === hash.toUpperCase()
-    );
+    const hashmap: Map<string, BeatmapLocal> =
+      store.getters["beatmap/beatmapHashMap"];
+    return hashmap.get(hash.toUpperCase());
   }
 
   public static HasBeatmap(beatmap: BeatsaverBeatmap): boolean {
-    const hashset = store.getters["beatmap/beatmapHashSet"] as Set<string>;
-    return hashset.has(beatmap.hash.toUpperCase());
+    const hashmap: Map<string, BeatmapLocal> =
+      store.getters["beatmap/beatmapHashMap"];
+    return hashmap.has(beatmap.hash.toUpperCase());
   }
 
   public static GetLastScanDate(): Date {
     return store.getters["beatmap/lastScan"];
   }
 
-  public static GenerateBeatmapHashSet() {
-    store.commit("beatmap/generateBeatmapHashSet");
+  public static GenerateBeatmapHashMap() {
+    store.commit("beatmap/generateBeatmapHashMap");
   }
 
   public static UpdateAllMaps(beatmaps: BeatmapLocal[]) {
     store.commit("beatmap/SET_LAST_SCAN", new Date());
     store.commit("beatmap/SET_BEATMAPS", beatmaps);
-    // SET_BEATMAPS を呼んだあとは SET_BEATMAP_HASH_SET も必要 (beatlist 再起動すれば不整合はなくなるはずではあるが)
-    store.commit("beatmap/SET_BEATMAP_HASH_SET", new Set());
-    store.commit("beatmap/generateBeatmapHashSet");
+    // SET_BEATMAPS を呼んだあとは SET_BEATMAP_HASH_MAP も必要 (beatlist 再起動すれば不整合はなくなるはずではあるが)
+    store.commit("beatmap/SET_BEATMAP_HASH_MAP", new Map());
+    store.commit("beatmap/generateBeatmapHashMap");
   }
 
   public static ClearCache() {
     store.commit("beatmap/SET_LAST_SCAN", undefined);
     store.commit("beatmap/SET_BEATMAPS", []);
-    // SET_BEATMAPS を呼んだあとは SET_BEATMAP_HASH_SET も必要 (beatlist 再起動すれば不整合はなくなるはずではあるが)
-    store.commit("beatmap/SET_BEATMAP_HASH_SET", new Set());
+    // SET_BEATMAPS を呼んだあとは SET_BEATMAP_HASH_MAP も必要 (beatlist 再起動すれば不整合はなくなるはずではあるが)
+    store.commit("beatmap/SET_BEATMAP_HASH_MAP", new Map());
   }
 
   public static AddBeatmap(beatmap: BeatmapLocal) {

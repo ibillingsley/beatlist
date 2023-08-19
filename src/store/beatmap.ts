@@ -17,7 +17,7 @@ import BeatmapHashComputer from "@/libraries/beatmap/BeatmapHashComputer";
 export interface BeatmapStoreState {
   lastScan: Date;
   beatmaps: BeatmapLocal[];
-  beatmapHashSet: Set<string>; // hash のみ保持
+  beatmapHashMap: Map<string, BeatmapLocal>; // hash のみ保持
   beatsaverCached: Map<string, BeatsaverItemValid>;
   beatsaverFailCached: Map<string, BeatsaverItemInvalid>;
   beatsaverKeyToHashIndex: Map<string, string>;
@@ -27,7 +27,7 @@ export interface BeatmapStoreState {
 const state = {
   lastScan: undefined,
   beatmaps: [],
-  beatmapHashSet: new Set<string>(),
+  beatmapHashMap: new Map<string, BeatmapLocal>(),
   beatsaverCached: new Map<string, BeatsaverItemInvalid>(),
   beatsaverFailCached: new Map<string, BeatsaverItemInvalid>(),
   beatsaverKeyToHashIndex: new Map<string, string>(),
@@ -44,7 +44,10 @@ const mutations = {
     context.beatmaps.push(payload.beatmap);
     if (payload.beatmap.hash != null) {
       // null になるのは invalid な map だけ
-      context.beatmapHashSet.add(payload.beatmap.hash.toUpperCase());
+      context.beatmapHashMap.set(
+        payload.beatmap.hash.toUpperCase(),
+        payload.beatmap
+      );
     }
   },
   addBeatmaps(
@@ -55,7 +58,7 @@ const mutations = {
       context.beatmaps.push(beatmap);
       if (beatmap.hash != null) {
         // null になるのは invalid な map だけ
-        context.beatmapHashSet.add(beatmap.hash.toUpperCase());
+        context.beatmapHashMap.set(beatmap.hash.toUpperCase(), beatmap);
       }
     }
   },
@@ -66,13 +69,13 @@ const mutations = {
     context.beatmaps = context.beatmaps.filter(
       (value: BeatmapLocal) => value.hash !== payload.beatmap.hash // BeatmapLocal どうしのhash比較
     );
-    const hashset = new Set<string>();
+    const hashmap = new Map<string, BeatmapLocal>();
     context.beatmaps.forEach((value) => {
       if (value.hash != null) {
-        hashset.add(value.hash.toUpperCase());
+        hashmap.set(value.hash.toUpperCase(), value);
       }
     });
-    context.beatmapHashSet = hashset;
+    context.beatmapHashMap = hashmap;
   },
   // removeBeatmapByPath(context: BeatmapStoreState, payload: { path: string }) {
   //   context.beatmaps = context.beatmaps.filter(
@@ -88,22 +91,22 @@ const mutations = {
     context.beatmaps = context.beatmaps.filter(
       (value: BeatmapLocal) => !pathSet.has(value.folderPath.toLowerCase())
     );
-    const hashset = new Set<string>();
+    const hashmap = new Map<string, BeatmapLocal>();
     context.beatmaps.forEach((value) => {
       if (value.hash != null) {
-        hashset.add(value.hash.toUpperCase());
+        hashmap.set(value.hash.toUpperCase(), value);
       }
     });
-    context.beatmapHashSet = hashset;
+    context.beatmapHashMap = hashmap;
   },
-  generateBeatmapHashSet(context: BeatmapStoreState) {
-    const hashset = new Set<string>();
+  generateBeatmapHashMap(context: BeatmapStoreState) {
+    const hashmap = new Map<string, BeatmapLocal>();
     context.beatmaps.forEach((value) => {
       if (value.hash != null) {
-        hashset.add(value.hash.toUpperCase());
+        hashmap.set(value.hash.toUpperCase(), value);
       }
     });
-    context.beatmapHashSet = hashset;
+    context.beatmapHashMap = hashmap;
   },
   updateDownloadDate(
     context: BeatmapStoreState,

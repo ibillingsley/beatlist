@@ -33,7 +33,7 @@ export default Vue.extend({
     async LaunchServices() {
       await store.restored;
 
-      BeatmapLibrary.GenerateBeatmapHashSet();
+      BeatmapLibrary.GenerateBeatmapHashMap();
       this.DiscordRichPresence();
       const serverUrl = this.BeatsaverServerUrl();
       const cdnHost = await this.GetCdnHost(serverUrl);
