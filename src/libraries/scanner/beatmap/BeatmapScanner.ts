@@ -58,6 +58,18 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
         );
       }
 
+      // Refresh maps with missing cache data
+      if (forceUpdate) {
+        const validCache = BeatsaverCachedLibrary.GetAllValid();
+        const missing = BeatmapLibrary.GetAllValidMap().filter(
+          (beatmap) =>
+            beatmap.hash && !validCache.has(beatmap.hash.toUpperCase())
+        );
+        const paths = missing.map((beatmap) => beatmap.folderPath);
+        BeatmapLibrary.RemoveBeatmapByPaths(paths);
+        diff.added = diff.added.concat(paths);
+      }
+
       progress.setTotal(diff.added.length + retryTargetItems.length);
 
       // 追加された曲
