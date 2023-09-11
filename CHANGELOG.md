@@ -12,6 +12,22 @@
 
 # Changelog
 
+## v1.5.0-beta  (11/09/2023)
+**Improvement:**
+- [ArcViewer](https://github.com/AllPoland/ArcViewer) replaces Rabbit's viewer for previews.
+   - Supports V3 maps with arcs and chains.
+   - Added setting for ArcViewer.exe path to use desktop version.
+   - Desktop version can preview local maps without redownloading them.
+- Added option to customize actions column buttons.
+- Table width increased to full page width.
+- Updated Electron to version 25.
+
+**Bug fixes:**
+ - Fixed beatmap information page for maps with no with no BeatSaver data.
+ - Scanner rechecks maps with no BeatSaver data.
+
+<br>
+
 ## v1.4.1 (29/07/2022)
 **Bug fixes:**
  - Added a process to correct a bug when upgrading to v1.4.0.
