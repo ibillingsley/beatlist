@@ -142,6 +142,10 @@
         >Are you sure you want to <strong class="error--text">clear</strong> the
         cache ?</span
       >
+      <v-checkbox
+        v-model="clearBeatsaver"
+        label="Clear BeatSaver data"
+      ></v-checkbox>
     </ConfirmDialog>
     <InvalidBeatmapDialog :open.sync="invalidBeatmapDialog" />
     <InvalidPlaylistDialog :open.sync="invalidPlaylistDialog" />
@@ -187,6 +191,7 @@ export default Vue.extend({
     isScanning: false,
     isRateLimited: false,
     rateLimitResetInSecond: 0,
+    clearBeatsaver: false,
   }),
   computed: {
     installationPathValid: get("settings/installationPathValid"),
@@ -251,7 +256,7 @@ export default Vue.extend({
     clearCache() {
       BeatmapLibrary.ClearCache();
       PlaylistLibrary.ClearCache();
-      BeatsaverCachedLibrary.ClearCache();
+      if (this.clearBeatsaver) BeatsaverCachedLibrary.ClearCache();
     },
     canClearCache() {
       return (
