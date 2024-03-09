@@ -6,7 +6,7 @@ const TEST = false;
 
 export default class BeatlistRepo {
   private static readonly baseUri: string =
-    "https://raw.githubusercontent.com/ranmd9a/beatlist";
+    "https://raw.githubusercontent.com/ibillingsley/beatlist";
 
   private static readonly changelogUri: string = "/master/CHANGELOG.md";
 

@@ -12,14 +12,16 @@
 
 # Changelog
 
-## v1.5.0-beta  (11/09/2023)
+## v1.5.0-beta  (09/03/2024)
 **Improvement:**
 - [ArcViewer](https://github.com/AllPoland/ArcViewer) replaces Rabbit's viewer for previews.
    - Supports V3 maps with arcs and chains.
    - Added setting for ArcViewer.exe path to use desktop version.
    - Desktop version can preview local maps without redownloading them.
 - Added option to customize actions column buttons.
+- Added checkbox to clear local cache without clearing BeatSaver cache.
 - Table width increased to full page width.
+- Reduced freezing on startup.
 - Updated Electron to version 25.
 
 **Bug fixes:**
