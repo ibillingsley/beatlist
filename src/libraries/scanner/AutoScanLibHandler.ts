@@ -13,51 +13,43 @@ export default class AutoScanLibHandler {
     const beatmapFolder = await BeatSaber.getBeatmapFolder();
     const playlistFolder = await BeatSaber.getPlaylistFolder();
 
-    const watcher = chokidar.watch([beatmapFolder, playlistFolder], {
+    this.watch(beatmapFolder, {
       ignoreInitial: true,
+      depth: 0,
     });
 
-    const delayFunc = lodash.debounce(
-      () => {
-        if (
-          BeatmapLibrary.GetAllMaps().length > 0 ||
-          PlaylistLibrary.GetAllPlaylists().length > 0
-        ) {
-          ScannerService.ScanAll();
-        }
-      },
-      500,
-      { maxWait: 5000 }
-    );
-
-    // watcher.on("add", AutoScanLibHandler.onChange);
-    // watcher.on("change", AutoScanLibHandler.onChange);
-    // watcher.on("unlink", AutoScanLibHandler.onChange);
-    // watcher.on("addDir", AutoScanLibHandler.onChange);
-    // watcher.on("unlinkDir", AutoScanLibHandler.onChange);
-    watcher.on("add", delayFunc);
-    watcher.on("change", delayFunc);
-    watcher.on("unlink", delayFunc);
-    watcher.on("addDir", delayFunc);
-    watcher.on("unlinkDir", delayFunc);
+    this.watch(playlistFolder, {
+      ignoreInitial: true,
+    });
 
     if (
       store.getters["settings/configValid"] &&
       !store.getters["modal/newUserModal"]
     ) {
-      // this.onChange();
-      delayFunc();
+      this.onChange();
     }
   }
 
-  /*
-  private static onChange() {
-    if (
-      BeatmapLibrary.GetAllMaps().length > 0 ||
-      PlaylistLibrary.GetAllPlaylists().length > 0
-    ) {
-      ScannerService.ScanAll().then();
-    }
+  private static watch(folder: string, options: chokidar.WatchOptions) {
+    const watcher = chokidar.watch(folder, options);
+
+    watcher.on("add", this.onChange);
+    watcher.on("change", this.onChange);
+    watcher.on("unlink", this.onChange);
+    watcher.on("addDir", this.onChange);
+    watcher.on("unlinkDir", this.onChange);
   }
-  */
+
+  private static onChange = lodash.debounce(
+    () => {
+      if (
+        BeatmapLibrary.GetAllMaps().length > 0 ||
+        PlaylistLibrary.GetAllPlaylists().length > 0
+      ) {
+        ScannerService.ScanAll();
+      }
+    },
+    500,
+    { maxWait: 5000 }
+  );
 }
