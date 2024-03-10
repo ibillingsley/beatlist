@@ -7,7 +7,7 @@
       </div>
       <div>
         <v-btn
-          href="https://github.com/ranmd9a/beatlist/releases/latest"
+          href="https://github.com/ibillingsley/beatlist/releases/latest"
           target="_blank"
           text
           style="background-color: primary"
@@ -60,7 +60,7 @@ export default Vue.extend({
   },
   methods: {
     openGithubRepo() {
-      shell.openExternal("https://github.com/ranmd9a/beatlist");
+      shell.openExternal("https://github.com/ibillingsley/beatlist");
     },
     openDiscordInvitation() {
       // shell.openExternal("https://discord.gg/f5AmKSH");

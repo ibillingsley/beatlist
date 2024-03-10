@@ -1,36 +1,36 @@
 # ATTENTION
- - (29/07/2022) When updating from an older version to v1.4.0, some songs may not be displayed.  
+ - (2022-07-29) When updating from an older version to v1.4.0, some songs may not be displayed.  
    If you have updated to v1.4.0, please update to v1.4.1.  
   - This does not occur with new installations of v1.4.0.
 
 <br>
 
- - (02/04/2022) Due to beatsaver.com's April Fool's Day, some songs may not be displayed.  
+ - (2022-04-02) Due to beatsaver.com's April Fool's Day, some songs may not be displayed.  
    If this is the case, please update to v1.3.8 or later or try [CLEAR CACHE] & [UPDATE LIBRARY] from the [Settings] screen.
 
 <br>
 
 # Changelog
 
-## v1.5.0-beta  (09/03/2024)
+## v1.5.0-beta  (2024-03-09)
 **Improvement:**
-- [ArcViewer](https://github.com/AllPoland/ArcViewer) replaces Rabbit's viewer for previews.
+ - <a href="https://github.com/AllPoland/ArcViewer" target="_blank">ArcViewer</a> replaces Rabbit's viewer for previews.
    - Supports V3 maps with arcs and chains.
    - Added setting for ArcViewer.exe path to use desktop version.
    - Desktop version can preview local maps without redownloading them.
-- Added option to customize actions column buttons.
-- Added checkbox to clear local cache without clearing BeatSaver cache.
-- Table width increased to full page width.
-- Reduced freezing on startup.
-- Updated Electron to version 25.
+ - Added option to customize actions column buttons.
+ - Added checkbox to clear local cache without clearing BeatSaver cache.
+ - Table width increased to full page width.
+ - Updated Electron to version 25.
 
 **Bug fixes:**
+ - Fixed freezing on startup.
  - Fixed beatmap information page for maps with no with no BeatSaver data.
  - Scanner rechecks maps with no BeatSaver data.
 
 <br>
 
-## v1.4.1 (29/07/2022)
+## v1.4.1 (2022-07-29)
 **Bug fixes:**
  - Added a process to correct a bug when upgrading to v1.4.0.
    - When updating, the Playlist will be rescanned. Please wait until it finishes.
@@ -39,7 +39,7 @@
 
 <br>
 
-## v1.4.0 (23/07/2022)
+## v1.4.0 (2022-07-23)
 **ATTENTION:**
  - To revert back to v1.3.x after installing v1.4.0, uninstall v1.4.0, delete the data as described in [Troubleshooting_en] - [Method 2] on the Wiki, and then install v1.3.x.
 
@@ -69,7 +69,7 @@
 
 <br>
 
-## v1.3.8 (08/04/2022)
+## v1.3.8 (2022-04-08)
 **ATTENTION:**
  - When updating from v1.3.7 or earlier, the download date of map will be read at the first startup.  
    While it reads, a dialog box will appear during the scan. Please wait for a while.
@@ -98,7 +98,7 @@
 
 <br>
 
-## v1.3.7 (12/02/2022)
+## v1.3.7 (2022-02-12)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
    While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
@@ -116,7 +116,7 @@
 
 <br>
 
-## v1.3.6 (26/01/2022)
+## v1.3.6 (2022-01-26)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
    While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
@@ -146,7 +146,7 @@
 
 <br>
 
-## v1.3.5 (18/12/2021)
+## v1.3.5 (2021-12-18)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
    While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
@@ -156,7 +156,7 @@
 
 <br>
 
-## v1.3.4 (12/12/2021)
+## v1.3.4 (2021-12-12)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
    While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
@@ -167,7 +167,7 @@
 
 <br>
 
-## v1.3.3 (06/12/2021)
+## v1.3.3 (2021-12-06)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
    While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
@@ -186,7 +186,7 @@
 
 <br>
 
-## v1.3.2 (23/11/2021)
+## v1.3.2 (2021-11-23)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
    While the cache is being recreated, a dialog box will appear during the scan. Please wait for a while.
@@ -201,7 +201,7 @@
 
 <br>
 
-## v1.3.1 (05/11/2021)
+## v1.3.1 (2021-11-05)
 **Improvement:**
  - Added chroma/noodle/mapping extensions/cinema, NPS, and date filter to the [Beatmap Online via Beatsaver] screen.
  - In [Beastsaber Playlists] screen, the contents of the playlist are now downloaded as is.
@@ -218,7 +218,7 @@
 
 <br>
 
-## v1.3.0 (20/10/2021)
+## v1.3.0 (2021-10-20)
 **Bug fixes:**
  - Fixed a bug that following error occurs when downloading songs.
     - "Couldn't download beatmap. [Error]: certificate has expired"
@@ -226,7 +226,7 @@
 
 <br>
 
-## v1.2.8 (19/09/2021)
+## v1.2.8 (2021-09-19)
 **Features:**
  - Added Ranked and FullSpread filter to the [Beatmap Online via beatsaver] screen.
  - Added a filter to extract songs that are not included in any playlist.
@@ -244,7 +244,7 @@
 
 <br>
 
-## v1.2.7 (08/09/2021)
+## v1.2.7 (2021-09-08)
 **Improvement:**
  - Improved loading speed for files under the CustomLevels directory.
 
@@ -257,7 +257,7 @@
 
 <br>
 
-## v1.2.6 (04/09/2021)
+## v1.2.6 (2021-09-04)
 **Features:**
  - Support the new beatsaver api.
  - Add [Copy BSR] button.
@@ -285,19 +285,19 @@
 
 <br>
 
-## v1.2.5 (27/04/2021)
+## v1.2.5 (2021-04-27)
 **Bug fixes:**
  - Fixed a problem that the songs delete from beatsaver.com are not displayed in [Saved Beatmaps] page even if they exist in the CustomLevels directory.
 
 <br>
 
-## v1.2.4 (30/12/2020)
+## v1.2.4 (2020-12-30)
 **Bug fixes:**
  - Do not remove the playlist thumbnail when adding songs. (#80, #82)
 
 This is the final version of beatlist, and the repo will be archived. See README.MD for more information.
 
-## v1.2.3 (18/12/2020)
+## v1.2.3 (2020-12-18)
 **Features:**
  - Handling rate limit (#77)
  - Added a mirror of beatsaver, BeatSaberPlus, available in options (#79)
@@ -308,7 +308,7 @@ This is the final version of beatlist, and the repo will be archived. See README
 **Bug fixes**:
  - Download should now work again (#78)
 
-## v1.2.2 (02/09/2020)
+## v1.2.2 (2020-09-02)
 **Improvement:**
  - Added a way to display in which playlist(s) a beatmap is the table (#40, #65)
  - Some rephrasing & installation path detection change (#59)
@@ -320,7 +320,7 @@ This is the final version of beatlist, and the repo will be archived. See README
  
 Many thanks to @SWinxy and @SpellcheckerExtraordinaire for their contributions in this release
  
-## v1.2.1 (10/06/2020)
+## v1.2.1 (2020-06-10)
 **Improvement:**
  - Colorblind mode (difficulties badges can now have a letter or be grey-scaled)
  - All pages are now "keep-alive", so you won't lose your search and filter if you change page.
@@ -328,7 +328,7 @@ Many thanks to @SWinxy and @SpellcheckerExtraordinaire for their contributions i
  - Adjust naming convention to match ModAssistant and BeatSaverDownloader (#39)
  - The song preview will now be stopped if you change page
  
-## v1.2.0 (18/05/2020)
+## v1.2.0 (2020-05-18)
 **Features:**
  - Rework of the whole UI, it now uses table and overall the app is denser.
  - Along with tables, you can now do bulk action such as download all beatmaps from a playlist.
@@ -352,17 +352,17 @@ Many thanks to @SWinxy and @SpellcheckerExtraordinaire for their contributions i
  
 Any kind of feedback is welcome, don't hesitate to DM me on discord. And yes, 2-4 weeks prediction from the previous release note was a failure oof.
 
-## v1.1.4 (05/01/2020)
+## v1.1.4 (2020-01-05)
 **Quick change:**
  - Changed the way beatlist download beatmap on the background to help the beatsaver server.
 
 A quite huge update should come soon (I hope I can do it within 2-4 weeks) with a lot of fixes and improvements. :)
 
-## v1.1.3 (02/12/2019)
+## v1.1.3 (2019-12-02)
 **Bug fixes:**
  - Fixed the search bar for online beatmap. Oops.
 
-## v1.1.2 (24/11/2019)
+## v1.1.2 (2019-11-24)
 **Features:**
  - Discord Rich Presence added
  - Now support the OneClick button on beatsaver.com
@@ -376,7 +376,7 @@ A quite huge update should come soon (I hope I can do it within 2-4 weeks) with 
  - Not all song were shown on the playlist editor on the song browser
  - Fixed the clear button on the search bar. It now really clear the input.
 
-## v1.1.1 (16/11/2019)
+## v1.1.1 (2019-11-16)
 **Improvements:**
  - Added an button to preview beatmap (external website)
  - Skeleton loader for online playlist page
@@ -389,7 +389,7 @@ A quite huge update should come soon (I hope I can do it within 2-4 weeks) with 
  - Fixed various bug in playlists
  - Song are now scanned automatically when you launch the app
 
-## v1.1.0 (06/10/2019)
+## v1.1.0 (2019-10-06)
 **Features:**
  - Online beatmap download (beatsaver.com)
  - Online playlist download (bsaber.com)
@@ -417,7 +417,7 @@ A quite huge update should come soon (I hope I can do it within 2-4 weeks) with 
  
 <a href="https://www.notion.so/Beatlist-V1-1-848d401722464698a106011a03d359be" target="_blank">See more (include screenshots)</a>
 
-## v1.0.3 (05/07/2019)
+## v1.0.3 (2019-07-05)
 
 **Features:**
  - Playlist list/grid are now clickable
@@ -425,17 +425,17 @@ A quite huge update should come soon (I hope I can do it within 2-4 weeks) with 
 **Fixes:**
  - (#-) Some songs were not displayed in the playlist
 
-## v1.0.2 (03/07/2019)
+## v1.0.2 (2019-07-03)
 
 **Fixes:**
  - (#2) Songs scan: directories path are case sensitive
 
-## v1.0.1 (01/07/2019)
+## v1.0.1 (2019-07-01)
 
 **Fixes:**
  - (#1) Title is not saved when editing a playlist
 
-## v1.0.0 (30/06/2019)
+## v1.0.0 (2019-06-30)
 
 Release of beatlist
 
@@ -448,6 +448,6 @@ Release of beatlist
  - UI preference in settings
  - FAQ and Home page
 
-## v0.1.0 (18/06/2019)
+## v0.1.0 (2019-06-18)
 
 Beginning of the project :)

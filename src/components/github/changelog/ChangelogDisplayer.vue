@@ -13,7 +13,7 @@
           <span class="text-caption">
             You can always check the
             <a
-              href="https://github.com/ranmd9a/beatlist"
+              href="https://github.com/ibillingsley/beatlist"
               target="_blank"
               class="warning--text"
               rel="noopener noreferrer"
