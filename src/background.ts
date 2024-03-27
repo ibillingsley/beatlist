@@ -2,6 +2,7 @@ import { app, protocol, BrowserWindow, shell } from "electron";
 import * as remoteMain from "@electron/remote/main";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
+import contextMenu from "electron-context-menu";
 import path from "path";
 import registerIpc from "@/libraries/ipc";
 import BeatsaverLinkOpener from "@/libraries/ipc/BeatsaverLinkOpener";
@@ -145,3 +146,11 @@ class Background {
 }
 
 new Background().Initiate();
+
+contextMenu({
+  showLearnSpelling: false,
+  showLookUpSelection: false,
+  showSearchWithGoogle: false,
+  showSelectAll: false,
+  showCopyLink: false,
+});
