@@ -23,6 +23,10 @@ const router = new VueRouter({
   routes: [
     {
       path: "/",
+      redirect: { name: route.BEATMAPS },
+    },
+    {
+      path: "/home",
       name: route.HOME,
       component: Home,
     },
