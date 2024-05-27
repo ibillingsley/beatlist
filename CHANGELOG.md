@@ -1,15 +1,3 @@
-# ATTENTION
- - (2022-07-29) When updating from an older version to v1.4.0, some songs may not be displayed.  
-   If you have updated to v1.4.0, please update to v1.4.1.  
-  - This does not occur with new installations of v1.4.0.
-
-<br>
-
- - (2022-04-02) Due to beatsaver.com's April Fool's Day, some songs may not be displayed.  
-   If this is the case, please update to v1.3.8 or later or try [CLEAR CACHE] & [UPDATE LIBRARY] from the [Settings] screen.
-
-<br>
-
 # Changelog
 
 ## v1.5.0-beta  (2024-05-27)
@@ -29,16 +17,12 @@
  - Fixed freezing on startup.
  - Fixed beatmap information page for maps with no with no BeatSaver data.
 
-<br>
-
 ## v1.4.1 (2022-07-29)
 **Bug fixes:**
  - Added a process to correct a bug when upgrading to v1.4.0.
    - When updating, the Playlist will be rescanned. Please wait until it finishes.
    - The display of the maps/playlists in BeatSaber is not affected.
    - This does not occur with new installations of v1.4.0.
-
-<br>
 
 ## v1.4.0 (2022-07-23)
 **ATTENTION:**
@@ -68,8 +52,6 @@
 **Others:**
  - The preloaded cache data has been updated to that of late July 2022 (approximately 64,000 items).
 
-<br>
-
 ## v1.3.8 (2022-04-08)
 **ATTENTION:**
  - When updating from v1.3.7 or earlier, the download date of map will be read at the first startup.  
@@ -97,8 +79,6 @@
  - Changed [Copy BSR] icon to twitch icon.
  - The preloaded cache data has been updated to that of late March 2022 (approximately 59,000 items).
 
-<br>
-
 ## v1.3.7 (2022-02-12)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
@@ -114,8 +94,6 @@
 
 **Bug fixes:**
  - Other minor fixes.
-
-<br>
 
 ## v1.3.6 (2022-01-26)
 **ATTENTION:**
@@ -145,8 +123,6 @@
  - Changed the download process to use the fetch API for development purposes.
  - Removed libraries that are no longer needed.
 
-<br>
-
 ## v1.3.5 (2021-12-18)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
@@ -154,8 +130,6 @@
 
 **Bug fixes:**
  - Fixed to re-fetch the latest download URL before downloading the map.
-
-<br>
 
 ## v1.3.4 (2021-12-12)
 **ATTENTION:**
@@ -165,8 +139,6 @@
 **Bug fixes:**
  - Fixed a bug that sometimes it was not possible to sort by song title or delete a song without pressing the delete button twice. (#2)
    - This bug may occur when the same song exists under Custom Levels.
-
-<br>
 
 ## v1.3.3 (2021-12-06)
 **ATTENTION:**
@@ -185,8 +157,6 @@
 **Others:**
  - The default indent for saving a playlist in the [Settings] screen has been changed from `None` to `Space (2)`.
 
-<br>
-
 ## v1.3.2 (2021-11-23)
 **ATTENTION:**
  - If you are updating from a version earlier than v1.3.2, the playlist cache will be recreated on the first launch.  
@@ -199,8 +169,6 @@
  - Added indentation settings for saving playlists in the [Settings] screen.
    - If you are not going to edit the playlist directly with a text editor, don't worry about it.
  - Deleting playlists and maps now moves them to the recycle bin.
-
-<br>
 
 ## v1.3.1 (2021-11-05)
 **Improvement:**
@@ -217,15 +185,11 @@
 **Others:**
  - Updated the cache data to be loaded in advance to early November 2021 (about 52,000 items).
 
-<br>
-
 ## v1.3.0 (2021-10-20)
 **Bug fixes:**
  - Fixed a bug that following error occurs when downloading songs.
     - "Couldn't download beatmap. [Error]: certificate has expired"
  - Fixed a bug that the preview screen of the cover image in the [Saved Beatmaps] screen and each playlist editing screen could not be closed when the cover image of the playlist was huge.
-
-<br>
 
 ## v1.2.8 (2021-09-19)
 **Features:**
@@ -243,8 +207,6 @@
 **Others:**
  - Updated the cache data to be loaded in advance to mid-September 2021 (about 50,000 items).
 
-<br>
-
 ## v1.2.7 (2021-09-08)
 **Improvement:**
  - Improved loading speed for files under the CustomLevels directory.
@@ -255,8 +217,6 @@
  - Fixed a bug in the playlist edit screen that the first selected cover image, title, etc. is still displayed even if another playlist is selected.
  - Fixed a bug where editing a newly downloaded playlist from Beastsaber would not be reflected on the screen.
  - etc.
-
-<br>
 
 ## v1.2.6 (2021-09-04)
 **Features:**
@@ -284,13 +244,9 @@
  - Batch downloads in the My Playlists screen are being disabled.
  - Added [Refresh the Data] button to the [Saved Beatmaps] screen.
 
-<br>
-
 ## v1.2.5 (2021-04-27)
 **Bug fixes:**
  - Fixed a problem that the songs delete from beatsaver.com are not displayed in [Saved Beatmaps] page even if they exist in the CustomLevels directory.
-
-<br>
 
 ## v1.2.4 (2020-12-30)
 **Bug fixes:**

@@ -60,30 +60,31 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-#markdown:first-child {
-  margin-top: 0px !important;
-}
-
-#markdown :deep(h1),
-#markdown :deep(h2),
-#markdown :deep(h3),
-#markdown :deep(h4),
-#markdown :deep(h5),
-#markdown :deep(h6) {
+#markdown ::v-deep h1,
+#markdown ::v-deep h1 + h2,
+#markdown ::v-deep h2,
+#markdown ::v-deep h3,
+#markdown ::v-deep h4,
+#markdown ::v-deep h5,
+#markdown ::v-deep h6 {
   margin-bottom: 15px;
   margin-top: 15px;
 }
 
-#markdown :deep(p),
-#markdown :deep(li) {
+#markdown ::v-deep h2 {
+  margin-top: 2em;
+}
+
+#markdown ::v-deep p,
+#markdown ::v-deep li {
   font-weight: 400;
 }
 
-#markdown :deep(ul) {
+#markdown ::v-deep ul {
   margin-bottom: 15px;
 }
 
-#markdown :deep(p) {
+#markdown ::v-deep p {
   margin-bottom: 5px;
 }
 </style>
