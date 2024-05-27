@@ -3,6 +3,7 @@ import * as remoteMain from "@electron/remote/main";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import contextMenu from "electron-context-menu";
+import windowStateKeeper from "electron-window-state";
 import path from "path";
 import registerIpc from "@/libraries/ipc";
 import BeatsaverLinkOpener from "@/libraries/ipc/BeatsaverLinkOpener";
@@ -30,9 +31,16 @@ class Background {
   }
 
   private async InitiateWindow(): Promise<void> {
+    const windowState = windowStateKeeper({
+      defaultWidth: 1280,
+      defaultHeight: 800,
+    });
+
     this.win = new BrowserWindow({
-      width: 1000,
-      height: 750,
+      x: windowState.x,
+      y: windowState.y,
+      width: windowState.width,
+      height: windowState.height,
       minWidth: 1000,
       minHeight: 750,
       frame: false,
@@ -44,6 +52,8 @@ class Background {
       icon: path.join(__dirname, "../public/icon_bold_64.png"),
       backgroundColor: "#303030",
     });
+
+    windowState.manage(this.win);
 
     this.win.webContents.setWindowOpenHandler((details) => {
       shell.openExternal(details.url);
