@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.5.0-beta  (2024-05-27)
+## v1.5.0-beta  (2024-06-29)
 **Improvement:**
  - <a href="https://github.com/AllPoland/ArcViewer" target="_blank">ArcViewer</a> replaces Rabbit's viewer for previews.
    - Supports V3 maps with arcs and chains.
@@ -15,6 +15,7 @@
 
 **Bug fixes:**
  - Fixed freezing on startup.
+ - Fixed sorting by uploaded date.
  - Fixed beatmap information page for maps with no with no BeatSaver data.
 
 ## v1.4.1 (2022-07-29)

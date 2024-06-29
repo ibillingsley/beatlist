@@ -52,8 +52,14 @@ function sortText(a: string, b: string): number {
 }
 
 function sortDateFromString(a: string, b: string): number {
-  if (!a || !b) {
-    return 0;
+  if (!a) {
+    if (!b) {
+      return 0;
+    }
+    return -1;
+  }
+  if (!b) {
+    return 1;
   }
 
   const dateA = new Date(a);
