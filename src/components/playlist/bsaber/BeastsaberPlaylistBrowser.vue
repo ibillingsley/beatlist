@@ -83,7 +83,9 @@ export default Vue.extend({
 
       switch (apiResponse.status) {
         case BeastsaberAPIResponseStatus.Success:
-          this.playlists = apiResponse.data;
+          this.playlists = (
+            apiResponse.data as unknown as { docs: BeastsaberPlaylist[] }
+          ).docs;
           break;
 
         case BeastsaberAPIResponseStatus.Failed:
@@ -100,7 +102,7 @@ export default Vue.extend({
       this.currentPlaylistBeast = playlist;
       this.loadingPlaylistLocal = true;
 
-      PlaylistFetcher.Fetch(playlist.playlistURL, this.progress)
+      PlaylistFetcher.Fetch(playlist.downloadURL, this.progress)
         .then((pl: PlaylistLocal) => {
           this.progress = undefined;
           this.currentPlaylistLocal = pl;
@@ -122,8 +124,7 @@ export default Vue.extend({
       return (
         PlaylistLibrary.GetAllValidPlaylists().find(
           (p: PlaylistLocal) =>
-            playlist.playlistTitle === p.title &&
-            playlist.playlistAuthor === p.author
+            playlist.name === p.title && playlist.owner.name === p.author
         ) !== undefined
       );
     },
@@ -133,7 +134,7 @@ export default Vue.extend({
         return;
       }
 
-      let filename = this.currentPlaylistBeast.playlistTitle
+      let filename = this.currentPlaylistBeast.name
         .replace(/[\s]/g, "-")
         .replace(/[^a-zA-Z0-9-]*/g, "");
       // PlaylistLocal 画面で編集した時のファイル名に合わせる
@@ -141,13 +142,13 @@ export default Vue.extend({
 
       this.loadingPlaylistInstall = true;
       PlaylistFetcher.Install(
-        this.currentPlaylistBeast.playlistURL,
+        this.currentPlaylistBeast.downloadURL,
         filename,
         PlaylistFormatType.Json
       )
         .then(() => {
           NotificationService.NotifyMessage(
-            `${this.currentPlaylistBeast?.playlistTitle} has been installed`,
+            `${this.currentPlaylistBeast?.name} has been installed`,
             "success",
             NOTIFICATION_ICON_SUCCESS,
             2500
@@ -156,7 +157,7 @@ export default Vue.extend({
         .catch((e: Error) => {
           this.errorPlaylist = e.message;
           NotificationService.NotifyMessage(
-            `${this.currentPlaylistBeast?.playlistTitle} installation failed`,
+            `${this.currentPlaylistBeast?.name} installation failed`,
             "warning",
             NOTIFICATION_ICON_FAILED,
             2500
