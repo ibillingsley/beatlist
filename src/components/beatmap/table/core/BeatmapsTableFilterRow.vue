@@ -1,3 +1,5 @@
+<!-- eslint-disable vue/no-mutating-props -->
+<!-- TODO 上記警告はいったん保留 -->
 <template>
   <tr>
     <td v-for="index in [...Array(shiftLeft)].map((_, i) => i)" :key="index" />

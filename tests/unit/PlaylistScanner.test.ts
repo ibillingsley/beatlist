@@ -34,11 +34,11 @@ describe("playlist scanner", () => {
     jest
       .spyOn(PlaylistLoader, "LoadRaw")
       .mockImplementation(async (pathStr: string) => {
-        const result = ({
+        const result = {
           songs: [], // songs に要素をもつと mock が増えるので空配列で代用
           path: pathStr,
           format: PlaylistFormatType.Json,
-        } as unknown) as PlaylistRaw;
+        } as unknown as PlaylistRaw;
         return result;
       });
 

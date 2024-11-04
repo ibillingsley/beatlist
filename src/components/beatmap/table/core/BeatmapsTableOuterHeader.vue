@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row style="margin-bottom: 0px">
     <v-col :sm="showRefreshButton ? 7 : 8" :cols="showRefreshButton ? 9 : 10">
       <BeatmapsTableColumnSelector
         :value="shownColumn"

@@ -2,7 +2,7 @@
   <div class="text-truncate" :style="`width: ${header.width}px`">
     <Tooltip :text="tooltipText">
       {{ item.data.metadata.songName }}
-      <span class="caption grey--text">
+      <span class="text-caption grey--text">
         {{ item.data.metadata.songSubName }}
       </span>
     </Tooltip>

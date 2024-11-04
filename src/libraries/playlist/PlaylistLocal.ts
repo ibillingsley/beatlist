@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { PlaylistLoadState } from "@/libraries/playlist/loader/PlaylistLoadState";
 import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import { BeatsaverKey } from "@/libraries/beatmap/repo/BeatsaverKeyType";

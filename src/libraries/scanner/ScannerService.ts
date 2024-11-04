@@ -56,13 +56,10 @@ export default class ScannerService {
 
   private static eventEmitter: events.EventEmitter = new events.EventEmitter();
 
-  private static locked: boolean = false;
+  private static locked = false;
 
-  private static operation:
-    | "beatmap"
-    | "playlist"
-    | "all"
-    | undefined = undefined;
+  private static operation: "beatmap" | "playlist" | "all" | undefined =
+    undefined;
 
   private static _beatmapProgress: Progress = new Progress();
 
@@ -92,15 +89,14 @@ export default class ScannerService {
       if (forceUpdate) {
         this.retryTargetItems = Array.from(
           BeatsaverCachedLibrary.GetAllInvalid().values()
-        ).filter((value) => {
-          return (
+        ).filter(
+          (value) =>
             value.loadState.attemptedSource.type === BeatsaverKeyType.Hash &&
             (value.loadState.errorType ===
               BeatsaverItemLoadError.BeatsaverRateLimited ||
               value.loadState.errorType ===
                 BeatsaverItemLoadError.BeatsaverServerNotAvailable)
-          );
-        });
+        );
         console.log(`updateInvalid target: ${this.retryTargetItems.length}`);
         for (const item of this.retryTargetItems) {
           console.log(
@@ -121,9 +117,7 @@ export default class ScannerService {
     );
   }
 
-  public static async ScanBeatmaps(
-    forceUpdate: boolean = false
-  ): Promise<void> {
+  public static async ScanBeatmaps(forceUpdate = false): Promise<void> {
     if (this.locked) return undefined;
 
     this.scanningBeatmap = true;
@@ -145,20 +139,19 @@ export default class ScannerService {
       return Promise.resolve();
     } catch (error) {
       // TODO エラー処理
+      // なんで TODO 書いたか忘れた。変更履歴調査すべし。
       console.log(error);
       this.locked = false;
       this.scanningBeatmap = false;
       const errorResult = new BeatmapScannerResult();
-      errorResult.errorMessage = error?.message ?? error;
+      errorResult.errorMessage = (error as any)?.message ?? error;
       this.eventEmitter.emit(ON_BEATMAP_SCAN_COMPLETED, errorResult);
       this.checkForEndOperation("beatmap");
       return Promise.resolve();
     }
   }
 
-  public static async ScanPlaylists(
-    forceUpdate: boolean = false
-  ): Promise<void> {
+  public static async ScanPlaylists(forceUpdate = false): Promise<void> {
     if (this.locked) return undefined;
 
     this.scanningPlaylist = true;
@@ -183,7 +176,7 @@ export default class ScannerService {
       this.locked = false;
       this.scanningPlaylist = false;
       const errorResult = new PlaylistScannerResult();
-      errorResult.errorMessage = error?.message ?? error;
+      errorResult.errorMessage = (error as any)?.message ?? error;
       this.eventEmitter.emit(ON_PLAYLIST_SCAN_COMPLETED, errorResult);
       return Promise.resolve();
     }
@@ -210,7 +203,7 @@ export default class ScannerService {
     }
   }
 
-  public static requestDialogToBeOpened(withPreparation: boolean = false) {
+  public static requestDialogToBeOpened(withPreparation = false) {
     this.eventEmitter.emit(ON_REQUEST_DIALOG_OPEN, withPreparation);
   }
 

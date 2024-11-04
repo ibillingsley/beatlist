@@ -7,9 +7,6 @@ export enum DownloadOperationType {
   Playlist = "Playlist",
 }
 
-export type DownloadOperation = DownloadOperationBase &
-  DownloadOperationTypeBeatmap;
-
 export interface DownloadOperationBase {
   type: DownloadOperationType;
   Start(): Promise<void>;
@@ -23,3 +20,6 @@ export interface DownloadOperationTypeBeatmap {
   progress: DownloadUnitProgress;
   beatmap: BeatsaverBeatmap;
 }
+
+export type DownloadOperation = DownloadOperationBase &
+  DownloadOperationTypeBeatmap;

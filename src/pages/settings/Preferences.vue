@@ -1,11 +1,7 @@
 <template>
   <v-container fluid>
-    <p class="display-1">
-      Preferences
-    </p>
-    <p class="title">
-      Application
-    </p>
+    <p class="text-h4">Preferences</p>
+    <p class="text-h6">Application</p>
     <v-switch
       v-model="darkTheme"
       color="accent"
@@ -20,9 +16,7 @@
       dense
       inset
     />
-    <p class="title pt-5">
-      Playlists
-    </p>
+    <p class="text-h6 pt-5">Playlists</p>
     <v-select
       v-model="defaultExportFormat"
       color="accent"
@@ -50,19 +44,19 @@
       dense
       inset
     >
-      <template v-slot:label>
+      <template #label>
         <div>
           <div>Disable playlist folder management</div>
           <div
             v-if="disablePlaylistFolderManagement"
-            class="warning--text caption"
+            class="warning--text text-caption"
           >
             Be aware that the playlists in the subfolders will not be displayed.
           </div>
         </div>
       </template>
     </v-switch>
-    <p class="title pt-5">Beatsaver</p>
+    <p class="text-h6 pt-5">Beatsaver</p>
     <v-select
       v-model="beatsaverServerUrl"
       :items="beatsaverUrlList"
@@ -74,13 +68,11 @@
       inset
       @change="updateServerUrl"
     />
-    <p v-if="isBeatSaverPlus()" class="warning--text caption">
+    <p v-if="isBeatSaverPlus()" class="warning--text text-caption">
       Be aware that BeatSaberPlus is an unofficial mirror of Beatsaver.
     </p>
     <OneClickSettings />
-    <p class="title pt-5">
-      Accessibility
-    </p>
+    <p class="text-h6 pt-5">Accessibility</p>
     <v-switch
       v-model="showLetterInDifficulty"
       color="accent"

@@ -31,38 +31,6 @@ export const FILE_NOT_FOUND: Error = new Error("File not found");
 export const INVALID_JSON: Error = new Error("Invalid JSON");
 
 export default class JsonDeserializer extends PlaylistDeserializer {
-  /*
-  public async deserialize(progress?: Progress): Promise<PlaylistBase> {
-    if (!(await fs.pathExists(this.filepath))) {
-      throw FILE_NOT_FOUND;
-    }
-
-    const rawJson = await fs.readFile(this.filepath);
-
-    try {
-      const json = JSON.parse(rawJson.toString());
-      JsonDeserializer.validateJson(json);
-
-      return {
-        title: json.playlistTitle,
-        author: json.playlistAuthor ?? "",
-        description: json.playlistDescription ?? "",
-        cover: Buffer.from(
-          Base64SrcLoader.GetRawSrc(json.image ?? ""),
-          "base64"
-        ),
-        // convertToHash の中で beatsaver api を呼び出している
-        maps: await JsonDeserializer.convertToHash(
-          json.songs ?? [],
-          progress ?? new Progress()
-        ),
-      } as PlaylistBase;
-    } catch (e) {
-      throw INVALID_JSON;
-    }
-  }
-  */
-
   public static async readJson(filepath: string) {
     const rawJson = await fs.readFile(filepath);
 
@@ -260,75 +228,12 @@ export default class JsonDeserializer extends PlaylistDeserializer {
 
     // 取得できなかったデータは除外
     return resultList.filter((item) => item != null);
-    /*
-    const resultList: PlaylistLocalMap[] = [];
-
-    // ダウンロード済の曲(CustomLevels 以下に存在する曲)はそれを返す
-    // 未ダウンロードの曲は newSongs に格納
-    const newSongs: {
-      hash: string | undefined;
-      key: string | undefined;
-    }[] = [];
-    for (const song of songs) {
-      if (song.hash != null) {
-        const beatmap = BeatmapLibrary.GetAllValidMap().find(
-          (value) => value.hash?.toUpperCase() === song.hash?.toUpperCase()
-        );
-        if (beatmap == null) {
-          newSongs.push(song);
-        } else {
-          resultList.push({
-            dateAdded: new Date(),
-            hash: beatmap.hash,
-            attemptedSource: {
-              type: BeatsaverKeyType.Hash,
-              value: song.hash,
-            },
-          } as PlaylistLocalMap);
-        }
-      }
-    }
-    // 未ダウンロードの曲をキャッシュあるいは beatsaver.com から取得
-    // ※本来 deserializer がやることじゃない
-    const notLocalMaps = await PlaylistDeserializeBeatsaverBeatmap.convert(
-      newSongs,
-      progress
-    );
-    const newPlaylistLocalMaps = notLocalMaps
-      .filter((item): item is BeatsaverItem => item !== undefined)
-      .map(
-        (item: BeatsaverItem) =>
-          ({
-            dateAdded: new Date(),
-            hash: item?.beatmap?.hash
-              ? item?.beatmap?.hash
-              : (item as any).originalHash,
-            attemptedSource: item.loadState.attemptedSource,
-            ...this.getErrorFor(item),
-          } as PlaylistLocalMap)
-      );
-    // 取得できたものをダウンロード済みの曲とマージして返却
-    return resultList.concat(newPlaylistLocalMaps);
-    */
-
-    // return (await PlaylistDeserializeBeatsaverBeatmap.convert(songs, progress))
-    //   .filter((item): item is BeatsaverItem => item !== undefined)
-    //   .map(
-    //     (item: BeatsaverItem) =>
-    //       ({
-    //         dateAdded: new Date(),
-    //         hash: item?.beatmap?.hash
-    //           ? item?.beatmap?.hash
-    //           : (item as any).originalHash,
-    //         attemptedSource: item.loadState.attemptedSource,
-    //         ...this.getErrorFor(item),
-    //       } as PlaylistLocalMap)
-    //   );
   }
 
-  private static getErrorFor(
-    item: BeatsaverItem
-  ): { error?: PlaylistMapImportError; errorInfo?: string } {
+  private static getErrorFor(item: BeatsaverItem): {
+    error?: PlaylistMapImportError;
+    errorInfo?: string;
+  } {
     if (item.loadState.valid) {
       return { error: undefined, errorInfo: undefined };
     }

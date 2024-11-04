@@ -7,7 +7,7 @@
       dense
       align-content="center"
     >
-      <v-col align-self="center" style="padding-top: 6px;">
+      <v-col align-self="center" style="padding-top: 6px">
         <v-btn
           icon
           small
@@ -29,11 +29,11 @@
           <v-icon>filter_list</v-icon>
         </v-btn>
       </v-col>
-      <v-col align-self="center" style="padding-top: 6px;">
+      <v-col align-self="center" style="padding-top: 6px">
         {{ filterText }}
       </v-col>
     </v-row>
-    <template v-slot:input>
+    <template #input>
       <v-switch
         v-model="rankFilter"
         color="accent"

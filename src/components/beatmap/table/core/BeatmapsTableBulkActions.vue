@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 52px;">
+  <div style="height: 52px">
     <v-slide-x-transition>
       <v-container v-if="selectedCount > 0" class="d-flex align-center ml-n4">
         <v-btn
@@ -80,7 +80,7 @@ export default Vue.extend({
     // for BeatmapsTable
     selected: { type: Array as PropType<BeatsaverBeatmap[]>, required: true },
     // for BeatmapsTableInPlaylist
-    selectedIndex: { type: Array as PropType<Number[]>, default: undefined },
+    selectedIndex: { type: Array as PropType<number[]>, default: undefined },
     playlist: {
       type: Object as PropType<PlaylistLocal | undefined>,
       default: undefined,
@@ -136,17 +136,16 @@ export default Vue.extend({
         }
         return result;
       }
-      return this.selected.filter((beatmap: BeatsaverBeatmap) => {
-        /*
+      return this.selected.filter(
+        (beatmap: BeatsaverBeatmap) =>
+          /*
         return (
           !BeatmapLibrary.HasBeatmap(beatmap) &&
           !DownloadLibrary.HasBeatmapScheduled(beatmap)
         ); */
-        return (
           !downloadedHashSet.has(beatmap.hash.toUpperCase()) &&
           !DownloadLibrary.HasBeatmapScheduled(beatmap)
-        );
-      });
+      );
     },
   },
   methods: {

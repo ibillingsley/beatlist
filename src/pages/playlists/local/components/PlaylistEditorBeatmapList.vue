@@ -1,8 +1,6 @@
 <template>
   <div>
-    <p class="headline">
-      Content
-    </p>
+    <p class="text-h5">Content</p>
     <BeatmapsTableOuterHeader
       :shown-column.sync="shownColumn"
       :search.sync="search"

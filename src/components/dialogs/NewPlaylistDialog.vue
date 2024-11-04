@@ -2,9 +2,7 @@
   <div class="text-center">
     <v-dialog v-model="isOpen" width="500">
       <v-card>
-        <v-card-title>
-          Input playlist title
-        </v-card-title>
+        <v-card-title> Input playlist title </v-card-title>
 
         <v-text-field
           ref="title"
@@ -21,9 +19,7 @@
         <v-card-text>FileName: {{ filename }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="secondary" text @click="closeDialog()">
-            CANCEL
-          </v-btn>
+          <v-btn color="secondary" text @click="closeDialog()"> CANCEL </v-btn>
           <v-btn
             color="primary"
             text

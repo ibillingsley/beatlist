@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <p class="display-1">
-      Installation path
-    </p>
+    <p class="text-h4">Installation path</p>
     <v-form v-model="installationPathValid">
       <v-text-field
         v-model="installationPath"
@@ -23,9 +21,7 @@
         :loading="resolveBtnLoading"
         @click="detectPath()"
       >
-        <v-icon class="pr-3">
-          fa-magic
-        </v-icon>
+        <v-icon class="pr-3"> fa-magic </v-icon>
         Detect installation path
       </v-btn>
     </v-form>

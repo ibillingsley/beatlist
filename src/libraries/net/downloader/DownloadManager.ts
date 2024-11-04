@@ -11,7 +11,7 @@ const PENDING_DURATION = 5 * 1000; // milliseconds
 export default class DownloadManager {
   private static EventEmitter = new events.EventEmitter();
 
-  private static pendingFlag: boolean = false;
+  private static pendingFlag = false;
 
   private static pendingStart: Date | undefined;
 

@@ -3,7 +3,7 @@
     <v-btn icon small :color="textFieldValue === '' ? '' : 'success'">
       <v-icon>filter_list</v-icon>
     </v-btn>
-    <template v-slot:input>
+    <template #input>
       <v-text-field
         v-model="textFieldValue"
         :placeholder="header.text"

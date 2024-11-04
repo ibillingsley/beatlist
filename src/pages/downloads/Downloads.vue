@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <p class="display-2">
-      Downloads
-    </p>
+    <p class="text-h3">Downloads</p>
 
     <v-card>
       <v-card-text>
@@ -49,6 +47,10 @@ import Tooltip from "@/components/helper/Tooltip.vue";
 export default Vue.extend({
   name: "Downloads",
   components: { Tooltip, DownloadsListGroup },
+  beforeRouteEnter(to, from, next) {
+    DiscordRichPresence.UpdateStatus("Checking their downloads");
+    next();
+  },
   data: () => ({
     queued: [] as DownloadOperation[],
     ongoing: [] as DownloadOperation[],
@@ -57,10 +59,6 @@ export default Vue.extend({
   mounted(): void {
     DownloadManager.OnQueueUpdated(this.updateDownloadData);
     this.updateDownloadData();
-  },
-  beforeRouteEnter(to, from, next) {
-    DiscordRichPresence.UpdateStatus("Checking their downloads");
-    next();
   },
   beforeDestroy(): void {
     DownloadManager.RemoveOnQueueUpdatedListener(this.updateDownloadData);

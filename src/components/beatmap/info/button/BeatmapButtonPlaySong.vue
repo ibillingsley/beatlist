@@ -2,12 +2,8 @@
   <div class="d-flex align-center">
     <Tooltip :text="audioTooltip()">
       <v-btn icon :loading="loading" @click="togglePlay()">
-        <v-icon v-if="playing">
-          pause_circle_outline
-        </v-icon>
-        <v-icon v-else>
-          play_circle_outline
-        </v-icon>
+        <v-icon v-if="playing"> pause_circle_outline </v-icon>
+        <v-icon v-else> play_circle_outline </v-icon>
       </v-btn>
     </Tooltip>
     <v-expand-x-transition mode="out-in">

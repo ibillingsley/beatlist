@@ -1,23 +1,15 @@
 <template>
   <v-dialog v-model="isOpen" max-width="80%" @click:outside="closeDialog">
     <v-card>
-      <v-card-title>
-        Invalid Playlists
-      </v-card-title>
+      <v-card-title> Invalid Playlists </v-card-title>
       <v-card-text>
         <v-simple-table dense fixed-header>
-          <template v-slot:default>
+          <template #default>
             <thead>
               <tr>
-                <th class="text-left">
-                  Folder
-                </th>
-                <th class="text-left">
-                  Reason
-                </th>
-                <th class="text-left">
-                  More info
-                </th>
+                <th class="text-left">Folder</th>
+                <th class="text-left">Reason</th>
+                <th class="text-left">More info</th>
               </tr>
             </thead>
             <tbody>
@@ -36,9 +28,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="closeDialog">
-          Ok
-        </v-btn>
+        <v-btn text @click="closeDialog"> Ok </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <p class="display-2">
-      Beastsaber Playlists
-    </p>
+    <p class="text-h3">Beastsaber Playlists</p>
 
     <BeastsaberPlaylistBrowser />
   </v-container>

@@ -2,9 +2,7 @@
   <div>
     <Tooltip text="Remove this playlist">
       <v-btn icon @click.stop="dialog = true">
-        <v-icon color="error">
-          delete_forever
-        </v-icon>
+        <v-icon color="error"> delete_forever </v-icon>
       </v-btn>
     </Tooltip>
     <ConfirmDialog

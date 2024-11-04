@@ -234,7 +234,7 @@ export default class PlaylistMapsLibrary {
 
   public static GetMapHashesByIndex(
     playlist: PlaylistLocal,
-    indexes: Number[]
+    indexes: number[]
   ) {
     if (playlist != null && indexes != null) {
       const hashSet = new Set<string>();

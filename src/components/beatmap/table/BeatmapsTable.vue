@@ -29,7 +29,7 @@
 
     <template
       v-for="header in getHeaders()"
-      v-slot:[headerToSlotName(header)]="{ item }"
+      #[headerToSlotName(header)]="{ item }"
     >
       <component
         :is="`BeatmapsTableTemplate${header.template}`"
@@ -71,7 +71,7 @@
       </span>
     </template>
 
-    <template v-if="!noFilter" v-slot:[`body.append`]>
+    <template v-if="!noFilter" #[`body.append`]>
       <BeatmapsTableFilterRow
         :headers="getHeaders()"
         :filters-value="filtersValue"
@@ -83,7 +83,7 @@
       <v-progress-linear color="success" indeterminate />
     </template>
 
-    <template v-slot:[`header.data-table-select`]>
+    <template #[`header.data-table-select`]>
       <v-simple-checkbox
         :value="selected.length > 0"
         :indeterminate="
@@ -93,10 +93,10 @@
       />
     </template>
 
-    <template v-slot:[`item.data-table-select`]="{ item }">
+    <template #[`item.data-table-select`]="{ item }">
       <v-simple-checkbox
         :value="selected.includes(item.raw.data)"
-        @input="((value) => selectThisItem(item.raw.data, value))"
+        @input="(value) => selectThisItem(item.raw.data, value)"
       />
     </template>
   </v-data-table>
@@ -596,9 +596,8 @@ export default Vue.extend({
         }
         // playlist に含まれない曲を抽出
         tableData = tableData.filter(
-          (entry: { raw: BeatmapsTableDataUnit }) => {
-            return !hashSet.has(entry.raw.data.hash?.toUpperCase());
-          }
+          (entry: { raw: BeatmapsTableDataUnit }) =>
+            !hashSet.has(entry.raw.data.hash?.toUpperCase())
         );
       }
 

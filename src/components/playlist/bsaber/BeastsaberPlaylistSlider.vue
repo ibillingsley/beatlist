@@ -7,8 +7,8 @@
   >
     <v-slide-item
       v-for="pl in playlists"
-      :key="pl.playlistURL"
-      v-slot:default="{ active, toggle }"
+      :key="pl.downloadURL"
+      v-slot="{ active, toggle }"
       :disabled="loading"
     >
       <v-skeleton-loader
@@ -27,7 +27,7 @@
             }
           "
         >
-          <v-img :src="pl.image" width="175" height="175">
+          <v-img :src="pl.playlistImage" width="175" height="175">
             <v-overlay absolute :value="active" :opacity="0.7">
               <v-row class="fill-height" align="center" justify="center">
                 <v-scale-transition>

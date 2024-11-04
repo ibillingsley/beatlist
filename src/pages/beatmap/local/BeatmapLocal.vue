@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <p class="display-2">
-      Saved Beatmaps
-    </p>
+    <p class="text-h3">Saved Beatmaps</p>
     <BeatmapsTableLocal />
   </v-container>
 </template>

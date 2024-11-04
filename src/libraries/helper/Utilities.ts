@@ -1,10 +1,11 @@
-import fs from "fs-extra";
+import fs from "fs";
 
 function byIndex(obj: any, index: string): any {
   return index.split(".").reduce((o, i) => o[i], obj);
 }
 
 const sleep = (msec: number) =>
+  // eslint-disable-next-line no-promise-executor-return
   new Promise((resolve) => setTimeout(resolve, msec));
 
 function silentClose(stream: fs.WriteStream): void {
@@ -57,4 +58,25 @@ function convertTimeHHMMSS(val: number | undefined): string {
   }
 }
 
-export default { byIndex, sleep, silentClose, isDateEquals, convertTimeHHMMSS };
+function unknownToError(error: unknown) {
+  if (error instanceof Error) {
+    return error;
+  }
+  let msg: string;
+  if (typeof error === "string") {
+    msg = error;
+  } else {
+    msg =
+      (error as any).toString != null ? (error as any).toString() : `${error}`;
+  }
+  return new Error(msg);
+}
+
+export default {
+  byIndex,
+  sleep,
+  silentClose,
+  isDateEquals,
+  convertTimeHHMMSS,
+  unknownToError,
+};

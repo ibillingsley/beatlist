@@ -12,10 +12,10 @@
     :class="fillBackground ? 'app' : ''"
     @update:active="activeChanged"
   >
-    <template v-slot:label="{ item, active, open }">
+    <template #label="{ item, active, open }">
       <Tooltip :text="item.name">
         <div
-          style="width: 100%; margin: -5px; padding: 5px;"
+          style="width: 100%; margin: -5px; padding: 5px"
           @click="
             active && preventClickOnActiveNode ? $event.stopPropagation() : null
           "

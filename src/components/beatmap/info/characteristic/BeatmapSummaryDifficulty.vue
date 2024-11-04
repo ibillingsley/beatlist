@@ -6,36 +6,28 @@
         class="align-first-column-left"
       >
         <tr>
-          <td class="body-2 pr-2">
-            Duration
-          </td>
-          <td class="body-1 pl-2">
-            <Tooltip :text="difficulty.duration.toString()" right>
-              {{ difficulty.duration.toFixed(2) }}
-            </Tooltip>
+          <td class="text-body-2 pr-2">Duration</td>
+          <td class="text-body-1 pl-2">
+            <!-- <Tooltip :text="difficulty.duration.toString()" right> -->
+            {{ difficulty.duration.toFixed(2) }}
+            <!-- </Tooltip> -->
           </td>
         </tr>
         <tr>
-          <td class="body-2 pr-2">
-            length
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">length</td>
+          <td class="text-body-1 pl-2">
             {{ difficulty.length }}
           </td>
         </tr>
         <tr>
-          <td class="body-2 pr-2">
-            Bombs
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">Bombs</td>
+          <td class="text-body-1 pl-2">
             {{ difficulty.bombs }}
           </td>
         </tr>
         <tr>
-          <td class="body-2 pr-2">
-            Notes
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">Notes</td>
+          <td class="text-body-1 pl-2">
             {{ difficulty.notes }}
           </td>
         </tr>
@@ -47,34 +39,26 @@
         class="align-first-column-left"
       >
         <tr>
-          <td class="body-2 pr-2">
-            Obstacles
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">Obstacles</td>
+          <td class="text-body-1 pl-2">
             {{ difficulty.obstacles }}
           </td>
         </tr>
         <tr>
-          <td class="body-2 pr-2">
-            njs
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">njs</td>
+          <td class="text-body-1 pl-2">
             {{ difficulty.njs }}
           </td>
         </tr>
         <tr>
-          <td class="body-2 pr-2">
-            njs offset
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">njs offset</td>
+          <td class="text-body-1 pl-2">
             {{ difficulty.njsOffset }}
           </td>
         </tr>
         <tr>
-          <td class="body-2 pr-2">
-            nps
-          </td>
-          <td class="body-1 pl-2">
+          <td class="text-body-2 pr-2">nps</td>
+          <td class="text-body-1 pl-2">
             {{
               difficulty.nps != null
                 ? Math.floor(difficulty.nps * 100) / 100
@@ -90,16 +74,12 @@
         class="align-first-column-left"
       >
         <tr v-for="req in reqs" :key="req.key">
-          <td class="body-2 pr-2">
+          <td class="text-body-2 pr-2">
             {{ req.name }}
           </td>
-          <td class="body-1 pl-2">
-            <v-icon v-if="req.enabled" small>
-              check_circle
-            </v-icon>
-            <v-icon v-else small>
-              radio_button_unchecked
-            </v-icon>
+          <td class="text-body-1 pl-2">
+            <v-icon v-if="req.enabled" small> check_circle </v-icon>
+            <v-icon v-else small> radio_button_unchecked </v-icon>
           </td>
         </tr>
       </table>

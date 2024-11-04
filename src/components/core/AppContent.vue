@@ -1,12 +1,12 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container v-if="isReady" fluid>
       <v-row>
         <transition name="slide-x-transition" mode="out-in">
           <!-- <keep-alive
             exclude="BeatmapOnlineUnit,BeatmapLocalUnit,Settings,*Dialog"
           > -->
-          <router-view style="z-index: 1;" />
+          <router-view style="z-index: 1" />
           <!-- </keep-alive> -->
         </transition>
       </v-row>
@@ -14,12 +14,12 @@
     <LoadingPage v-else>
       <span class="pt-3 grey--text">Loading content ...</span>
       <transition name="slide-x-transition">
-        <span v-if="twoSecond" class="pt warning--text caption">
+        <span v-if="twoSecond" class="pt warning--text text-caption">
           If you're reading this message, there's probably a problem
         </span>
       </transition>
     </LoadingPage>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">

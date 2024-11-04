@@ -1,7 +1,7 @@
 import events from "events";
 
-export const ON_PLUS_ONE: string = "plusOne";
-export const ON_TOTAL_CHANGE: string = "totalChange";
+export const ON_PLUS_ONE = "plusOne";
+export const ON_TOTAL_CHANGE = "totalChange";
 
 export interface ProgressInterface {
   get(): { done: number; total: number };
@@ -9,9 +9,9 @@ export interface ProgressInterface {
 }
 
 export default class Progress implements ProgressInterface {
-  private _done: number = 0;
+  private _done = 0;
 
-  private _total: number = 0;
+  private _total = 0;
 
   private _eventEmitter: events.EventEmitter = new events.EventEmitter();
 

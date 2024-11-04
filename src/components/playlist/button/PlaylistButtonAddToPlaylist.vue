@@ -8,9 +8,7 @@
       icon
       @click="Add"
     >
-      <v-icon :small="small">
-        add
-      </v-icon>
+      <v-icon :small="small"> add </v-icon>
     </v-btn>
   </Tooltip>
 </template>

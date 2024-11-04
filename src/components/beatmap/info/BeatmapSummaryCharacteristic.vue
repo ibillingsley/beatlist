@@ -1,5 +1,5 @@
 <template>
-  <v-card flat style="min-height: 225px;">
+  <v-card flat style="min-height: 225px">
     <v-tabs v-model="tab" height="32" grow>
       <v-tab
         v-for="characteristic in beatmap.metadata.characteristics"
@@ -15,7 +15,7 @@
         :key="characteristic.name"
       >
         <BeatmapSummaryDifficultiesTabs
-          style="min-height: 200px;"
+          style="min-height: 200px"
           :characteristic="characteristic"
         />
       </v-tab-item>

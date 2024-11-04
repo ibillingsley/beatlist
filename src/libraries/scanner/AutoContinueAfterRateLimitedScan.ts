@@ -16,17 +16,17 @@ export default class AutoContinueAfterRateLimitedScan {
       // There's prolly entry that got rate-limited in the cache
       const hasRateLimitEntryCached = Array.from(
         BeatsaverCachedLibrary.GetAllInvalid().values()
-      ).find((entry) => {
-        return (
+      ).find(
+        (entry) =>
           entry.loadState.errorType ===
           BeatsaverItemLoadError.BeatsaverRateLimited
-        );
-      });
+      );
 
       if (hasRateLimitEntryCached) {
         // Ok so we got a rate limit entry after a scan, let's start
         // another scan automatically after the reset
-        const remainingSeconds = BeatsaverRateLimitManager.GetRemainingSeconds();
+        const remainingSeconds =
+          BeatsaverRateLimitManager.GetRemainingSeconds();
         setTimeout(() => {
           if (
             BeatmapLibrary.GetAllMaps().length === 0 &&

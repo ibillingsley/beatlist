@@ -2,9 +2,7 @@
   <span>
     <Tooltip text="Add/Remove from playlists">
       <v-btn icon :small="small" @click="dialog = true">
-        <v-icon :small="small">
-          playlist_add
-        </v-icon>
+        <v-icon :small="small"> playlist_add </v-icon>
       </v-btn>
     </Tooltip>
     <AddRemoveFromPlaylistsDialog

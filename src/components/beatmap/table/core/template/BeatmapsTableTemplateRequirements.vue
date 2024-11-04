@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-0 pl-3">
-    <span style="margin-left: -1px; margin-right: -1px; min-width: 2em;">
+    <span style="margin-left: -1px; margin-right: -1px; min-width: 2em">
       {{
         data
           .filter((item) => item.enabled)

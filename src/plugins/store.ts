@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import VuexPersistence from "vuex-persist";
+import VuexPersistence, { AsyncStorage } from "vuex-persist";
 import localForage from "localforage";
 import pathify from "@/plugins/pathify";
 import modules, { StoreState } from "@/store";
@@ -9,7 +9,7 @@ Vue.use(Vuex);
 
 const vuexLocalCachedData = new VuexPersistence<StoreState>({
   key: "vuex-cached-data",
-  storage: localForage,
+  storage: localForage as AsyncStorage,
   asyncStorage: true,
   strictMode: true,
   reducer: (state) => ({
@@ -34,7 +34,7 @@ const vuexLocalCachedData = new VuexPersistence<StoreState>({
 
 const vuexLocalMain = new VuexPersistence<StoreState>({
   key: "vuex-main",
-  storage: localForage,
+  storage: localForage as AsyncStorage,
   asyncStorage: true,
   strictMode: true,
   reducer: (state) => ({

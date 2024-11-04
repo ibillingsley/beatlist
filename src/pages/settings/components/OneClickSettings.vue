@@ -1,8 +1,6 @@
 <template>
   <div>
-    <p class="title pt-3">
-      URI
-    </p>
+    <p class="text-h6 pt-3">URI</p>
     <span class="text--disabled">
       The current beatsaver:// url handler is
       <strong class="accent--text">

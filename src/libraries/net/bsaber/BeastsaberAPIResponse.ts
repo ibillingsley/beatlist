@@ -1,7 +1,9 @@
 import BeastsaberPlaylist from "@/libraries/net/bsaber/BeastsaberPlaylist";
 
-export type BeastsaberAPIResponse = BeastsaberAPIResponseBase &
-  (BeastsaberAPIResponseSuccess | BeastsaberAPIResponseFailed);
+export enum BeastsaberAPIResponseStatus {
+  Success = 0,
+  Failed = 1,
+}
 
 export interface BeastsaberAPIResponseBase {
   status: BeastsaberAPIResponseStatus;
@@ -17,7 +19,5 @@ export interface BeastsaberAPIResponseFailed {
   error: string;
 }
 
-export enum BeastsaberAPIResponseStatus {
-  Success = 0,
-  Failed = 1,
-}
+export type BeastsaberAPIResponse = BeastsaberAPIResponseBase &
+  (BeastsaberAPIResponseSuccess | BeastsaberAPIResponseFailed);

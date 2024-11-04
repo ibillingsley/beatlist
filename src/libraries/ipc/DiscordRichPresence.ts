@@ -19,7 +19,7 @@ export default class DiscordRichPresence {
     ipcRenderer.send(UPDATE_RICH_PRESENCE_VISIBILITY, enabled);
   }
 
-  private enabled: boolean = false;
+  private enabled = false;
 
   private clientId = "642818043109703702";
 

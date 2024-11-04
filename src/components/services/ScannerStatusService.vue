@@ -41,9 +41,7 @@
       </v-card-text>
 
       <v-card-text v-else>
-        <p>
-          Please wait...
-        </p>
+        <p>Please wait...</p>
         <v-progress-linear indeterminate :value="0" color="success" rounded />
       </v-card-text>
 
@@ -100,7 +98,7 @@ export default Vue.extend({
       ScannerService.ScanAll(true); // 非同期
       NotificationServiceScanner.notifyOnNextScan();
     },
-    onStatusDialogRequestOpen(withPreparation: boolean = false): void {
+    onStatusDialogRequestOpen(withPreparation = false): void {
       this.dialog = true;
       if (withPreparation) {
         this.preparing = true;

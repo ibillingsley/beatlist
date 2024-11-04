@@ -1,13 +1,13 @@
 <template>
   <div>
-    <v-hover #default="{ hover }">
+    <v-hover v-slot="{ hover }">
       <v-avatar :size="avatarSize" :tile="tile" class="my-1">
         <PlaylistCover :playlist="playlist">
           <transition name="slide-y-transition">
             <div
               v-if="hover"
               class="d-flex fill-height align-center justify-center"
-              style="width: 100%; background-color: #000000a0;"
+              style="width: 100%; background-color: #000000a0"
             >
               <v-btn icon>
                 <!-- <v-icon :size="iconExpandSize" @click="imageOverlay = true"> -->
@@ -28,9 +28,7 @@
     >
       <PlaylistCover :playlist="playlist" :max-width="512" contain />
       <v-btn icon large class="mt-2" @click="imageOverlay = false">
-        <v-icon large>
-          mdi-close
-        </v-icon>
+        <v-icon large> mdi-close </v-icon>
       </v-btn>
     </v-overlay>
   </div>

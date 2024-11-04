@@ -17,7 +17,8 @@ import Progress from "@/libraries/common/Progress";
 // import JsonDeserializer from "@/libraries/playlist/loader/deserializer/JsonDeserializer";
 
 export default class PlaylistScanner
-  implements ScannerInterface<PlaylistLocal> {
+  implements ScannerInterface<PlaylistLocal>
+{
   public result: PlaylistScannerResult = new PlaylistScannerResult();
 
   public async scanAll(
@@ -60,12 +61,12 @@ export default class PlaylistScanner
 
         if (playlistRaw.songs != null) {
           try {
-            // eslint-disable-next-line no-await-in-loop
-            const playlistLocal = await PlaylistLoader.ConvertRawToPlaylistLocal(
-              playlistRaw,
-              hash,
-              progress
-            );
+            const playlistLocal =
+              await PlaylistLoader.ConvertRawToPlaylistLocal(
+                playlistRaw,
+                hash,
+                progress
+              );
             this.result.newItems.push(playlistLocal);
           } catch (error) {
             const invalidPlaylistLocal = PlaylistLoader.handleError(
@@ -77,14 +78,6 @@ export default class PlaylistScanner
           }
         }
       }
-      /*
-      // TODO エラーになった場合の考慮が足りない？
-      this.result.newItems = await Promise.all(
-        diff.added.map(async (path: string) =>
-          PlaylistLoader.Load(path, progressGroup.getNewOne())
-        )
-      );
-      */
 
       this.result.removedItems = diff.removed.length;
       this.result.keptItems = diff.kept.length;
@@ -210,13 +203,12 @@ export default class PlaylistScanner
               }
               if (forceUpdate) {
                 // forceUpdate = true の場合、invalid map (RequestError or Unknown)を含む playlist を再取得
-                const hasInvalidMap = libPlaylist.maps.some((map) => {
-                  return (
+                const hasInvalidMap = libPlaylist.maps.some(
+                  (map) =>
                     map.error ===
                       PlaylistMapImportError.BeatsaverRequestError ||
                     map.error === PlaylistMapImportError.Unknown
-                  );
-                });
+                );
                 if (hasInvalidMap) {
                   console.log(`has invalid map: ${libPlaylist.path}`);
                   resolve({

@@ -6,18 +6,12 @@
       </v-card-title>
       <v-card-text>
         <v-simple-table height="500" dense fixed-header>
-          <template v-slot:default>
+          <template #default>
             <thead>
               <tr>
-                <th class="text-left">
-                  Key type
-                </th>
-                <th class="text-left">
-                  Key value
-                </th>
-                <th class="text-left">
-                  Reason
-                </th>
+                <th class="text-left">Key type</th>
+                <th class="text-left">Key value</th>
+                <th class="text-left">Reason</th>
                 <!-- 変更検知させるためダミーで props を含めておく -->
                 <th class="text-left">More info{{ open ? "" : "?" }}</th>
               </tr>
@@ -39,9 +33,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="closeDialog">
-          Ok
-        </v-btn>
+        <v-btn text @click="closeDialog"> Ok </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

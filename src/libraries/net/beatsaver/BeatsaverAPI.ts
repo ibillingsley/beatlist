@@ -23,12 +23,14 @@ const SEARCH = "search/text";
 // const GET_BY_RATING = "maps/rating";
 export const ITEM_COUNT_PER_PAGE_OF_SEARCH = 20;
 
-export type BeatSaverAPIResponse<T> =
-  | BeatSaverAPIResponseDataFound<T>
-  | BeatSaverAPIResponseDataInvalid
-  | BeatSaverAPIResponseDataRateLimited
-  | BeatSaverAPIResponseDataInexistent
-  | BeatSaverAPIResponseDataTimeout;
+export enum BeatSaverAPIResponseStatus {
+  ResourceFound = 0, // 200
+  ResourceNotFound = 1, // 404
+  ResourceFoundButInvalidData = 2, // 200 but data is not what we expected
+  ServerNotAvailable = 3, // the rest
+  RateLimited = 4, // rate-limit-remaining headers is at 0
+  Timeout = 5, // timeout
+}
 
 export interface BeatSaverAPIResponseDataFound<T> {
   status: BeatSaverAPIResponseStatus.ResourceFound;
@@ -59,14 +61,12 @@ export interface BeatSaverAPIResponseDataTimeout {
   status: BeatSaverAPIResponseStatus.Timeout;
 }
 
-export enum BeatSaverAPIResponseStatus {
-  ResourceFound = 0, // 200
-  ResourceNotFound = 1, // 404
-  ResourceFoundButInvalidData = 2, // 200 but data is not what we expected
-  ServerNotAvailable = 3, // the rest
-  RateLimited = 4, // rate-limit-remaining headers is at 0
-  Timeout = 5, // timeout
-}
+export type BeatSaverAPIResponse<T> =
+  | BeatSaverAPIResponseDataFound<T>
+  | BeatSaverAPIResponseDataInvalid
+  | BeatSaverAPIResponseDataRateLimited
+  | BeatSaverAPIResponseDataInexistent
+  | BeatSaverAPIResponseDataTimeout;
 
 export default class BeatsaverAPI {
   public static Singleton: BeatsaverAPI = new BeatsaverAPI();
@@ -97,8 +97,8 @@ export default class BeatsaverAPI {
 
   public async searchBeatmaps(
     search: string,
-    sortOrder = "Relevance",
-    page: number = 0,
+    sortOrder: string,
+    page: number,
     filters?: BeatsaverFilter
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
     const query: string[] = [];
@@ -166,7 +166,7 @@ export default class BeatsaverAPI {
   //   }
 
   public async getByLatest(
-    page: number = 0
+    page = 0
   ): Promise<BeatSaverAPIResponse<BeatsaverPage>> {
     return this.makeRequest<BeatsaverPage>(
       `${SEARCH}/${page}?sortOrder=Latest`,
@@ -224,10 +224,10 @@ export default class BeatsaverAPI {
       if (!valid) {
         // 新APIの応答に対して isBeatsaverBeatmap は false になる。
         // TODO validation の意味がないので、isBeatsaverNewBeatmap を定義して if (valid) { に修正すべき。
-        const newData = (answer.data as unknown) as BeatsaverNewBeatmap;
+        const newData = answer.data as unknown as BeatsaverNewBeatmap;
         const data = convertNewMapToMap(newData);
         return {
-          data: Object.freeze((data as unknown) as T),
+          data: Object.freeze(data as unknown as T),
           status: BeatSaverAPIResponseStatus.ResourceFound,
         } as BeatSaverAPIResponse<T>;
       }
@@ -241,8 +241,8 @@ export default class BeatsaverAPI {
         nextPage: null,
         totalDocs: Number.MAX_SAFE_INTEGER, // API の response にないので INTEGER の最大値
       };
-      for (const doc of ((answer.data as any)
-        .docs as unknown) as BeatsaverNewBeatmap[]) {
+      for (const doc of (answer.data as any)
+        .docs as unknown as BeatsaverNewBeatmap[]) {
         const data = convertNewMapToMap(doc);
         page.docs.push(data);
       }
@@ -255,7 +255,7 @@ export default class BeatsaverAPI {
       }
       return {
         // data: Object.freeze(answer.data as T),
-        data: Object.freeze((page as unknown) as T),
+        data: Object.freeze(page as unknown as T),
         status: BeatSaverAPIResponseStatus.ResourceFound,
       } as BeatSaverAPIResponse<T>;
     }
@@ -293,15 +293,25 @@ export default class BeatsaverAPI {
     // を追加しているが、2021/08/13時点では beatsaver.com からの応答ヘッダーにそれらは含まれていない。
     const remainingHeader = error.response?.headers["rate-limit-remaining"];
     const totalHeader = error.response?.headers["rate-limit-total"];
-    let resetHeader = error.response?.headers["rate-limit-reset"];
+    const resetHeader = error.response?.headers["rate-limit-reset"];
+    let resetDate: Date;
 
-    if (resetHeader !== undefined) {
-      resetHeader = new Date(resetHeader * 1000); // sec to ms
+    if (resetHeader != null) {
+      try {
+        const resetValue = Number.parseInt(resetHeader, 10);
+        if (Number.isNaN(resetValue)) {
+          resetDate = new Date(new Date().getTime() + 5000);
+        } else {
+          resetDate = new Date(resetValue * 1000); // sec to ms
+        }
+      } catch (e) {
+        resetDate = new Date(new Date().getTime() + 5000);
+      }
     } else {
       // 上記 rate-limit-reset ヘッダーがなくても、429 が返されたことに変わりはないので 5秒間リクエストを遮断する。
-      resetHeader = new Date(new Date().getTime() + 5000);
+      resetDate = new Date(new Date().getTime() + 5000);
     }
-    BeatsaverRateLimitManager.NotifyRateLimit(resetHeader); // ここで通知した日時が過ぎるまでリクエストは遮断される
+    BeatsaverRateLimitManager.NotifyRateLimit(resetDate); // ここで通知した日時が過ぎるまでリクエストは遮断される
 
     return {
       status: BeatSaverAPIResponseStatus.RateLimited,

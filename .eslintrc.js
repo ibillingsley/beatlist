@@ -12,8 +12,8 @@ module.exports = {
     "plugin:import/typescript",
     "plugin:jest/all",
     "prettier",
-    "prettier/@typescript-eslint",
-    "prettier/vue",
+    // "prettier/@typescript-eslint",
+    // "prettier/vue",
   ],
   globals: {
     Atomics: "readonly",
@@ -31,9 +31,17 @@ module.exports = {
     "vue/html-closing-bracket-spacing": "off",
     "no-underscore-dangle": "off",
     "@typescript-eslint/no-unused-vars": "error",
+    // "@typescript-eslint/no-floating-promises": ["warn"],
+    "vue/multi-word-component-names": "off",
     "no-unused-vars": "off",
+    "no-await-in-loop": "warn",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error",
     "vue/no-v-html": "off",
     "jest/no-hooks": "off",
+    "jest/require-hook": "off",
+    "jest/unbound-method": "off",
+    "jest/max-expects": "warn",
     "no-param-reassign": "off",
     "no-restricted-syntax": [
       "error",
@@ -56,6 +64,7 @@ module.exports = {
   settings: {
     "import/core-modules": [
       "vue-cli-plugin-electron-builder/lib",
+      "electron",
       "electron-devtools-installer",
     ],
     "import/resolver": {

@@ -4,13 +4,13 @@ import { ScannerResultInterface } from "@/libraries/scanner/ScannerInterface";
 export default class PlaylistScannerResult implements ScannerResultInterface {
   public newItems: PlaylistLocal[] = [];
 
-  public removedItems: number = 0;
+  public removedItems = 0;
 
-  public keptItems: number = 0;
+  public keptItems = 0;
 
-  public updatedItems: number = 0;
+  public updatedItems = 0;
 
-  public errorMessage: string = "";
+  public errorMessage = "";
 
   public toString(): string {
     const newItemsStr =

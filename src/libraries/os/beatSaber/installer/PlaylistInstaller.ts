@@ -1,6 +1,5 @@
 import fs from "fs-extra";
 import path from "path";
-import trash from "trash";
 import {
   PlaylistBase,
   PlaylistLocal,
@@ -13,6 +12,7 @@ import PlaylistFormatType from "@/libraries/playlist/PlaylistFormatType";
 import store from "@/plugins/store";
 import PlaylistFilenameExtension from "@/libraries/playlist/PlaylistFilenameExtension";
 import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
+import FileRemover from "@/libraries/ipc/FileRemover";
 
 declare const __static: string;
 const defaultCoverPath = path.join(__static, "defaultCover.jpg");
@@ -93,8 +93,7 @@ export default class PlaylistInstaller {
 
   public static async Uninstall(playlist: PlaylistLocal): Promise<void> {
     if (playlist.path) {
-      // await fs.unlink(playlist.path);
-      await trash(playlist.path);
+      await FileRemover.remove(playlist.path);
     }
 
     PlaylistLibrary.RemovePlaylist(playlist);

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <p class="display-2">
+    <p class="text-h3">
       <!--Couldn't get it small enough lol-->
       Beatmap Online <small><small>via Beatsaver</small></small>
     </p>

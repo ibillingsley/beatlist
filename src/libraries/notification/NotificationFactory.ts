@@ -37,7 +37,7 @@ export default class NotificationFactory {
   }
 
   private static Make<T extends INotificationType>(
-    timeout: number = 5000
+    timeout = 5000
   ): ICommonNotification & T {
     return {
       timeout,

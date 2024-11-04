@@ -5,20 +5,20 @@
       :playlist="playlistLocal"
       :avatar-size="96"
       :icon-expand-size="24"
-      style="margin-top: auto; margin-bottom: auto;"
+      style="margin-top: auto; margin-bottom: auto"
     />
     <table
-      style="max-width: 500px;"
+      style="max-width: 500px"
       class="pl-5"
       aria-describedby="infos about the playlist (1st column)"
     >
       <tr>
         <td>Title</td>
-        <td>{{ playlistBeastsaber.playlistTitle }}</td>
+        <td>{{ playlistBeastsaber.name }}</td>
       </tr>
       <tr>
         <td>Author</td>
-        <td>{{ playlistBeastsaber.playlistAuthor }}</td>
+        <td>{{ playlistBeastsaber.owner.name }}</td>
       </tr>
       <tr>
         <td>Date</td>
@@ -30,7 +30,7 @@
       </tr>
     </table>
     <table
-      style="max-width: 700px;"
+      style="max-width: 700px"
       aria-describedby="infos about the playlist (2nd column)"
     >
       <tr>
@@ -41,7 +41,7 @@
       </tr>
       <tr>
         <td>Description</td>
-        <td>{{ playlistBeastsaber.playlistDescription }}</td>
+        <td>{{ playlistBeastsaber.description }}</td>
       </tr>
     </table>
   </div>

@@ -2,7 +2,7 @@
   <v-snackbar
     v-model="snackbar"
     :color="snackbarColor"
-    :timeout="0"
+    :timeout="-1"
     right
     bottom
     :class="$vuetify.theme.dark ? '' : 'black--text'"
@@ -10,10 +10,8 @@
     <v-icon v-if="notification.icon" class="pr-2">
       {{ notification.icon }}
     </v-icon>
-    <span style="width: 100%;" v-html="notification.content" />
-    <v-btn text color="secondary" class="ma-0" @click="close()">
-      Close
-    </v-btn>
+    <span style="width: 100%" v-html="notification.content" />
+    <v-btn text color="secondary" class="ma-0" @click="close()"> Close </v-btn>
   </v-snackbar>
 </template>
 

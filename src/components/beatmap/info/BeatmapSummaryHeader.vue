@@ -14,14 +14,14 @@
       </v-col>
       <v-col align-self="center">
         <p class="d-flex align-baseline mb-0">
-          <span class="display-1 mb-0">
+          <span class="text-h4 mb-0">
             {{ beatmap.metadata.songName }}
           </span>
-          <span class="headline grey--text mb-0 ml-3">
+          <span class="text-h5 grey--text mb-0 ml-3">
             {{ beatmap.metadata.songSubName }}
           </span>
         </p>
-        <p class="headline grey--text mb-0">
+        <p class="text-h5 grey--text mb-0">
           {{ beatmap.metadata.levelAuthorName }}
         </p>
         <DifficultiesChips :diff="beatmap.metadata.difficulties" />

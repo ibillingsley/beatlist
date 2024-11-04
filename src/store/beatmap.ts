@@ -116,9 +116,9 @@ const mutations = {
       if (downloadDateMap.has(key)) {
         const newDownloaded = downloadDateMap.get(key);
         if (newDownloaded != null && value.downloaded !== newDownloaded) {
-          console.log(
-            `downloaded changed: ${value.downloaded} => ${newDownloaded}`
-          );
+          // console.log(
+          //   `downloaded changed: ${value.downloaded} => ${newDownloaded}`
+          // );
           value.downloaded = newDownloaded;
         }
       }

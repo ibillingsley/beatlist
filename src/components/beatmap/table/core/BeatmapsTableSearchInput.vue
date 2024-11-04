@@ -7,6 +7,7 @@
     hide-details
     append-icon="search"
     clearable
+    class="pa-0"
     @input="$emit('input', $event || '')"
     @click:clear="$emit('input', '')"
   />

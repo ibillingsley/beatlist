@@ -32,9 +32,7 @@
         :disabled="isFirstPage"
         @click="pageStart"
       >
-        <v-icon small>
-          first_page
-        </v-icon>
+        <v-icon small> first_page </v-icon>
       </v-btn>
       <v-btn
         icon
@@ -43,14 +41,10 @@
         :disabled="isFirstPage"
         @click="pagePrevious"
       >
-        <v-icon small>
-          chevron_left
-        </v-icon>
+        <v-icon small> chevron_left </v-icon>
       </v-btn>
       <v-btn icon small class="mx-1" :disabled="isLastPage" @click="pageNext">
-        <v-icon small>
-          chevron_right
-        </v-icon>
+        <v-icon small> chevron_right </v-icon>
       </v-btn>
       <v-btn
         v-if="!noItemPerPageChoice"
@@ -60,9 +54,7 @@
         :disabled="isLastPage"
         @click="pageEnd"
       >
-        <v-icon small>
-          last_page
-        </v-icon>
+        <v-icon small> last_page </v-icon>
       </v-btn>
     </div>
     <ConfirmDialog

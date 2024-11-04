@@ -6,10 +6,10 @@
           :color="value.color"
           :small="small"
           :class="chipClass(value.highlight)"
-          style="border: solid; border-width: 1px;"
+          style="border: solid; border-width: 1px"
           v-on="on"
         >
-          <span style="margin-left: -1px; margin-right: -1px;">
+          <span style="margin-left: -1px; margin-right: -1px">
             {{
               short ? (showShortLetter ? value.shortName : "") : value.chipName
             }}

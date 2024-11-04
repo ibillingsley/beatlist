@@ -10,7 +10,7 @@
         <v-alert text type="warning" icon="warning" class="mt-5">
           <span>Unfortunately, we weren't able to fetch the CHANGELOG.md</span>
           <br />
-          <span class="caption">
+          <span class="text-caption">
             You can always check the
             <a
               href="https://github.com/ranmd9a/beatlist"
@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import marked from "marked";
+import { marked } from "marked";
 import BeatlistRepo from "@/libraries/net/github/BeatlistRepo";
 
 export default Vue.extend({
@@ -64,26 +64,26 @@ export default Vue.extend({
   margin-top: 0px !important;
 }
 
-#markdown >>> h1,
-#markdown >>> h2,
-#markdown >>> h3,
-#markdown >>> h4,
-#markdown >>> h5,
-#markdown >>> h6 {
+#markdown :deep(h1),
+#markdown :deep(h2),
+#markdown :deep(h3),
+#markdown :deep(h4),
+#markdown :deep(h5),
+#markdown :deep(h6) {
   margin-bottom: 15px;
   margin-top: 15px;
 }
 
-#markdown >>> p,
-#markdown >>> li {
+#markdown :deep(p),
+#markdown :deep(li) {
   font-weight: 400;
 }
 
-#markdown >>> ul {
+#markdown :deep(ul) {
   margin-bottom: 15px;
 }
 
-#markdown >>> p {
+#markdown :deep(p) {
   margin-bottom: 5px;
 }
 </style>

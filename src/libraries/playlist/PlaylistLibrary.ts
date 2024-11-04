@@ -97,30 +97,24 @@ export default class PlaylistLibrary {
   }
 
   public static GetSortColumnList() {
-    return Object.values(PlaylistSortColumnType).map((value) => {
-      return {
-        text: getSortTypeDisplayNameFor(value),
-        value,
-      };
-    });
+    return Object.values(PlaylistSortColumnType).map((value) => ({
+      text: getSortTypeDisplayNameFor(value),
+      value,
+    }));
   }
 
   public static GetSortOrderList() {
-    return Object.values(PlaylistSortOrderType).map((value) => {
-      return {
-        text: getSortOrderDisplayNameFor(value),
-        value,
-      };
-    });
+    return Object.values(PlaylistSortOrderType).map((value) => ({
+      text: getSortOrderDisplayNameFor(value),
+      value,
+    }));
   }
 
   public static GetIndentTypeList() {
-    return Object.values(PlaylistIndentType).map((value) => {
-      return {
-        text: getIndentTypeDisplayNameFor(value),
-        value,
-      };
-    });
+    return Object.values(PlaylistIndentType).map((value) => ({
+      text: getIndentTypeDisplayNameFor(value),
+      value,
+    }));
   }
 
   public static SortPlaylists(

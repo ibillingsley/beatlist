@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <p class="display-2">
-      Settings
-    </p>
+    <p class="text-h3">Settings</p>
     <InstallationPathForm />
     <Library />
     <Preferences />

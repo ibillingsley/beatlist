@@ -9,7 +9,7 @@
     >
       <v-icon>filter_list</v-icon>
     </v-btn>
-    <template v-slot:input>
+    <template #input>
       <v-menu
         ref="menuMin"
         v-model="menuMin"
@@ -18,7 +18,7 @@
         offset-y
         min-width="290px"
       >
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-text-field
             v-model="stringMin"
             label="From"
@@ -42,7 +42,7 @@
         offset-y
         min-width="290px"
       >
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-text-field
             v-model="stringMax"
             label="To"

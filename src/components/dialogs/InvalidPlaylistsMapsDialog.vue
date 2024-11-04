@@ -1,9 +1,7 @@
 <template>
   <v-dialog v-model="isOpen" max-width="80%" @click:outside="closeDialog">
     <v-card>
-      <v-card-title>
-        Invalid beatmaps in playlists
-      </v-card-title>
+      <v-card-title> Invalid beatmaps in playlists </v-card-title>
       <v-card-text>
         <v-data-table
           :headers="headers"
@@ -17,7 +15,7 @@
           aria-describedby="All invalid beatmaps inside playlists"
           dense
         >
-          <template v-slot:[`item.error`]="{ item }">
+          <template #[`item.error`]="{ item }">
             <span class="error--text">
               {{ item.error | errorTranslated }}
             </span>
@@ -26,9 +24,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="closeDialog">
-          Ok
-        </v-btn>
+        <v-btn text @click="closeDialog"> Ok </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

@@ -2,11 +2,11 @@
   <v-snackbar
     v-model="snackbar"
     :color="snackbarColor"
-    :timeout="0"
+    :timeout="-1"
     bottom
     right
   >
-    <v-list v-if="isSuccess" style="background: none;" class="pa-0">
+    <v-list v-if="isSuccess" style="background: none" class="pa-0">
       <v-list-item class="pa-0">
         <v-list-item-avatar class="my-0">
           <BeatmapCover :beatmap="beatmap" />
