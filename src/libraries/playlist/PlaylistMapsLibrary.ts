@@ -171,9 +171,11 @@ export default class PlaylistMapsLibrary {
     Logger.debug(`    start promise.all`, "PlaylistMapsLibrary");
     const resolved = await Promise.all(promiseResults);
     Logger.debug(`    end   promise.all`, "PlaylistMapsLibrary");
-    return result.concat(
-      resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
-    );
+    return result
+      .concat(
+        resolved.filter((item) => item.data != null) as BeatmapsTableDataUnit[]
+      )
+      .sort((a, b) => a.playlistMapIndex! - b.playlistMapIndex!);
   }
 
   public static GetDuplicatedHashSet(
