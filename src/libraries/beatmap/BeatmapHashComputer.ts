@@ -8,14 +8,31 @@ export default class BeatmapHashComputer {
       const infoDatPath = path.join(folderPath, "info.dat");
       const infoDatStr = (await fs.readFile(infoDatPath)).toString();
       const infoDat = JSON.parse(infoDatStr);
+      const v4 = infoDat.version?.startsWith("4.");
 
       let binary = infoDatStr;
 
-      for (const diffSet of infoDat._difficultyBeatmapSets) {
-        for (const d of diffSet._difficultyBeatmaps) {
-          binary += fs
-            .readFileSync(path.join(folderPath, d._beatmapFilename))
-            .toString();
+      if (v4) {
+        binary += fs
+          .readFileSync(path.join(folderPath, infoDat.audio.audioDataFilename))
+          .toString();
+        for (const d of infoDat.difficultyBeatmaps) {
+          if (d.beatmapDataFilename)
+            binary += fs
+              .readFileSync(path.join(folderPath, d.beatmapDataFilename))
+              .toString();
+          if (d.lightshowDataFilename)
+            binary += fs
+              .readFileSync(path.join(folderPath, d.lightshowDataFilename))
+              .toString();
+        }
+      } else {
+        for (const diffSet of infoDat._difficultyBeatmapSets) {
+          for (const d of diffSet._difficultyBeatmaps) {
+            binary += fs
+              .readFileSync(path.join(folderPath, d._beatmapFilename))
+              .toString();
+          }
         }
       }
 

@@ -88,14 +88,19 @@ export default class BeatmapLoader {
       this.beatmap.downloaded = stat.birthtime.toISOString();
 
       const beatmapDescription = JSON.parse(infoDat.toString());
+      const v4 = beatmapDescription.version?.startsWith("4.");
 
       coverImageFilePath = path.join(
         this.beatmapFolder,
-        beatmapDescription._coverImageFilename
+        v4
+          ? beatmapDescription.coverImageFilename
+          : beatmapDescription._coverImageFilename
       );
       soundFilePath = path.join(
         this.beatmapFolder,
-        beatmapDescription._songFilename
+        v4
+          ? beatmapDescription.audio.songFilename
+          : beatmapDescription._songFilename
       );
     } catch (e) {
       this.beatmap.loadState.errorType =

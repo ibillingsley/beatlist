@@ -174,6 +174,7 @@ export default class BeatmapLibrary {
     } catch (e) {
       return undefined;
     }
+    const v4 = beatmapDescription.version?.startsWith("4.");
     const myDifficulties = {
       easy: false,
       normal: false,
@@ -188,9 +189,12 @@ export default class BeatmapLibrary {
       me: false,
       cinema: false,
     };
-    for (const mapset of beatmapDescription._difficultyBeatmapSets) {
-      for (const map of mapset._difficultyBeatmaps) {
-        switch (map._difficulty) {
+    const authors = new Set();
+    for (const mapset of v4
+      ? [beatmapDescription.difficultyBeatmaps]
+      : beatmapDescription._difficultyBeatmapSets) {
+      for (const map of v4 ? mapset : mapset._difficultyBeatmaps) {
+        switch (v4 ? map.difficulty : map._difficulty) {
           case "Easy":
             myDifficulties.easy = true;
             break;
@@ -209,12 +213,24 @@ export default class BeatmapLibrary {
           default:
             break;
         }
+        if (v4 && map.beatmapAuthors) {
+          for (const mapper of map.beatmapAuthors.mappers || [])
+            authors.add(mapper);
+          for (const lighter of map.beatmapAuthors.lighters || [])
+            authors.add(lighter);
+        }
         let reqs: string[] = [];
         if (map._customData?._suggestions != null) {
           reqs = reqs.concat(map._customData?._suggestions);
         }
         if (map._customData?._requirements != null) {
           reqs = reqs.concat(map._customData?._requirements);
+        }
+        if (v4 && map.customData?.suggestions != null) {
+          reqs = reqs.concat(map.customData?.suggestions);
+        }
+        if (v4 && map.customData?.requirements != null) {
+          reqs = reqs.concat(map.customData?.requirements);
         }
         requirements.chroma = requirements.chroma || reqs.includes("Chroma");
         requirements.ne = requirements.ne || reqs.includes("Noodle Extensions");
@@ -227,11 +243,21 @@ export default class BeatmapLibrary {
     const mymetadata: Metadata = {
       difficulties: myDifficulties,
       characteristics: [],
-      songName: beatmapDescription._songName,
-      songSubName: beatmapDescription._songSubName,
-      songAuthorName: beatmapDescription._songAuthorName,
-      levelAuthorName: beatmapDescription._levelAuthorName,
-      bpm: beatmapDescription._beatsPerMinute,
+      songName: v4
+        ? beatmapDescription.song.title
+        : beatmapDescription._songName,
+      songSubName: v4
+        ? beatmapDescription.song.subTitle
+        : beatmapDescription._songSubName,
+      songAuthorName: v4
+        ? beatmapDescription.song.author
+        : beatmapDescription._songAuthorName,
+      levelAuthorName: v4
+        ? Array.from(authors).join(", ")
+        : beatmapDescription._levelAuthorName,
+      bpm: v4
+        ? beatmapDescription.audio.bpm
+        : beatmapDescription._beatsPerMinute,
       // info.dat の中に duration がないので取得不可
       duration: undefined,
       requirements,
@@ -248,7 +274,7 @@ export default class BeatmapLibrary {
       },
       description: "",
       key: "",
-      name: beatmapDescription._songName,
+      name: mymetadata.songName,
       // uploaded: null,
       hash: beatmap.hash,
       // directDownload: "",
