@@ -1,7 +1,7 @@
 {
   "name": "beatlist",
   "description": "App to create playlist for BeatSaber",
-  "version": "1.5.0-beta",
+  "version": "1.5.0",
   "homepage": "https://github.com/ibillingsley/beatlist",
   "repository": {
     "type": "git",

@@ -1,11 +1,11 @@
 # Changelog
 
-## v1.5.0-beta  (2024-06-29)
-**Improvement:**
+## v1.5.0  (2025-03-07)
+**Features:**
+ - Supports V4 maps.
  - <a href="https://github.com/AllPoland/ArcViewer" target="_blank">ArcViewer</a> replaces Rabbit's viewer for previews.
-   - Supports V3 maps with arcs and chains.
-   - Added setting for ArcViewer.exe path to use desktop version.
-   - Desktop version can preview local maps without redownloading them.
+   - Supports V3 & V4 maps.
+   - Added setting for ArcViewer.exe path to use desktop version (preview local maps without download).
  - Added option to customize actions column buttons.
  - Added checkbox to clear local cache without clearing BeatSaver cache.
  - Added context menu.
@@ -17,6 +17,7 @@
  - Fixed freezing on startup.
  - Fixed sorting by uploaded date.
  - Fixed beatmap information page for maps with no with no BeatSaver data.
+ - Fixed order of beatmaps with no with no BeatSaver data in playlists.
 
 ## v1.4.1 (2022-07-29)
 **Bug fixes:**
