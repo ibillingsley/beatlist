@@ -4,8 +4,7 @@
 **Features:**
  - Supports V4 maps.
  - <a href="https://github.com/AllPoland/ArcViewer" target="_blank">ArcViewer</a> replaces Rabbit's viewer for previews.
-   - Supports V3 & V4 maps.
-   - Added setting for ArcViewer.exe path to use desktop version (preview local maps without download).
+ - Added setting for ArcViewer.exe path to use desktop version (preview maps without redownloading).
  - Added option to customize actions column buttons.
  - Added checkbox to clear local cache without clearing BeatSaver cache.
  - Added context menu.
