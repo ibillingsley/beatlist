@@ -1,10 +1,16 @@
 export default interface BeastsaberPlaylist {
-  playlistTitle: string;
-  playlistDescription: string;
-  playlistAuthor: string;
+  name: string;
+  description: string;
+  owner: {
+    name: string;
+    avatar: string;
+    playlistUrl: string;
+    id: number;
+  };
   playlistSongCount: number;
   playlistDate: string;
   playlistCategory: string;
-  playlistURL: string;
-  image: string;
+  downloadURL: string;
+  playlistImage: string;
+  playlistId: number;
 }

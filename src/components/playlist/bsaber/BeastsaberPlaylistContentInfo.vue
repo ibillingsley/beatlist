@@ -14,11 +14,11 @@
     >
       <tr>
         <td>Title</td>
-        <td>{{ playlistBeastsaber.playlistTitle }}</td>
+        <td>{{ playlistBeastsaber.name }}</td>
       </tr>
       <tr>
         <td>Author</td>
-        <td>{{ playlistBeastsaber.playlistAuthor }}</td>
+        <td>{{ playlistBeastsaber.owner.name }}</td>
       </tr>
       <tr>
         <td>Date</td>
@@ -41,7 +41,7 @@
       </tr>
       <tr>
         <td>Description</td>
-        <td>{{ playlistBeastsaber.playlistDescription }}</td>
+        <td>{{ playlistBeastsaber.description }}</td>
       </tr>
     </table>
   </div>
