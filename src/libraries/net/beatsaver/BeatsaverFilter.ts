@@ -1,5 +1,5 @@
 export interface BeatsaverFilter {
-  mode: "filter" | "nps" | "date" | "all";
+  mode?: "filter" | "nps" | "date" | "all";
   ai?: boolean;
   ranked?: boolean;
   curated?: boolean;

@@ -5,24 +5,47 @@
       <v-icon>sentiment_dissatisfied</v-icon>
     </v-alert>
 
-    <BeastsaberPlaylistSlider
-      v-else
-      v-slot="{ playlist }"
-      :playlists="playlists"
-      :loading="loading"
-      @playlistClick="onPlaylistSelected"
-    >
-      <v-btn
-        icon
-        x-large
-        :disabled="!currentPlaylistLocal || isPlaylistDownloaded(playlist)"
-        @click.stop="installPlaylist()"
+    <template v-else>
+      <p class="text-h5">Curated</p>
+      <BeastsaberPlaylistSlider
+        v-slot="{ playlist }"
+        :playlists="curatedPlaylists"
+        :selected="currentPlaylistBeast"
+        :loading="loading"
+        @playlistClick="onPlaylistSelected"
       >
-        <v-icon color="success" x-large>
-          {{ isPlaylistDownloaded(playlist) ? "done" : "file_download" }}
-        </v-icon>
-      </v-btn>
-    </BeastsaberPlaylistSlider>
+        <v-btn
+          icon
+          x-large
+          :disabled="!currentPlaylistLocal || isPlaylistDownloaded(playlist)"
+          @click.stop="installPlaylist()"
+        >
+          <v-icon color="success" x-large>
+            {{ isPlaylistDownloaded(playlist) ? "done" : "file_download" }}
+          </v-icon>
+        </v-btn>
+      </BeastsaberPlaylistSlider>
+
+      <p class="text-h5">Verified Mapper</p>
+      <BeastsaberPlaylistSlider
+        v-slot="{ playlist }"
+        :playlists="verifiedPlaylists"
+        :selected="currentPlaylistBeast"
+        :loading="loading"
+        @playlistClick="onPlaylistSelected"
+      >
+        <v-btn
+          icon
+          x-large
+          :disabled="!currentPlaylistLocal || isPlaylistDownloaded(playlist)"
+          @click.stop="installPlaylist()"
+        >
+          <v-icon color="success" x-large>
+            {{ isPlaylistDownloaded(playlist) ? "done" : "file_download" }}
+          </v-icon>
+        </v-btn>
+      </BeastsaberPlaylistSlider>
+    </template>
 
     <BeastsaberPlaylistContent
       :playlist-local="currentPlaylistLocal"
@@ -51,6 +74,7 @@ import NotificationService, {
   NOTIFICATION_ICON_SUCCESS,
 } from "@/libraries/notification/NotificationService";
 import PlaylistFilename from "@/libraries/playlist/PlaylistFilename";
+import { BeatsaverFilter } from "@/libraries/net/beatsaver/BeatsaverFilter";
 
 export default Vue.extend({
   name: "BeastsaberPlaylistBrowser",
@@ -58,7 +82,8 @@ export default Vue.extend({
   data() {
     return {
       loading: true,
-      playlists: [] as BeastsaberPlaylist[],
+      curatedPlaylists: [] as BeastsaberPlaylist[],
+      verifiedPlaylists: [] as BeastsaberPlaylist[],
       currentPlaylistBeast: undefined as BeastsaberPlaylist | undefined,
       currentPlaylistLocal: undefined as PlaylistLocal | undefined,
       errorPlaylists: undefined as string | undefined,
@@ -70,28 +95,40 @@ export default Vue.extend({
   },
   mounted(): void {
     this.loading = true;
-    this.loadPlaylist().then(() => {
-      this.loading = false;
-    });
+    this.curatedPlaylists = [];
+    this.verifiedPlaylists = [];
+    Promise.all([
+      this.loadPlaylist({ curated: true }).then((result) => {
+        this.curatedPlaylists = result;
+      }),
+      this.loadPlaylist({ verified: true }).then((result) => {
+        this.verifiedPlaylists = result;
+      }),
+    ])
+      .catch((e: Error) => {
+        this.errorPlaylists = e.message;
+      })
+      .finally(() => {
+        this.loading = false;
+      });
   },
   methods: {
-    async loadPlaylist() {
+    async loadPlaylist(
+      filters?: BeatsaverFilter
+    ): Promise<BeastsaberPlaylist[]> {
       this.errorPlaylists = undefined;
-      this.playlists = [];
 
-      const apiResponse = await BeastsaberAPI.Singleton.GetPlaylists();
+      const apiResponse = await BeastsaberAPI.Singleton.GetPlaylists(filters);
 
       switch (apiResponse.status) {
         case BeastsaberAPIResponseStatus.Success:
-          this.playlists = apiResponse.data.docs;
-          break;
+          return apiResponse.data.docs;
 
         case BeastsaberAPIResponseStatus.Failed:
-          this.errorPlaylists = apiResponse.error;
-          break;
+          throw new Error(apiResponse.error);
 
         default:
-          this.errorPlaylists = "Unexpected error";
+          throw new Error("Unexpected error");
       }
     },
     onPlaylistSelected(playlist: BeastsaberPlaylist) {

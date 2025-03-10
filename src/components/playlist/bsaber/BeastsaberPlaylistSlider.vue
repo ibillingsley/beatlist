@@ -29,7 +29,12 @@
           "
         >
           <v-img :src="pl.playlistImage" width="175" height="175">
-            <v-overlay absolute :value="active" :opacity="0.7">
+            <v-overlay
+              v-if="playlists.includes(selected)"
+              absolute
+              :value="active"
+              :opacity="0.7"
+            >
               <v-row class="fill-height" align="center" justify="center">
                 <v-scale-transition>
                   <slot v-if="active" :playlist="pl" />
@@ -57,6 +62,7 @@ export default Vue.extend({
       type: Array as PropType<BeastsaberPlaylist[]>,
       required: true,
     },
+    selected: { type: Object as PropType<BeastsaberPlaylist> },
     loading: { type: Boolean, default: false },
   },
   data: () => ({
