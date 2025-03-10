@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.5.1  (2025-03-10)
+**Bug fixes:**
+ - Fixed online playlists page (curated and verified only)
+
 ## v1.5.0  (2025-03-07)
 **Features:**
  - Supports V4 maps.
