@@ -11,7 +11,7 @@ export interface BeastsaberAPIResponseBase {
 
 export interface BeastsaberAPIResponseSuccess {
   status: BeastsaberAPIResponseStatus.Success;
-  data: BeastsaberPlaylist[];
+  data: { docs: BeastsaberPlaylist[] };
 }
 
 export interface BeastsaberAPIResponseFailed {

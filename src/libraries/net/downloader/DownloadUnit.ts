@@ -1,3 +1,4 @@
+import * as remote from "@electron/remote";
 import fs from "fs-extra";
 import {
   DownloadUnitProgress,
@@ -25,21 +26,8 @@ export default class DownloadUnit {
 
       const res = await fetch(url, {
         headers: {
-          authority: "beatsaver.com",
-          pragma: "no-cache",
-          "cache-control": "no-cache",
-          "sec-ch-ua":
-            '" Not A;Brand";v="99", "Chromium";v="90", "Microsoft Edge";v="90"',
-          "sec-ch-ua-mobile": "?0",
-          "user-agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36 Edg/90.0.818.56",
-          accept: "*/*",
-          "sec-fetch-site": "same-origin",
-          "sec-fetch-mode": "cors",
-          "sec-fetch-dest": "empty",
-          "accept-language": "de,de-DE;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-          dnt: "1",
-          "sec-gpc": "1",
+          "User-Agent": remote.session.defaultSession?.getUserAgent(),
+          "Accept-Language": "en",
         },
       });
 

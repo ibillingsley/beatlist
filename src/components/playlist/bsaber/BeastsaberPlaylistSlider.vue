@@ -19,6 +19,7 @@
       >
         <v-card
           width="175"
+          :title="pl.name"
           :raised="active"
           @click.stop="
             () => {
@@ -36,6 +37,9 @@
               </v-row>
             </v-overlay>
           </v-img>
+          <div class="text-truncate text-sm-caption px-sm-2 py-sm-1">
+            {{ pl.name }}
+          </div>
         </v-card>
       </v-skeleton-loader>
     </v-slide-item>

@@ -8,8 +8,6 @@ export default interface BeastsaberPlaylist {
     id: number;
   };
   playlistSongCount: number;
-  playlistDate: string;
-  playlistCategory: string;
   downloadURL: string;
   playlistImage: string;
   playlistId: number;

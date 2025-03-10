@@ -85,7 +85,7 @@ const router = new VueRouter({
             icon: "computer",
           },
           {
-            name: "Online - BSaber.com",
+            name: "Online - Beatsaver",
             path: { name: "playlists-bsaber" },
             icon: "language",
           },

@@ -83,9 +83,7 @@ export default Vue.extend({
 
       switch (apiResponse.status) {
         case BeastsaberAPIResponseStatus.Success:
-          this.playlists = (
-            apiResponse.data as unknown as { docs: BeastsaberPlaylist[] }
-          ).docs;
+          this.playlists = apiResponse.data.docs;
           break;
 
         case BeastsaberAPIResponseStatus.Failed:

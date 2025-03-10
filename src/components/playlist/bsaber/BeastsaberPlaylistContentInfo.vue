@@ -21,11 +21,7 @@
         <td>{{ playlistBeastsaber.owner.name }}</td>
       </tr>
       <tr>
-        <td>Date</td>
-        <td>{{ playlistBeastsaber.playlistDate }}</td>
-      </tr>
-      <tr>
-        <td>Item(s)</td>
+        <td>Items</td>
         <td>{{ playlistLocal ? playlistLocal.maps.length : "..." }}</td>
       </tr>
     </table>
@@ -34,13 +30,6 @@
       aria-describedby="infos about the playlist (2nd column)"
     >
       <tr>
-        <td>Category</td>
-        <td>
-          <v-chip small>{{ playlistBeastsaber.playlistCategory }}</v-chip>
-        </td>
-      </tr>
-      <tr>
-        <td>Description</td>
         <td>{{ playlistBeastsaber.description }}</td>
       </tr>
     </table>
@@ -74,11 +63,11 @@ export default Vue.extend({
 <style scoped>
 table tr td {
   font-size: 0.85rem;
+  vertical-align: top;
 }
 
-table tr td:first-child {
+table tr td:first-child:not(:last-child) {
   text-align: end;
   font-weight: bold;
-  vertical-align: top;
 }
 </style>

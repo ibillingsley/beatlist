@@ -16,12 +16,8 @@ export default class PlaylistFetcher {
     url: string,
     progress?: Progress
   ): Promise<PlaylistLocal> {
-    const extension = url.split(".").slice(-1)[0] ?? ".json";
     const randHex = crypto.randomBytes(6).toString("hex");
-    const tmpFile = path.join(
-      os.tmpdir(),
-      `beatlist-playlist-${randHex}.${extension}`
-    );
+    const tmpFile = path.join(os.tmpdir(), `beatlist-playlist-${randHex}.json`);
 
     await this.download(url, fs.createWriteStream(tmpFile));
 
@@ -44,12 +40,8 @@ export default class PlaylistFetcher {
         `${filename}.${PlaylistFilenameExtension.GetFor(format)}`
       )
       .toLowerCase();
-    const extension = url.split(".").slice(-1)[0] ?? ".json";
     const randHex = crypto.randomBytes(6).toString("hex");
-    const tmpFile = path.join(
-      os.tmpdir(),
-      `beatlist-playlist-${randHex}.${extension}`
-    );
+    const tmpFile = path.join(os.tmpdir(), `beatlist-playlist-${randHex}.json`);
 
     // await this.download(url, fs.createWriteStream(filepath));
     let writeStream;

@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <p class="text-h3">Beastsaber Playlists</p>
+    <p class="text-h3">Beatsaver Playlists</p>
 
     <BeastsaberPlaylistBrowser />
   </v-container>
