@@ -9,6 +9,7 @@ export interface BeatsaverFilter {
   noodle?: boolean;
   me?: boolean;
   cinema?: boolean;
+  vivify?: boolean;
   minNps?: number;
   maxNps?: number;
   minDate?: Date;

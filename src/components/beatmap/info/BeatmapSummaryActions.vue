@@ -6,7 +6,7 @@
     <BeatmapButtonRemoveBeatmap v-if="isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonPlaySong v-if="isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonAddToNPlaylists :beatmap="beatmap" />
-    <BeatmapButtonRefreshData v-if="isDownloaded" :beatmap="beatmap" />
+    <BeatmapButtonRefreshData :beatmap="beatmap" />
     <BeatmapButtonOpenFolder v-if="isDownloaded" :beatmap="beatmap" />
     <BeatmapButtonOpenPreview :beatmap="beatmap" />
     <BeatmapButtonOpenBeatsaver :beatmap="beatmap" />

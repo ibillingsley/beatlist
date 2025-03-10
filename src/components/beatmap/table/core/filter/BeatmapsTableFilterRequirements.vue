@@ -40,6 +40,15 @@
         inset
         @change="update"
       />
+      <v-switch
+        v-model="vivifyFilter"
+        color="accent"
+        label="Vivify"
+        hide-details="auto"
+        dense
+        inset
+        @change="update"
+      />
     </template>
   </v-edit-dialog>
 </template>
@@ -59,12 +68,14 @@ export default Vue.extend({
     noodleFilter: false,
     meFilter: false,
     cinemaFilter: false,
+    vivifyFilter: false,
   }),
   mounted(): void {
     this.chromaFilter = this.value.chroma;
     this.noodleFilter = this.value.ne;
     this.meFilter = this.value.me;
     this.cinemaFilter = this.value.cinema;
+    this.vivifyFilter = this.value.vivify;
   },
   methods: {
     update() {
@@ -73,6 +84,7 @@ export default Vue.extend({
         ne: this.noodleFilter,
         me: this.meFilter,
         cinema: this.cinemaFilter,
+        vivify: this.vivifyFilter,
       });
     },
     isModified() {
@@ -80,7 +92,8 @@ export default Vue.extend({
         this.chromaFilter ||
         this.noodleFilter ||
         this.meFilter ||
-        this.cinemaFilter
+        this.cinemaFilter ||
+        this.vivifyFilter
       );
     },
   },

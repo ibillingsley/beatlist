@@ -25,7 +25,13 @@ export function FilterDifficulties(
 
 export function FilterRequirements(
   value: ReqsMetadata,
-  search: { me: boolean; ne: boolean; chroma: boolean; cinema: boolean }
+  search: {
+    me: boolean;
+    ne: boolean;
+    chroma: boolean;
+    cinema: boolean;
+    vivify: boolean;
+  }
 ) {
   if (search.chroma) {
     if (value?.chroma !== search.chroma) {
@@ -44,6 +50,11 @@ export function FilterRequirements(
   }
   if (search.cinema) {
     if (value?.cinema !== search.cinema) {
+      return false;
+    }
+  }
+  if (search.vivify) {
+    if (value?.vivify !== search.vivify) {
       return false;
     }
   }

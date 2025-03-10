@@ -10,6 +10,8 @@ function getNameFor(name: string) {
       return "Chroma";
     case "cinema":
       return "Cinema";
+    case "vivify":
+      return "Vivify";
     default:
       return undefined;
   }
@@ -24,6 +26,8 @@ function getShortNameFor(name: string) {
       return "CR";
     case "cinema":
       return "CI";
+    case "vivify":
+      return "VI";
     default:
       return undefined;
   }

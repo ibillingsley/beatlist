@@ -49,6 +49,7 @@ export interface BeatsaverNewDiffs {
   ne: boolean;
   chroma: boolean;
   cinema: boolean;
+  vivify: boolean;
 }
 
 export interface NewStats {
@@ -109,6 +110,7 @@ export interface Difficulty {
   ne: boolean;
   me: boolean;
   cinema: boolean;
+  vivify: boolean;
 }
 
 export interface DifficultiesSimple {
@@ -126,6 +128,7 @@ export interface ReqsMetadata {
   ne: boolean;
   me: boolean;
   cinema: boolean;
+  vivify: boolean;
 }
 
 export interface Stats {
@@ -216,6 +219,7 @@ function createCharacteristicMetadata(doc: BeatsaverNewBeatmap): {
     ne: false,
     me: false,
     cinema: false,
+    vivify: false,
   };
 
   for (const diff of version.diffs) {
@@ -247,11 +251,13 @@ function createCharacteristicMetadata(doc: BeatsaverNewBeatmap): {
       ne: diff.ne,
       chroma: diff.chroma,
       cinema: diff.cinema,
+      vivify: diff.vivify,
     };
     requirements.me = requirements.me || diff.me;
     requirements.ne = requirements.ne || diff.ne;
     requirements.chroma = requirements.chroma || diff.chroma;
     requirements.cinema = requirements.cinema || diff.cinema;
+    requirements.vivify = requirements.vivify || diff.vivify;
     switch (diff.difficulty) {
       case "ExpertPlus":
         characteristic.difficulties.expertPlus = diffDetail;

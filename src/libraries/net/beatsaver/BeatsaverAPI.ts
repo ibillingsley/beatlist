@@ -122,6 +122,7 @@ export default class BeatsaverAPI {
       "noodle",
       "me",
       "cinema",
+      "vivify",
     ];
     for (const extraFilter of extraFilters) {
       if (filters != null && filters[extraFilter]) {

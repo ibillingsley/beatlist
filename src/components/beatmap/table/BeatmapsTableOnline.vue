@@ -32,6 +32,7 @@
           :enable-noodle-filter="enableNoodleFilter"
           :enable-m-e-filter="enableMEFilter"
           :enable-cinema-filter="enableCinemaFilter"
+          :enable-vivify-filter="enableVivifyFilter"
           @input="updateFilter"
         />
       </v-col>
@@ -161,6 +162,7 @@ export default Vue.extend({
     enableNoodleFilter: false,
     enableMEFilter: false,
     enableCinemaFilter: false,
+    enableVivifyFilter: false,
     minNps: null as number | null,
     maxNps: null as number | null,
     dateRange: {} as DateRange,
@@ -268,6 +270,10 @@ export default Vue.extend({
         }
         if (this.enableCinemaFilter !== params.cinema) {
           this.enableCinemaFilter = params.cinema ?? false;
+          changed = true;
+        }
+        if (this.enableVivifyFilter !== params.vivify) {
+          this.enableVivifyFilter = params.vivify ?? false;
           changed = true;
         }
       }
@@ -476,6 +482,9 @@ export default Vue.extend({
       }
       if (this.enableCinemaFilter) {
         filter.cinema = true;
+      }
+      if (this.enableVivifyFilter) {
+        filter.vivify = true;
       }
       if (this.minNps != null) {
         filter.minNps = this.minNps;

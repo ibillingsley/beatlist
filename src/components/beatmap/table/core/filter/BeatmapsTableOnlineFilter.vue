@@ -21,7 +21,8 @@
               chromaFilter ||
               noodleFilter ||
               meFilter ||
-              cinemaFilter)
+              cinemaFilter ||
+              vivifyFilter)
               ? 'success'
               : ''
           "
@@ -102,6 +103,14 @@
         dense
         inset
       />
+      <v-switch
+        v-model="vivifyFilter"
+        color="accent"
+        label="Vivify"
+        hide-details="auto"
+        dense
+        inset
+      />
     </template>
   </v-edit-dialog>
 </template>
@@ -123,6 +132,7 @@ export default Vue.extend({
     enableNoodleFilter: { type: Boolean, required: true },
     enableMEFilter: { type: Boolean, required: true },
     enableCinemaFilter: { type: Boolean, required: true },
+    enableVivifyFilter: { type: Boolean, required: true },
   },
   data: () => ({
     filterText: "Filter",
@@ -135,6 +145,7 @@ export default Vue.extend({
     noodleFilter: false,
     meFilter: false,
     cinemaFilter: false,
+    vivifyFilter: false,
   }),
   watch: {
     enableAIFilter() {
@@ -182,6 +193,11 @@ export default Vue.extend({
         this.cinemaFilter = this.enableCinemaFilter;
       }
     },
+    enableVivifyFilter() {
+      if (this.vivifyFilter !== this.enableVivifyFilter) {
+        this.vivifyFilter = this.enableVivifyFilter;
+      }
+    },
   },
   activated(): void {
     this.reset();
@@ -202,6 +218,7 @@ export default Vue.extend({
       this.noodleFilter = this.enableNoodleFilter;
       this.meFilter = this.enableMEFilter;
       this.cinemaFilter = this.enableCinemaFilter;
+      this.vivifyFilter = this.enableVivifyFilter;
     },
     updateFilterText() {
       const filters: string[] = [];
@@ -232,6 +249,9 @@ export default Vue.extend({
       if (this.cinemaFilter) {
         filters.push("cinema");
       }
+      if (this.vivifyFilter) {
+        filters.push("vivify");
+      }
       const text = filters.join(",");
       if (text === "") {
         this.filterText = "Filter";
@@ -252,6 +272,7 @@ export default Vue.extend({
         noodle: this.noodleFilter,
         me: this.meFilter,
         cinema: this.cinemaFilter,
+        vivify: this.vivifyFilter,
       };
       this.$emit("input", filter);
     },

@@ -188,6 +188,7 @@ export default class BeatmapLibrary {
       ne: false,
       me: false,
       cinema: false,
+      vivify: false,
     };
     const authors = new Set();
     for (const mapset of v4
@@ -237,6 +238,7 @@ export default class BeatmapLibrary {
         requirements.me =
           requirements.me || reqs.includes("Mapping Extensions");
         requirements.cinema = requirements.cinema || reqs.includes("Cinema");
+        requirements.vivify = requirements.vivify || reqs.includes("Vivify");
       }
     }
 

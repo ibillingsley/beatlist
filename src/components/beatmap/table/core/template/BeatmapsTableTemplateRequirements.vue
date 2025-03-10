@@ -34,7 +34,13 @@ export default Vue.extend({
         return [];
       }
       // chroma, ne, me, cinema の順に表示
-      const keys: (keyof ReqsMetadata)[] = ["chroma", "ne", "me", "cinema"];
+      const keys: (keyof ReqsMetadata)[] = [
+        "chroma",
+        "ne",
+        "me",
+        "cinema",
+        "vivify",
+      ];
       return convertReqsMetadataToShortNameList(keys, reqs);
     },
   },

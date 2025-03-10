@@ -106,7 +106,13 @@ export default Vue.extend({
   computed: {
     reqs() {
       // chroma, ne, me, cinema の順に表示
-      const keys: (keyof ReqsMetadata)[] = ["chroma", "ne", "me", "cinema"];
+      const keys: (keyof ReqsMetadata)[] = [
+        "chroma",
+        "ne",
+        "me",
+        "cinema",
+        "vivify",
+      ];
       return convertReqsMetadataToNameList(keys, this.difficulty);
     },
   },
