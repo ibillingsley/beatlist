@@ -30,9 +30,8 @@
         >
           <v-img :src="pl.playlistImage" width="175" height="175">
             <v-overlay
-              v-if="playlists.includes(selected)"
               absolute
-              :value="active"
+              :value="active && playlists.includes(selected)"
               :opacity="0.7"
             >
               <v-row class="fill-height" align="center" justify="center">
