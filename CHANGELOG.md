@@ -1,6 +1,9 @@
 # Changelog
 
 ## v1.5.1  (2025-03-10)
+**Features:**
+ - Added Vivify to possible map requirements
+
 **Bug fixes:**
  - Fixed online playlists page (curated and verified only)
 
