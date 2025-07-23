@@ -35,9 +35,10 @@ export default Vue.extend({
     openPreview(): void {
       if (this.arcviewerPath && pathExistsSync(this.arcviewerPath)) {
         const local = BeatmapLibrary.GetMapByHash(this.beatmap.hash);
-        const params = local
-          ? [`path=${local.folderPath}`]
-          : [`id=${this.beatmap.key}`];
+        const params = [
+          local ? `path=${local.folderPath}` : `id=${this.beatmap.key}`,
+          "autoPlay=true",
+        ];
         execFile(this.arcviewerPath, params);
       } else {
         shell.openExternal(
