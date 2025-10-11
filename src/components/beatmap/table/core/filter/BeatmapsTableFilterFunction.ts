@@ -9,7 +9,9 @@ export function FilterRange(value: number, search: Range) {
 }
 
 export function FilterText(value: string, search: string) {
-  return value.toLowerCase().includes(search.toLowerCase());
+  return value
+    .toLowerCase()
+    .includes(search.toLowerCase().replace("!bsr ", ""));
 }
 
 export function FilterDateRange(value: Date, search: DateRange) {
