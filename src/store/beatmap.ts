@@ -41,6 +41,12 @@ const getters = {
 const mutations = {
   ...make.mutations(state),
   addBeatmap(context: BeatmapStoreState, payload: { beatmap: BeatmapLocal }) {
+    const path = payload.beatmap.folderPath.toLowerCase();
+    context.beatmaps = context.beatmaps.filter(
+      (value) =>
+        (!payload.beatmap.hash || value.hash !== payload.beatmap.hash) &&
+        (!path || value.folderPath.toLowerCase() !== path)
+    );
     context.beatmaps.push(payload.beatmap);
     if (payload.beatmap.hash != null) {
       // null になるのは invalid な map だけ
