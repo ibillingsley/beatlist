@@ -9,13 +9,20 @@ export function FilterRange(value: number, search: Range) {
 }
 
 export function FilterText(value: string, search: string) {
-  return value
-    .toLowerCase()
-    .includes(search.toLowerCase().replace("!bsr ", ""));
+  return value.toLowerCase().includes(search.toLowerCase());
 }
 
 export function FilterDateRange(value: Date, search: DateRange) {
   return IsInDate(value, search);
+}
+
+const keyRegex = /!bsr ([a-f0-9]+)/i;
+export function FilterKey(value: string, search: string) {
+  const match = search.match(keyRegex);
+  if (match) {
+    return match[1] === value;
+  }
+  return FilterText(value, search);
 }
 
 export function FilterDifficulties(

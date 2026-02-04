@@ -138,6 +138,7 @@ import {
   FilterDateRange,
   FilterRange,
   FilterText,
+  FilterKey,
   FilterDifficulties,
   FilterRequirements,
 } from "@/components/beatmap/table/core/filter/BeatmapsTableFilterFunction";
@@ -449,8 +450,8 @@ export default Vue.extend({
           filterable: true,
           filterType: BeatmapsTableFilterType.Text,
           localFilter: (value: string) =>
-            FilterText(value, this.filtersValue.key),
-          globalSearch: (value: string) => FilterText(value, this.search),
+            FilterKey(value, this.filtersValue.key),
+          globalSearch: (value: string) => FilterKey(value, this.search),
           sort: sortKeyHex,
           width: 50,
         },
