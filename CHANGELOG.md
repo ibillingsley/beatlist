@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.2  (2026-02-09)
+**Features:**
+ - Search by !bsr request in search bar
+ - Auto play in ArcViewer preview
+ - Sort by download date by default
+
+**Bug fixes:**
+ - Recompute map hash when "Refresh the Data" clicked
+
 ## v1.5.1  (2025-03-10)
 **Features:**
  - Added Vivify to possible map requirements
