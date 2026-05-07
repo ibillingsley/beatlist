@@ -6,7 +6,7 @@
     :options="{ page: currentPage, itemsPerPage }"
     :server-items-length="serverItemsLength"
     :loading="loading"
-    :sort-by="['downloaded']"
+    sort-by="downloaded"
     :sort-desc="true"
     :disable-sort="noSort"
     :fixed-header="fixedHeader"

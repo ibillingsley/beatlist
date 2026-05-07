@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.5.3  (2026-05-06)
+**Bug fixes:**
+ - Fixed sort reverting after page change
+
 ## v1.5.2  (2026-02-09)
 **Features:**
  - Search by !bsr request in search bar
