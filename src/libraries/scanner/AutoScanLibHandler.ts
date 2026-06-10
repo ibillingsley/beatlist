@@ -1,4 +1,4 @@
-import chokidar from "chokidar";
+import chokidar, { ChokidarOptions } from "chokidar";
 import lodash from "lodash";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import store from "@/plugins/store";
@@ -30,7 +30,7 @@ export default class AutoScanLibHandler {
     }
   }
 
-  private static watch(folder: string, options: chokidar.WatchOptions) {
+  private static watch(folder: string, options: ChokidarOptions) {
     const watcher = chokidar.watch(folder, options);
 
     watcher.on("add", this.onChange);

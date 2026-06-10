@@ -41,7 +41,7 @@ describe("beatSaber", () => {
   it("should get all folder (supposed to be beatmap) in the folder", async () => {
     expect.assertions(2);
 
-    const [first, second] = (await BeatSaber.getAllSongFolderPath()) ?? [];
+    const [first, second] = await BeatSaber.getAllSongFolderPath();
 
     expect(first).toBe(
       path.join(
@@ -60,8 +60,7 @@ describe("beatSaber", () => {
   it("should find all playlists file", async () => {
     expect.assertions(3);
 
-    const [first, second, third] =
-      (await BeatSaber.getAllPlaylistsPath()) ?? [];
+    const [first, second, third] = (await BeatSaber.getAllPlaylistsPath())!;
 
     expect(first).toBe(
       path.join(__dirname, "../data/fakeInstallation/Playlists/file1.json")

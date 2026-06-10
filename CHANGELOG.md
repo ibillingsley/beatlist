@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.4  (2026-06-09)
+ - Updated Electron to version 42.3.3
+ - Updated Chokidar to version 5.0.0
+ - Other minor dependency updates
+
 ## v1.5.3  (2026-05-06)
 **Bug fixes:**
  - Fixed sort reverting after page change
