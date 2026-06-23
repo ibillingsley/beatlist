@@ -1,3 +1,4 @@
+import fs from "fs-extra";
 import BeatSaber from "@/libraries/os/beatSaber/BeatSaber";
 import {
   computeDifferenceBySet,
@@ -39,10 +40,6 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
       // 削除されたディレクトリのキャッシュを破棄
       BeatmapLibrary.RemoveBeatmapByPaths(diff.removed);
 
-      this.result.removedItems = diff.removed.length;
-      this.result.keptItems = diff.kept.length;
-      diff.removed = []; // 件数しか使用しないので早めに破棄
-
       // 手動で [UPDATE LIBRARY] を実行したときだけ、既存譜面の DownloadDate を再取得して反映 (作成日時の変更は chokidar の検知対象外)
       if (forceUpdate && diff.kept.length > 0) {
         Logger.debug(`start getDownloadDate`, "BeatmapScanner");
@@ -56,7 +53,13 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
           `end   BeatmapLibrary.UpdateDownloadDate`,
           "BeatmapScanner"
         );
+        // Check for modified folders, treat as added
+        await BeatmapScanner.checkForChange(diff);
       }
+
+      this.result.removedItems = diff.removed.length;
+      this.result.keptItems = diff.kept.length;
+      diff.removed = []; // 件数しか使用しないので早めに破棄
 
       progress.setTotal(diff.added.length + retryTargetItems.length);
 
@@ -157,6 +160,24 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
     });
 
     return computeDifferenceBySet(oldPathSet, currentPathSet);
+  }
+
+  private static async checkForChange(diff: Differences<string>) {
+    const modifiedPathSet = new Set<string>();
+    for (const beatmap of BeatmapLibrary.GetAllMaps()) {
+      try {
+        const fstat = await fs.stat(beatmap.folderPath);
+        if (!beatmap.modified || beatmap.modified < fstat.mtime.toISOString())
+          modifiedPathSet.add(beatmap.folderPath.toLowerCase());
+      } catch (e) {
+        console.warn(e); // No file, etc
+      }
+    }
+    // Treat modified folders as added
+    diff.added = diff.added.concat(
+      diff.kept.filter((value) => modifiedPathSet.has(value))
+    );
+    diff.kept = diff.kept.filter((value) => !modifiedPathSet.has(value));
   }
 
   //   private ReassembleAllBeatmap(diff: Differences<string>): BeatmapLocal[] {

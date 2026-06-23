@@ -7,6 +7,7 @@ export interface BeatmapLocal {
   hash: string | undefined;
   folderNameHash: string | undefined;
   downloaded: string;
+  modified: string | undefined;
   loadState: BeatmapLoadState;
 }
 

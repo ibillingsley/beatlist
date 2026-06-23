@@ -81,6 +81,9 @@ export default class BeatmapLoader {
     );
 
     try {
+      const fstat = await fs.stat(this.beatmapFolder);
+      this.beatmap.modified = fstat.mtime.toISOString();
+
       const infoDatPath = path.join(this.beatmapFolder, "info.dat");
       const infoDat = await fs.readFile(infoDatPath);
 
