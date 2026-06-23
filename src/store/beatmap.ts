@@ -41,12 +41,12 @@ const getters = {
 const mutations = {
   ...make.mutations(state),
   addBeatmap(context: BeatmapStoreState, payload: { beatmap: BeatmapLocal }) {
+    // Remove existing beatmaps with the same path
     const path = payload.beatmap.folderPath.toLowerCase();
     context.beatmaps = context.beatmaps.filter(
-      (value) =>
-        (!payload.beatmap.hash || value.hash !== payload.beatmap.hash) &&
-        (!path || value.folderPath.toLowerCase() !== path)
+      (value) => !value.folderPath || value.folderPath.toLowerCase() !== path
     );
+    // Add beatmap
     context.beatmaps.push(payload.beatmap);
     if (payload.beatmap.hash != null) {
       // null になるのは invalid な map だけ
@@ -60,6 +60,14 @@ const mutations = {
     context: BeatmapStoreState,
     payload: { beatmaps: BeatmapLocal[] }
   ) {
+    // Remove existing beatmaps with the same path
+    const paths = new Set(
+      payload.beatmaps.map((value) => value.folderPath.toLowerCase())
+    );
+    context.beatmaps = context.beatmaps.filter(
+      (value) => !value.folderPath || !paths.has(value.folderPath.toLowerCase())
+    );
+    // Add beatmaps
     for (const beatmap of payload.beatmaps) {
       context.beatmaps.push(beatmap);
       if (beatmap.hash != null) {
