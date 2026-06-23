@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.5  (2026-06-22)
+ - When doing a manual scan, recompute hashes for modified folders
+ - Fixed handling of duplicate maps
+ - Updated Electron to version 42.4.1
+
 ## v1.5.4  (2026-06-09)
  - Updated Electron to version 42.3.3
  - Updated Chokidar to version 5.0.0
