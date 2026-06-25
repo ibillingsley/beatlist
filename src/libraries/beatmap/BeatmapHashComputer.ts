@@ -9,32 +9,29 @@ export default class BeatmapHashComputer {
       const infoDatStr = (await fs.readFile(infoDatPath)).toString();
       const infoDat = JSON.parse(infoDatStr);
       const v4 = infoDat.version?.startsWith("4.");
-
-      let binary = infoDatStr;
+      const filenames: string[] = [];
 
       if (v4) {
-        binary += fs
-          .readFileSync(path.join(folderPath, infoDat.audio.audioDataFilename))
-          .toString();
+        filenames.push(infoDat.audio.audioDataFilename);
         for (const d of infoDat.difficultyBeatmaps) {
-          if (d.beatmapDataFilename)
-            binary += fs
-              .readFileSync(path.join(folderPath, d.beatmapDataFilename))
-              .toString();
-          if (d.lightshowDataFilename)
-            binary += fs
-              .readFileSync(path.join(folderPath, d.lightshowDataFilename))
-              .toString();
+          if (d.beatmapDataFilename) filenames.push(d.beatmapDataFilename);
+          if (d.lightshowDataFilename) filenames.push(d.lightshowDataFilename);
         }
       } else {
         for (const diffSet of infoDat._difficultyBeatmapSets) {
           for (const d of diffSet._difficultyBeatmaps) {
-            binary += fs
-              .readFileSync(path.join(folderPath, d._beatmapFilename))
-              .toString();
+            filenames.push(d._beatmapFilename);
           }
         }
       }
+
+      const fileStr = await Promise.all(
+        filenames.map((name) =>
+          fs.readFile(path.join(folderPath, name)).then((buf) => buf.toString())
+        )
+      );
+
+      const binary = [infoDatStr].concat(fileStr).join("");
 
       return crypto
         .createHash("sha1")
