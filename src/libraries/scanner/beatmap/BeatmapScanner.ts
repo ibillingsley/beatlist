@@ -76,8 +76,8 @@ export default class BeatmapScanner implements ScannerInterface<BeatmapLocal> {
         // eslint-disable-next-line no-await-in-loop
         const addedBeatmaps = await Promise.all(addedBeatmapPromise); // 最大25件分、非同期で実行し完了を待機
         addedBeatmapList = addedBeatmapList.concat(addedBeatmaps);
-        if (addedBeatmapList.length >= 1000) {
-          // store への登録は 1000件単位
+        if (addedBeatmapList.length >= 2000) {
+          // store への登録は 2000件単位
           BeatmapLibrary.AddBeatmaps(addedBeatmapList);
           addedBeatmapList = [];
         }
