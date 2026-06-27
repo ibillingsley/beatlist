@@ -39,7 +39,6 @@ const vuexLocalMain = new VuexPersistence<StoreState>({
   strictMode: true,
   reducer: (state) => ({
     settings: state.settings,
-    notification: state.notification,
     modal: state.modal,
   }),
 });
