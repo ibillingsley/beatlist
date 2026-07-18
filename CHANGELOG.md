@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.5.6  (2026-07-18)
+ - Speed up hashing during scan
+ - Do not persist notifications after restart
+ - Updated Electron to version 43.1.1
+
 ## v1.5.5  (2026-06-22)
  - When doing a manual scan, recompute hashes for modified folders
  - Fixed handling of duplicate maps
